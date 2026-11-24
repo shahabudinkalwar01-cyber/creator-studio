@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v4 — Dynamic YouTube Video Engine</title>
+  <title>Studio v5 — Free Viral Video Engine</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -14,11 +14,12 @@
       --text: #f3f4f6;
       --muted: #9ca3af;
       --green: #10b981;
+      --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 16px 14px 50px; }
     .container { max-width: 680px; margin: 0 auto; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
     .badge {
       font-size: 11px; font-weight: 700; color: var(--gold);
       border: 1px solid rgba(245,185,66,0.4); background: rgba(245,185,66,0.08);
@@ -27,50 +28,66 @@
     .back-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
     .card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 18px; margin-bottom: 18px;
+      border-radius: 16px; padding: 18px; margin-bottom: 16px;
     }
     .step-title {
-      font-size: 0.85rem; font-weight: 700; color: var(--gold);
-      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px;
+      font-size: 0.82rem; font-weight: 700; color: var(--gold);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px;
     }
+    .tpl-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 4px; }
+    .tpl-btn {
+      flex: 0 0 auto; background: var(--input); color: var(--text); border: 1px solid var(--border);
+      padding: 9px 13px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+    }
+    .tpl-btn:hover { border-color: var(--gold); color: var(--gold); }
+
     textarea {
-      width: 100%; min-height: 120px; background: var(--input); color: var(--text);
+      width: 100%; min-height: 110px; background: var(--input); color: var(--text);
       border: 1px solid var(--border); border-radius: 12px; padding: 12px;
-      font-size: 0.95rem; line-height: 1.45; resize: vertical; margin-bottom: 12px;
+      font-size: 0.95rem; line-height: 1.45; resize: vertical; margin-bottom: 10px;
     }
-    .upload-box {
-      display: block; width: 100%; text-align: center; cursor: pointer;
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .mic-btn {
+      background: #1f1622; color: #fca5a5; border: 1px solid rgba(239,68,68,0.4);
+      border-radius: 12px; padding: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+    }
+    .mic-btn.recording { background: var(--red); color: #fff; border-color: var(--red); }
+    .upload-mini {
+      display: flex; align-items: center; justify-content: center; text-align: center;
       background: var(--input); border: 1px dashed #374151; border-radius: 12px;
-      padding: 14px 12px; margin-bottom: 10px;
+      padding: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
     }
-    .upload-box strong { display: block; font-size: 0.92rem; margin-bottom: 3px; }
-    .upload-box span { font-size: 0.78rem; color: var(--muted); }
     input[type="file"] { display: none; }
 
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--input); border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 14px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600;
+    }
     select {
       width: 100%; background: var(--input); color: var(--text);
       border: 1px solid var(--border); border-radius: 12px;
-      padding: 13px 12px; font-size: 0.92rem; margin-bottom: 16px;
+      padding: 13px 12px; font-size: 0.92rem; margin-bottom: 14px;
     }
-    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
     .style-card {
       background: var(--input); border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 12px; cursor: pointer; transition: 0.15s;
+      border-radius: 12px; padding: 12px; cursor: pointer;
     }
     .style-card.active { border-color: var(--gold); background: rgba(245,185,66,0.06); }
-    .style-card h4 { font-size: 0.9rem; margin-bottom: 6px; }
-    .style-card p { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
+    .style-card h4 { font-size: 0.88rem; margin-bottom: 4px; }
+    .style-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.3; }
 
     .btn-generate {
       width: 100%; background: var(--gold); color: #0b0f19; border: none;
-      border-radius: 12px; padding: 15px; font-size: 1rem; font-weight: 700; cursor: pointer;
+      border-radius: 12px; padding: 15px; font-size: 1rem; font-weight: 800; cursor: pointer;
     }
     canvas {
-      width: 100%; aspect-ratio: 16 / 9; background: #000;
-      border-radius: 12px; border: 1px solid var(--border); display: block; margin-bottom: 12px;
+      width: 100%; aspect-ratio: 9 / 16; max-height: 520px; object-fit: contain;
+      background: #000; border-radius: 12px; border: 1px solid var(--border); display: block; margin: 0 auto 12px;
     }
     .controls-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .status { font-size: 0.85rem; color: var(--green); }
+    .status { font-size: 0.83rem; color: var(--green); }
     .btn-small {
       background: #1e293b; color: var(--text); border: 1px solid var(--border);
       padding: 9px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
@@ -82,62 +99,82 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">LIVE MOBILE ENGINE v4</span>
-      <a href="index.html" class="back-link">← Back to Home</a>
+      <span class="badge">VIRAL ENGINE v5</span>
+      <a href="index.html" class="back-link">← Home</a>
     </div>
 
+    <!-- 1-Tap Viral Templates -->
     <div class="card">
-      <div class="step-title">1. Script or Voiceover Input</div>
-      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Imagine turning a raw voice memo into a $10,000 agency-level edit in seconds.</textarea>
+      <div class="step-title">⚡ 1-Tap Viral Templates</div>
+      <div class="tpl-row">
+        <button class="tpl-btn" data-tpl="money">💰 $10k Agency Rule</button>
+        <button class="tpl-btn" data-tpl="finance">📈 2026 Wealth Shift</button>
+        <button class="tpl-btn" data-tpl="discipline">🔥 3 Harsh Truths</button>
+        <button class="tpl-btn" data-tpl="apple">⚡ Tech Speed Secret</button>
+        <button class="tpl-btn" data-tpl="doc">🕵️ Hidden Mystery</button>
+      </div>
+    </div>
 
-      <label class="upload-box">
-        <input type="file" id="audioUpload" accept="audio/*" />
-        <strong id="audioLabel">+ Upload Voiceover (Optional)</strong>
-        <span>MP3 / WAV / M4A — Mixes into exported video</span>
-      </label>
+    <!-- Step 1 -->
+    <div class="card">
+      <div class="step-title">1. Script, Mic Voiceover & Images</div>
+      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Turn any voice memo into a $10,000 agency-level edit in seconds.</textarea>
 
-      <label class="upload-box" style="margin-bottom:0;">
+      <div class="btn-row">
+        <button class="mic-btn" id="micBtn">🎙️ Record Voice Memo</button>
+        <label class="upload-mini">
+          <input type="file" id="audioUpload" accept="audio/*" />
+          <span id="audioLabel">📁 Upload Audio</span>
+        </label>
+      </div>
+
+      <label class="upload-mini" style="width:100%;">
         <input type="file" id="imageUpload" accept="image/*" multiple />
-        <strong id="imageLabel">+ Add Custom Images / Screenshots</strong>
-        <span>Select 1 to 10 images to weave into scenes</span>
+        <span id="imageLabel">🖼️ + Add 1–10 Custom Images / Screenshots</span>
       </label>
     </div>
 
+    <!-- Step 2 & 3 -->
     <div class="card">
-      <div class="step-title">2. Choose Video Mode & Format</div>
+      <div class="step-title">2. Format, Beat & Viral Style</div>
       <select id="modeSelect">
-        <option value="shorts">YouTube Shorts / Reels / TikTok (9:16 Vertical)</option>
-        <option value="landscape" selected>Full YouTube Video (16:9 Horizontal)</option>
+        <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
+        <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
       </select>
 
-      <div class="step-title">3. Choose Visual & Sound Style</div>
+      <label class="toggle-row">
+        <span>🎵 Built-in Dark Background Beat</span>
+        <input type="checkbox" id="beatToggle" checked style="width:20px; height:20px;" />
+      </label>
+
       <div class="style-grid">
         <div class="style-card active" data-style="luxury">
           <h4>Style 1: Dark Luxury</h4>
-          <p>Black & gold kinetic text, glowing stat cards & particles.</p>
+          <p>Black & gold stats, glowing cards & particles.</p>
         </div>
         <div class="style-card" data-style="doc">
           <h4>Style 2: Documentary</h4>
-          <p>Warm paper texture, red marker highlight sweep & zoom.</p>
+          <p>Warm paper, red marker highlight & film bars.</p>
         </div>
         <div class="style-card" data-style="apple">
           <h4>Style 3: Clean Apple Tech</h4>
-          <p>Frosted slate glass, sheen sweep & crisp white type.</p>
+          <p>Frosted slate glass, sheen sweep & clean type.</p>
         </div>
         <div class="style-card" data-style="finance">
           <h4>Style 4: Dark Neon Finance</h4>
-          <p>Pitch black with animated emerald growth charts & cuts.</p>
+          <p>Pitch black + rising green growth chart.</p>
         </div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">Generate Pro Video Automatically</button>
+      <button class="btn-generate" id="generateBtn">Generate Viral Video Now</button>
     </div>
 
+    <!-- Step 4 -->
     <div class="card">
-      <div class="step-title">4. Live Dynamic Preview & Export</div>
-      <canvas id="previewCanvas" width="1280" height="720"></canvas>
+      <div class="step-title">3. Live Preview & Zero-Watermark Export</div>
+      <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Tap Generate above</span>
+        <span class="status" id="statusText">Ready — Tap a Template or Generate</span>
         <div style="display:flex; gap:8px;">
           <button class="btn-small" id="replayBtn">Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
@@ -152,13 +189,16 @@
     const statusText = document.getElementById("statusText");
     const scriptInput = document.getElementById("scriptInput");
     const modeSelect = document.getElementById("modeSelect");
+    const beatToggle = document.getElementById("beatToggle");
     const exportBtn = document.getElementById("exportBtn");
+    const micBtn = document.getElementById("micBtn");
 
     let selectedStyle = "luxury";
     let uploadedImages = [];
     let audioBufferUrl = null;
     let audioEl = null;
     let animId = null;
+    let beatInterval = null;
     let scenes = [];
     const sceneDurationMs = 3000;
     let startTime = null;
@@ -167,9 +207,34 @@
     let sharedActx = null;
     let sfxDest = null;
 
-    const particles = Array.from({ length: 24 }, () => ({
-      x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.5, speed: 0.015 + Math.random() * 0.03
-    }));
+    // Mic recording state
+    let micRecorder = null;
+    let micChunks = [];
+    let recognition = null;
+    let isMicRecording = false;
+
+    const TEMPLATES = {
+      money: {
+        style: "luxury",
+        text: "Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Turn any voice memo into a $10,000 agency-level edit in seconds."
+      },
+      finance: {
+        style: "finance",
+        text: "90% of people ignore compounding until it is too late. Saving $500 a month at 12% growth changes your entire bloodline. Start before 2027 leaves you behind."
+      },
+      discipline: {
+        style: "luxury",
+        text: "Nobody is coming to save you in 2026. Delete the distractions costing you 4 hours every night. Lock in for 90 days and watch your life flip."
+      },
+      apple: {
+        style: "apple",
+        text: "Why pay $30 every month for bloated editors? One tap turns raw words into clean 60fps motion graphics. Faster workflow, zero watermark, built for mobile."
+      },
+      doc: {
+        style: "doc",
+        text: "In 2024, one faceless channel made $42,000 in 30 days. Not from luck, but from 3-second visual hooks. Here is the exact retention formula they hid."
+      }
+    };
 
     const THEMES = {
       luxury:  { bg: "#070709", bg2: "#161208", accent: "#f5b942", text: "#ffffff", card: "rgba(245,185,66,0.10)" },
@@ -178,11 +243,28 @@
       finance: { bg: "#02060d", bg2: "#041c15", accent: "#10b981", text: "#ecfdf5", card: "rgba(16,185,129,0.12)" }
     };
 
+    const particles = Array.from({ length: 24 }, () => ({
+      x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.5, speed: 0.015 + Math.random() * 0.03
+    }));
+
+    function selectStyle(styleName) {
+      selectedStyle = styleName;
+      document.querySelectorAll(".style-card").forEach(c => {
+        c.classList.toggle("active", c.dataset.style === styleName);
+      });
+    }
+
     document.querySelectorAll(".style-card").forEach(card => {
-      card.addEventListener("click", () => {
-        document.querySelectorAll(".style-card").forEach(c => c.classList.remove("active"));
-        card.classList.add("active");
-        selectedStyle = card.dataset.style;
+      card.addEventListener("click", () => selectStyle(card.dataset.style));
+    });
+
+    document.querySelectorAll(".tpl-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tpl = TEMPLATES[btn.dataset.tpl];
+        scriptInput.value = tpl.text;
+        selectStyle(tpl.style);
+        statusText.textContent = "Template loaded! Playing preview...";
+        startPlayback();
       });
     });
 
@@ -196,11 +278,64 @@
       }
     });
 
+    // Mic Voice Memo + Live Auto-Transcription
+    micBtn.addEventListener("click", async () => {
+      if (isMicRecording) {
+        isMicRecording = false;
+        micBtn.classList.remove("recording");
+        micBtn.textContent = "🎙️ Record Voice Memo";
+        if (micRecorder && micRecorder.state === "recording") micRecorder.stop();
+        if (recognition) try { recognition.stop(); } catch (e) {}
+        return;
+      }
+
+      try {
+        const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        micChunks = [];
+        micRecorder = new MediaRecorder(micStream);
+        micRecorder.ondataavailable = e => { if (e.data.size > 0) micChunks.push(e.data); };
+        micRecorder.onstop = () => {
+          const blob = new Blob(micChunks, { type: "audio/webm" });
+          audioBufferUrl = URL.createObjectURL(blob);
+          document.getElementById("audioLabel").textContent = "✅ Voice Memo Ready";
+          micStream.getTracks().forEach(t => t.stop());
+          statusText.textContent = "Voice memo saved! Tap Generate.";
+        };
+        micRecorder.start();
+
+        // Live speech-to-text on supported mobile Chrome
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SR) {
+          recognition = new SR();
+          recognition.continuous = true;
+          recognition.interimResults = false;
+          recognition.lang = "en-US";
+          let transcript = "";
+          recognition.onresult = (ev) => {
+            for (let i = ev.resultIndex; i < ev.results.length; i++) {
+              if (ev.results[i].isFinal) {
+                transcript += ev.results[i][0].transcript.trim() + ". ";
+                scriptInput.value = transcript.trim();
+              }
+            }
+          };
+          recognition.start();
+        }
+
+        isMicRecording = true;
+        micBtn.classList.add("recording");
+        micBtn.textContent = "⏹️ Tap to Stop Recording";
+        statusText.textContent = "Listening... Speak clearly now";
+      } catch (err) {
+        statusText.textContent = "Mic blocked — allow microphone permission";
+      }
+    });
+
     document.getElementById("audioUpload").addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
       audioBufferUrl = URL.createObjectURL(file);
-      document.getElementById("audioLabel").textContent = "Loaded: " + file.name;
+      document.getElementById("audioLabel").textContent = "✅ " + file.name.slice(0, 14);
     });
 
     document.getElementById("imageUpload").addEventListener("change", (e) => {
@@ -211,7 +346,7 @@
         img.src = URL.createObjectURL(file);
         uploadedImages.push(img);
       });
-      document.getElementById("imageLabel").textContent = `Loaded ${files.length} image(s)`;
+      document.getElementById("imageLabel").textContent = `✅ Loaded ${files.length} image(s)`;
     });
 
     function extractStat(text) {
@@ -222,77 +357,97 @@
     function buildScenes() {
       const raw = scriptInput.value.trim();
       const parts = raw.split(/(?<=[.!?])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Paste your script to generate a pro edit."]).map(t => ({
+      scenes = (parts.length ? parts : ["Tap a template or speak into the mic."]).map(t => ({
         text: t,
         stat: extractStat(t)
       }));
     }
 
-    // Pure Web Audio synthesized whoosh + bass thump
     function playTransitionSfx() {
       if (!sharedActx) return;
       try {
         const now = sharedActx.currentTime;
-        // Sub bass hit
         const osc = sharedActx.createOscillator();
         const gain = sharedActx.createGain();
         osc.type = "sine";
         osc.frequency.setValueAtTime(115, now);
         osc.frequency.exponentialRampToValueAtTime(38, now + 0.25);
-        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
         osc.connect(gain);
         gain.connect(sharedActx.destination);
         if (sfxDest) gain.connect(sfxDest);
         osc.start(now);
         osc.stop(now + 0.3);
-
-        // Soft air whoosh
-        const bufSize = sharedActx.sampleRate * 0.22;
-        const buf = sharedActx.createBuffer(1, bufSize, sharedActx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
-        const noise = sharedActx.createBufferSource();
-        noise.buffer = buf;
-        const filter = sharedActx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(400, now);
-        filter.frequency.exponentialRampToValueAtTime(1800, now + 0.2);
-        const nGain = sharedActx.createGain();
-        nGain.gain.setValueAtTime(0.14, now);
-        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-        noise.connect(filter);
-        filter.connect(nGain);
-        nGain.connect(sharedActx.destination);
-        if (sfxDest) nGain.connect(sfxDest);
-        noise.start(now);
       } catch (e) {}
     }
 
+    function startBackgroundBeat() {
+      clearInterval(beatInterval);
+      if (!beatToggle.checked || !sharedActx) return;
+      let step = 0;
+      const playTick = () => {
+        if (!sharedActx) return;
+        try {
+          const now = sharedActx.currentTime;
+          if (step % 2 === 0) {
+            // Deep dark bass pulse
+            const osc = sharedActx.createOscillator();
+            const g = sharedActx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(step % 4 === 0 ? 55 : 49, now);
+            g.gain.setValueAtTime(0.14, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+            osc.connect(g);
+            g.connect(sharedActx.destination);
+            if (sfxDest) g.connect(sfxDest);
+            osc.start(now);
+            osc.stop(now + 0.4);
+          } else {
+            // Crisp dark hi-hat
+            const bufSize = sharedActx.sampleRate * 0.05;
+            const buf = sharedActx.createBuffer(1, bufSize, sharedActx.sampleRate);
+            const d = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+            const src = sharedActx.createBufferSource();
+            src.buffer = buf;
+            const hp = sharedActx.createBiquadFilter();
+            hp.type = "highpass";
+            hp.frequency.value = 6000;
+            const hg = sharedActx.createGain();
+            hg.gain.setValueAtTime(0.05, now);
+            hg.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            src.connect(hp); hp.connect(hg);
+            hg.connect(sharedActx.destination);
+            if (sfxDest) hg.connect(sfxDest);
+            src.start(now);
+          }
+          step++;
+        } catch (e) {}
+      };
+      playTick();
+      beatInterval = setInterval(playTick, 450);
+    }
+
     function drawBackgroundExtras(theme, p, elapsed) {
-      // Gradient backdrop
       const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 40, canvas.width/2, canvas.height/2, canvas.width*0.7);
       grad.addColorStop(0, theme.bg2);
       grad.addColorStop(1, theme.bg);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Subtle grid
       ctx.strokeStyle = selectedStyle === "doc" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)";
       ctx.lineWidth = 1;
-      const step = 64;
-      for (let x = 0; x < canvas.width; x += step) {
+      for (let x = 0; x < canvas.width; x += 64) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
       }
-      for (let y = 0; y < canvas.height; y += step) {
+      for (let y = 0; y < canvas.height; y += 64) {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
       }
 
-      // Style 4: Animated rising finance chart
       if (selectedStyle === "finance") {
         const pts = [0.78, 0.74, 0.77, 0.65, 0.68, 0.50, 0.53, 0.34, 0.22];
-        const progressPts = Math.min(1, p * 1.35);
-        const maxIdx = Math.floor(progressPts * (pts.length - 1));
+        const maxIdx = Math.floor(Math.min(1, p * 1.35) * (pts.length - 1));
         ctx.save();
         ctx.strokeStyle = theme.accent;
         ctx.lineWidth = 5;
@@ -302,14 +457,12 @@
         for (let i = 0; i <= maxIdx; i++) {
           const px = (i / (pts.length - 1)) * canvas.width;
           const py = pts[i] * canvas.height;
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
+          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         }
         ctx.stroke();
         ctx.restore();
       }
 
-      // Style 1: Floating gold particles
       if (selectedStyle === "luxury") {
         ctx.fillStyle = "rgba(245, 185, 66, 0.45)";
         particles.forEach(pt => {
@@ -320,19 +473,17 @@
         });
       }
 
-      // Style 2: Documentary film frame bars
       if (selectedStyle === "doc") {
         ctx.fillStyle = "#18181b";
-        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.06);
-        ctx.fillRect(0, canvas.height * 0.94, canvas.width, canvas.height * 0.06);
+        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.05);
+        ctx.fillRect(0, canvas.height * 0.95, canvas.width, canvas.height * 0.05);
       }
 
-      // Style 3: Apple glass sheen
       if (selectedStyle === "apple") {
         const sheenX = -canvas.width * 0.3 + p * canvas.width * 1.6;
         const sheen = ctx.createLinearGradient(sheenX, 0, sheenX + 180, canvas.height);
         sheen.addColorStop(0, "rgba(255,255,255,0)");
-        sheen.addColorStop(0.5, "rgba(255,255,255,0.06)");
+        sheen.addColorStop(0.5, "rgba(255,255,255,0.07)");
         sheen.addColorStop(1, "rgba(255,255,255,0)");
         ctx.fillStyle = sheen;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -345,6 +496,7 @@
       const totalDuration = scenes.length * sceneDurationMs;
 
       if (elapsed >= totalDuration) {
+        clearInterval(beatInterval);
         if (audioEl) audioEl.pause();
         if (activeRecorder && activeRecorder.state === "recording") {
           activeRecorder.stop();
@@ -366,23 +518,19 @@
 
       drawBackgroundExtras(theme, p, elapsed);
 
-      // Uploaded image layer with zoom
       if (uploadedImages.length > 0) {
         const img = uploadedImages[idx % uploadedImages.length];
         if (img.complete && img.naturalWidth > 0) {
           ctx.save();
-          ctx.globalAlpha = 0.25;
+          ctx.globalAlpha = 0.28;
           const s = 1 + p * 0.08;
           ctx.drawImage(img, (canvas.width - canvas.width*s)/2, (canvas.height - canvas.height*s)/2, canvas.width*s, canvas.height*s);
           ctx.restore();
         }
       }
 
-      // Spring ease-out for scene entry
       const pop = Math.min(1, p * 4.5);
       const ease = 1 - Math.pow(1 - pop, 3);
-
-      // Center frosted / glowing panel
       const isVertical = canvas.height > canvas.width;
       const padX = canvas.width * 0.08;
       const boxH = isVertical ? canvas.height * 0.44 : canvas.height * 0.56;
@@ -400,7 +548,6 @@
       ctx.stroke();
       ctx.restore();
 
-      // Hero Stat Card popup (if scene contains a stat like $10,000, 95%, 10 HOURS)
       if (scene.stat) {
         ctx.save();
         const statW = isVertical ? canvas.width * 0.55 : 320;
@@ -424,7 +571,6 @@
         ctx.restore();
       }
 
-      // Kinetic word-by-word caption inside card
       const words = scene.text.split(" ");
       const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
       const fontSize = isVertical ? 38 : 46;
@@ -459,7 +605,6 @@
           const isActive = wordCursor < revealedCount;
           const isCurrent = wordCursor === revealedCount - 1;
 
-          // Documentary red marker highlight behind active word
           if (selectedStyle === "doc" && isCurrent) {
             const ww = ctx.measureText(w).width;
             ctx.fillStyle = "rgba(220, 38, 38, 0.25)";
@@ -494,10 +639,12 @@
 
     function startPlayback(recordStream = null) {
       cancelAnimationFrame(animId);
+      clearInterval(beatInterval);
       buildScenes();
       startTime = null;
       lastSceneIdx = -1;
       initAudioContext(recordStream);
+      startBackgroundBeat();
 
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
@@ -517,7 +664,7 @@
     }
 
     document.getElementById("generateBtn").addEventListener("click", () => {
-      statusText.textContent = "Playing pro preview...";
+      statusText.textContent = "Playing viral preview...";
       startPlayback();
     });
 
@@ -542,17 +689,18 @@
       const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || "";
 
       exportBtn.disabled = true;
-      statusText.textContent = "Rendering & exporting with audio...";
+      statusText.textContent = "Exporting video + beat + audio...";
 
       const chunks = [];
       activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3500000 } : {});
       activeRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
       activeRecorder.onstop = () => {
+        clearInterval(beatInterval);
         const blob = new Blob(chunks, { type: mimeType || "video/webm" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = mimeType.includes("mp4") ? "pro-edit.mp4" : "pro-edit.webm";
+        a.download = mimeType.includes("mp4") ? "viral-edit.mp4" : "viral-edit.webm";
         a.click();
         exportBtn.disabled = false;
         activeRecorder = null;
