@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v10 — Self-Animating AI Video Engine</title>
+  <title>Studio v10.1 — Full-Screen Revid AI Engine</title>
   <style>
     :root {
       --bg: #07090e; --card: #10141f; --input: #0a0e17; --border: #21293b;
@@ -18,7 +18,7 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
     .step-title { font-size: 0.82rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px; }
     input[type="text"], select, textarea { width: 100%; background: var(--input); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 0.94rem; margin-bottom: 10px; }
-    textarea { min-height: 95px; line-height: 1.45; resize: vertical; }
+    textarea { min-height: 90px; line-height: 1.45; resize: vertical; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-ai { width: 100%; background: linear-gradient(90deg, #f5c542, #fbbf24); color: #07090e; border: none; border-radius: 12px; padding: 14px; font-size: 0.96rem; font-weight: 800; cursor: pointer; }
     .btn-ai:disabled { opacity: 0.6; }
@@ -45,13 +45,12 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">PROCEDURAL AI ENGINE v10</span>
+      <span class="badge">REVID-STYLE FREE ENGINE v10.1</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
-    <!-- Option A: Voice -> Auto Random Animations + AI Art -->
     <div class="card">
-      <div class="step-title">🎙️ Option A: Add Voice → Auto-Invented Motion Video</div>
+      <div class="step-title">🎙️ Option A: Upload / Record Voice → Auto Reel</div>
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
         <label class="upload-mini">
@@ -62,9 +61,8 @@
       <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, automated motion graphics win every algorithm. Turn any voice into a $10,000 agency edit in seconds.</textarea>
     </div>
 
-    <!-- Option B: Topic -> AI Script + AI Art + AI Voice -->
     <div class="card">
-      <div class="step-title">⚡ Option B: Type Topic → AI Creates Everything</div>
+      <div class="step-title">⚡ Option B: Type Topic → Full AI Short</div>
       <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, AI Freelancing)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
@@ -84,10 +82,9 @@
           <option value="aura-es:sirio">Sirio (Spanish Male)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Everything (Script + Art + Voice + Motion)</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Full Short (Script + Art + Voice)</button>
     </div>
 
-    <!-- Style & Motion Brain -->
     <div class="card">
       <div class="step-title">2. Format, Beat & Color Theme</div>
       <select id="modeSelect">
@@ -100,21 +97,20 @@
       </label>
 
       <div class="style-grid">
-        <div class="style-card active" data-style="luxury"><h4>Dark Luxury</h4><p>Black & gold + 10 random widgets.</p></div>
-        <div class="style-card" data-style="doc"><h4>Documentary</h4><p>Red highlights, radar & film bars.</p></div>
+        <div class="style-card active" data-style="luxury"><h4>Dark Luxury</h4><p>Black & gold full-screen captions.</p></div>
+        <div class="style-card" data-style="doc"><h4>Documentary</h4><p>Red highlights, radar & film look.</p></div>
         <div class="style-card" data-style="apple"><h4>Clean Apple Tech</h4><p>Cyan glow, gauges & light sweeps.</p></div>
-        <div class="style-card" data-style="finance"><h4>Dark Neon Finance</h4><p>Emerald charts, candlesticks & dials.</p></div>
+        <div class="style-card" data-style="finance"><h4>Dark Neon Finance</h4><p>Emerald charts & candlesticks.</p></div>
       </div>
 
-      <button class="btn-remix" id="remixBtn">🎲 Shuffle New Random Animations & Preview</button>
+      <button class="btn-remix" id="remixBtn">🎲 Shuffle Animations & Preview</button>
     </div>
 
-    <!-- Output -->
     <div class="card">
-      <div class="step-title">3. Live Voice-Reactive Preview & Export</div>
+      <div class="step-title">3. Full-Screen Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Add voice or tap AI Build above</span>
+        <span class="status" id="statusText">Ready — Tap AI Build Full Short above</span>
         <div style="display:flex; gap:8px;">
           <button class="btn-small" id="replayBtn">Shuffle Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
@@ -159,13 +155,13 @@
     let micRecorder = null, micChunks = [], isMicRecording = false;
 
     const MODULES = ["candlesticks", "radar", "donut", "waveform", "notification", "speedometer", "split", "counter", "grid3d", "starfield"];
-    const STARS = Array.from({ length: 48 }, () => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8 }));
+    const STARS = Array.from({ length: 50 }, () => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8 }));
 
     const THEMES = {
-      luxury:  { accent: "#f5c542", text: "#ffffff", card: "rgba(8,8,12,0.72)", glow: "rgba(245,197,66,0.22)" },
-      doc:     { accent: "#ef4444", text: "#ffffff", card: "rgba(18,12,12,0.75)", glow: "rgba(239,68,68,0.22)" },
-      apple:   { accent: "#38bdf8", text: "#f8fafc", card: "rgba(15,23,42,0.72)", glow: "rgba(56,189,248,0.22)" },
-      finance: { accent: "#10b981", text: "#ecfdf5", card: "rgba(3,16,12,0.74)", glow: "rgba(16,185,129,0.22)" }
+      luxury:  { bg: "#090704", accent: "#f5c542", text: "#ffffff", glow: "rgba(245,197,66,0.28)" },
+      doc:     { bg: "#120909", accent: "#ef4444", text: "#ffffff", glow: "rgba(239,68,68,0.28)" },
+      apple:   { bg: "#081221", accent: "#38bdf8", text: "#f8fafc", glow: "rgba(56,189,248,0.28)" },
+      finance: { bg: "#03120c", accent: "#10b981", text: "#ecfdf5", glow: "rgba(16,185,129,0.28)" }
     };
 
     document.querySelectorAll(".style-card").forEach(card => {
@@ -197,6 +193,7 @@
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ script: scriptText, style: selectedStyle })
       });
+      if (!res.ok) throw new Error("Image generator error — check Worker Deploy");
       const data = await res.json();
       aiImages = (data.images || []).map(src => { const img = new Image(); img.src = src; return img; });
     }
@@ -214,9 +211,9 @@
         scriptInput.value = data.transcript;
         scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
 
-        statusText.textContent = "2/2 Painting AI visuals & shuffling animations...";
+        statusText.textContent = "2/2 Generating full-screen AI visuals...";
         await generateOwnAiImages(data.transcript);
-        statusText.textContent = "Ready! Playing unique voice-reactive edit...";
+        statusText.textContent = "Ready! Playing full-screen voice edit...";
         startPlayback(null);
       } catch (err) {
         statusText.textContent = err.message;
@@ -249,9 +246,9 @@
         micRecorder.start();
         isMicRecording = true;
         micBtn.classList.add("recording");
-        micBtn.textContent = "⏹️ Stop & Invent Edit";
+        micBtn.textContent = "⏹️ Stop & Build";
         statusText.textContent = "Recording... Speak clearly";
-      } catch (e) { statusText.textContent = "Mic permission blocked"; }
+      } catch (e) { statusText.textContent = "Mic blocked"; }
     });
 
     aiMagicBtn.addEventListener("click", async () => {
@@ -265,13 +262,14 @@
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ topic, lang, tone: selectedStyle })
         });
+        if (!sRes.ok) throw new Error("Worker returned " + sRes.status);
         const sData = await sRes.json();
         if (sData.script) {
           scriptInput.value = sData.script;
           scriptInput.dir = (lang === "ur" || lang === "ar") ? "rtl" : "ltr";
         }
 
-        statusText.textContent = "2/3 Painting AI visuals & generating voice...";
+        statusText.textContent = "2/3 Painting AI visuals & voice...";
         const jobs = [generateOwnAiImages(scriptInput.value)];
         if (lang === "en" || lang === "es") {
           jobs.push(
@@ -289,7 +287,7 @@
           document.getElementById("audioLabel").textContent = "✅ AI Voice Ready";
         }
 
-        statusText.textContent = "3/3 Ready! Playing randomized motion edit...";
+        statusText.textContent = `3/3 Ready (${aiImages.length} AI visuals)! Playing...`;
         startPlayback(null);
       } catch (err) {
         statusText.textContent = "Error: " + err.message;
@@ -306,12 +304,11 @@
     function buildScenes() {
       const raw = scriptInput.value.trim();
       const parts = raw.split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Tap AI Build or add voice."]).map(t => ({
+      scenes = (parts.length ? parts : ["Tap AI Build Full Short above."]).map(t => ({
         text: t, stat: extractStat(t), rtl: /[\u0600-\u06FF]/.test(t)
       }));
       sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
 
-      // Shuffle a completely fresh random animation module for each scene!
       const pool = [...MODULES].sort(() => Math.random() - 0.5);
       sceneModules = scenes.map((_, i) => pool[i % pool.length]);
     }
@@ -335,52 +332,47 @@
         const bars = 12, bw = W / (bars + 4);
         for (let i = 0; i < bars; i++) {
           const prog = Math.max(0, Math.min(1, p * 1.5 - i * 0.05));
-          const bh = (60 + ((i * 47) % 180)) * prog * (0.9 + energy * 0.35);
-          const x = (i + 2) * bw;
-          const y = H * 0.85 - bh - i * 18;
-          ctx.fillStyle = i % 3 === 0 ? "rgba(255,255,255,0.25)" : theme.accent;
+          const bh = (80 + ((i * 53) % 210)) * prog * (0.9 + energy * 0.35);
+          const x = (i + 2) * bw, y = H * 0.86 - bh - i * 20;
+          ctx.fillStyle = i % 3 === 0 ? "rgba(255,255,255,0.28)" : theme.accent;
           ctx.globalAlpha = 0.55;
           ctx.fillRect(x, y, bw * 0.55, bh);
           ctx.fillRect(x + bw * 0.22, y - 20, 3, bh + 40);
         }
       } else if (mod === "radar") {
-        const cx = W / 2, cy = H * 0.22, r = Math.min(W, H) * 0.14;
-        ctx.strokeStyle = theme.accent;
-        ctx.globalAlpha = 0.45;
+        const cx = W / 2, cy = H * 0.24, r = Math.min(W, H) * 0.16;
+        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.5; ctx.lineWidth = 2;
         [0.4, 0.7, 1].forEach(k => { ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, Math.PI * 2); ctx.stroke(); });
         const ang = elapsed * 0.004;
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, ang, ang + 0.7); ctx.closePath();
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, ang, ang + 0.75); ctx.closePath();
         ctx.fillStyle = theme.glow; ctx.fill();
       } else if (mod === "donut") {
-        const cx = W / 2, cy = H * 0.19, r = 64;
-        ctx.lineWidth = 14;
-        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        const cx = W / 2, cy = H * 0.21, r = 68;
+        ctx.lineWidth = 14; ctx.strokeStyle = "rgba(255,255,255,0.14)";
         ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
         ctx.strokeStyle = theme.accent;
         ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(0.95, p * 1.3)); ctx.stroke();
-        ctx.fillStyle = "#fff"; ctx.font = "800 28px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "#fff"; ctx.font = "900 30px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
       } else if (mod === "waveform") {
         const count = 28, bw = W / (count * 1.4);
-        ctx.fillStyle = theme.accent;
-        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.8;
         for (let i = 0; i < count; i++) {
-          const h = (18 + Math.abs(Math.sin(elapsed * 0.012 + i * 0.6)) * 95) * (0.6 + energy * 1.1);
+          const h = (20 + Math.abs(Math.sin(elapsed * 0.012 + i * 0.6)) * 110) * (0.6 + energy * 1.1);
           const x = (W - count * bw * 1.4) / 2 + i * bw * 1.4;
           ctx.fillRect(x, H * 0.84 - h / 2, bw, h);
         }
       } else if (mod === "notification") {
         const slide = Math.min(1, p * 4);
-        const ny = 48 + (1 - Math.pow(1 - slide, 3)) * -120;
-        const nw = W * 0.78, nx = (W - nw) / 2;
-        ctx.fillStyle = "rgba(15,23,42,0.92)";
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect(nx, ny, nw, 76, 18); ctx.fill(); ctx.stroke();
+        const ny = H * 0.08 + (1 - Math.pow(1 - slide, 3)) * -120;
+        const nw = W * 0.8, nx = (W - nw) / 2;
+        ctx.fillStyle = "rgba(15,23,42,0.92)"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(nx, ny, nw, 74, 18); ctx.fill(); ctx.stroke();
         ctx.fillStyle = theme.accent; ctx.font = "800 24px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("💰 +$10,000 Payout Verified", W / 2, ny + 38);
+        ctx.fillText("💰 +$10,000 Payout Verified", W / 2, ny + 37);
       } else if (mod === "speedometer") {
-        const cx = W / 2, cy = H * 0.24, r = 82;
-        ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        const cx = W / 2, cy = H * 0.25, r = 86;
+        ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,0.16)";
         ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.stroke();
         const prog = Math.min(1, p * 1.3);
         ctx.strokeStyle = theme.accent;
@@ -389,32 +381,28 @@
         ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(na) * (r - 12), cy + Math.sin(na) * (r - 12)); ctx.stroke();
       } else if (mod === "split") {
         ctx.font = "800 24px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillStyle = "rgba(239,68,68,0.85)"; ctx.fillRect(W * 0.1, H * 0.14, W * 0.38, 52);
+        ctx.fillStyle = "rgba(239,68,68,0.9)"; ctx.fillRect(W * 0.1, H * 0.14, W * 0.38, 52);
         ctx.fillStyle = theme.accent; ctx.fillRect(W * 0.52, H * 0.14, W * 0.38, 52);
         ctx.fillStyle = "#fff"; ctx.fillText("OLD WAY ❌", W * 0.29, H * 0.14 + 26);
         ctx.fillStyle = "#07090e"; ctx.fillText("AI SYSTEM ✅", W * 0.71, H * 0.14 + 26);
       } else if (mod === "counter") {
         const val = Math.floor(Math.min(1, p * 1.2) * 10000);
-        ctx.fillStyle = theme.accent;
-        ctx.font = "900 54px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("$" + val.toLocaleString(), W / 2, H * 0.19);
+        ctx.fillStyle = theme.accent; ctx.font = "900 56px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("$" + val.toLocaleString(), W / 2, H * 0.2);
       } else if (mod === "grid3d") {
-        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.28; ctx.lineWidth = 1.5;
-        const horizon = H * 0.58;
-        for (let i = -8; i <= 8; i++) {
-          ctx.beginPath(); ctx.moveTo(W / 2 + i * 24, horizon); ctx.lineTo(W / 2 + i * 160, H); ctx.stroke();
-        }
+        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.32; ctx.lineWidth = 1.5;
+        const horizon = H * 0.56;
+        for (let i = -8; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(W / 2 + i * 24, horizon); ctx.lineTo(W / 2 + i * 170, H); ctx.stroke(); }
         for (let j = 0; j < 7; j++) {
-          const off = ((j / 7 + p * 0.8) % 1);
-          const y = horizon + Math.pow(off, 2) * (H - horizon);
+          const y = horizon + Math.pow((j / 7 + p * 0.8) % 1, 2) * (H - horizon);
           ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
         }
       } else if (mod === "starfield") {
         ctx.fillStyle = theme.accent;
         STARS.forEach(st => {
-          const sx = (st.x - 0.5) * (1 + p * st.z * 1.4) * W + W / 2;
-          const sy = (st.y - 0.5) * (1 + p * st.z * 1.4) * H + H / 2;
-          ctx.globalAlpha = 0.65;
+          const sx = (st.x - 0.5) * (1 + p * st.z * 1.5) * W + W / 2;
+          const sy = (st.y - 0.5) * (1 + p * st.z * 1.5) * H + H / 2;
+          ctx.globalAlpha = 0.7;
           ctx.beginPath(); ctx.arc(sx, sy, 2 + st.z * 3 * energy, 0, Math.PI * 2); ctx.fill();
         });
       }
@@ -427,8 +415,7 @@
       try {
         const now = sharedActx.currentTime;
         const osc = sharedActx.createOscillator(), g = sharedActx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(118, now); osc.frequency.exponentialRampToValueAtTime(36, now + 0.25);
+        osc.type = "sine"; osc.frequency.setValueAtTime(118, now); osc.frequency.exponentialRampToValueAtTime(36, now + 0.25);
         g.gain.setValueAtTime(0.32, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
         osc.connect(g); g.connect(sharedActx.destination);
         if (sfxDest) g.connect(sfxDest);
@@ -481,106 +468,111 @@
       const theme = THEMES[selectedStyle];
       const energy = getVoiceEnergy(elapsed);
 
-      const shake = Math.max(0, 1 - sceneElapsed / 200) * 8;
+      const shake = Math.max(0, 1 - sceneElapsed / 200) * 9;
       ctx.save();
       ctx.translate(Math.sin(elapsed * 0.25) * shake, Math.cos(elapsed * 0.3) * shake);
 
-      ctx.fillStyle = "#06080f";
+      // Rich full-screen atmospheric backdrop
+      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
+      grad.addColorStop(0, theme.glow);
+      grad.addColorStop(1, theme.bg);
+      ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // AI-generated image backdrop with Ken Burns zoom
+      // Full-screen AI visual with Ken Burns zoom
       if (aiImages.length > 0) {
         const img = aiImages[idx % aiImages.length];
         if (img.complete && img.naturalWidth > 0) {
           const iw = img.naturalWidth, ih = img.naturalHeight;
-          const zoom = 1.03 + p * 0.14;
+          const zoom = 1.03 + p * 0.16;
           const sc = Math.max(canvas.width / iw, canvas.height / ih) * zoom;
           ctx.drawImage(img, (canvas.width - iw * sc) / 2, (canvas.height - ih * sc) / 2, iw * sc, ih * sc);
-          ctx.fillStyle = "rgba(0,0,0,0.45)";
+          // Cinematic dark vignette so captions pop cleanly without a box
+          const vig = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          vig.addColorStop(0, "rgba(0,0,0,0.45)");
+          vig.addColorStop(0.5, "rgba(0,0,0,0.58)");
+          vig.addColorStop(1, "rgba(0,0,0,0.82)");
+          ctx.fillStyle = vig;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
       }
 
-      // Draw randomized Iman Gadzhi motion module reacting to voice energy
+      // Randomized full-screen motion widget
       drawMotionModule(sceneModules[idx] || "candlesticks", theme, p, energy, elapsed);
 
       const isVertical = canvas.height > canvas.width;
-      const padX = canvas.width * 0.08;
-      const boxH = isVertical ? canvas.height * 0.34 : canvas.height * 0.46;
-      const boxY = (canvas.height - boxH) / 2 + 24;
 
-      ctx.save();
-      ctx.fillStyle = theme.card;
-      ctx.strokeStyle = theme.accent;
-      ctx.lineWidth = 2 + energy * 3;
-      ctx.shadowColor = theme.accent;
-      ctx.shadowBlur = 16 + energy * 24;
-      ctx.beginPath();
-      ctx.roundRect(padX, boxY, canvas.width - padX * 2, boxH, 22);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-
+      // Floating glowing Stat Badge (no big box!)
       if (scene.stat) {
         ctx.save();
         ctx.direction = "ltr";
-        const statW = isVertical ? canvas.width * 0.52 : 300;
+        const statW = isVertical ? canvas.width * 0.5 : 290;
         const statH = 60;
         const statX = (canvas.width - statW) / 2;
-        const statY = boxY - 30;
+        const statY = canvas.height * 0.34;
         ctx.fillStyle = theme.accent;
+        ctx.shadowColor = theme.accent;
+        ctx.shadowBlur = 24;
         ctx.beginPath(); ctx.roundRect(statX, statY, statW, statH, 14); ctx.fill();
+        ctx.shadowBlur = 0;
         ctx.fillStyle = "#07090e";
-        ctx.font = `900 ${isVertical ? 32 : 36}px -apple-system, sans-serif`;
+        ctx.font = `900 ${isVertical ? 34 : 38}px -apple-system, sans-serif`;
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(scene.stat, canvas.width / 2, statY + statH / 2 + 2);
         ctx.restore();
       }
 
+      // SUBMAGIC / REVID STYLE BIG FLOATING CAPTIONS (3 words at a time, NO BOX!)
       const words = scene.text.split(" ");
-      const fontSize = isVertical ? 34 : 42;
-      ctx.font = `800 ${fontSize}px -apple-system, sans-serif`;
+      const fontSize = isVertical ? 54 : 58;
+      ctx.font = `900 ${fontSize}px -apple-system, sans-serif`;
       ctx.textBaseline = "middle";
-
-      let lines = [], line = "", maxWidth = canvas.width * 0.76;
-      for (let w of words) {
-        const test = line + w + " ";
-        if (ctx.measureText(test).width > maxWidth && line !== "") { lines.push(line.trim()); line = w + " "; }
-        else line = test;
-      }
-      lines.push(line.trim());
-
-      const lineH = fontSize * 1.35;
-      const startY = boxY + boxH / 2 + (scene.stat ? 12 : 0) - ((lines.length - 1) * lineH) / 2;
+      ctx.lineJoin = "round";
 
       if (scene.rtl) {
         ctx.save(); ctx.direction = "rtl"; ctx.textAlign = "center";
-        lines.forEach((l, i) => { ctx.fillStyle = theme.text; ctx.fillText(l, canvas.width / 2, startY + i * lineH); });
+        const half = Math.ceil(words.length / 2);
+        const chunk = p < 0.5 ? words.slice(0, half).join(" ") : words.slice(half).join(" ");
+        ctx.lineWidth = 12; ctx.strokeStyle = "#000000";
+        ctx.strokeText(chunk, canvas.width / 2, canvas.height * 0.56, canvas.width * 0.86);
+        ctx.fillStyle = theme.text;
+        ctx.fillText(chunk, canvas.width / 2, canvas.height * 0.56, canvas.width * 0.86);
         ctx.restore();
       } else {
-        ctx.save(); ctx.direction = "ltr";
-        const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
-        let wordCursor = 0;
-        lines.forEach((l, lineIdx) => {
-          const lineWords = l.split(" ");
-          const totalW = ctx.measureText(l).width;
-          let xCursor = canvas.width / 2 - totalW / 2;
-          ctx.textAlign = "left";
-          lineWords.forEach((w) => {
-            const isActive = wordCursor < revealedCount;
-            const isCurrent = wordCursor === revealedCount - 1;
-            ctx.fillStyle = isActive ? (isCurrent ? theme.accent : theme.text) : "rgba(255,255,255,0.28)";
-            ctx.fillText(w, xCursor, startY + lineIdx * lineH);
-            xCursor += ctx.measureText(w + " ").width;
-            wordCursor++;
-          });
+        // Group into punchy 3-word chunks like Submagic / Hormozi
+        const chunks = [];
+        for (let i = 0; i < words.length; i += 3) chunks.push(words.slice(i, i + 3));
+        const chunkIdx = Math.min(chunks.length - 1, Math.floor(p * chunks.length));
+        const activeChunk = chunks[chunkIdx] || words;
+        const localP = (p * chunks.length) % 1;
+        const activeWordIdx = Math.min(activeChunk.length - 1, Math.floor(localP * activeChunk.length));
+
+        const chunkText = activeChunk.join(" ").toUpperCase();
+        const totalW = Math.min(canvas.width * 0.88, ctx.measureText(chunkText).width);
+        const scaleFit = totalW < ctx.measureText(chunkText).width ? totalW / ctx.measureText(chunkText).width : 1;
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height * 0.56);
+        ctx.scale(scaleFit * (1 + energy * 0.08), scaleFit * (1 + energy * 0.08));
+        ctx.direction = "ltr";
+
+        let xCursor = -ctx.measureText(chunkText).width / 2;
+        ctx.textAlign = "left";
+        activeChunk.forEach((rawW, wi) => {
+          const w = rawW.toUpperCase();
+          ctx.lineWidth = 12;
+          ctx.strokeStyle = "#000000";
+          ctx.strokeText(w, xCursor, 0);
+          ctx.fillStyle = wi === activeWordIdx ? theme.accent : theme.text;
+          ctx.fillText(w, xCursor, 0);
+          xCursor += ctx.measureText(w + " ").width;
         });
         ctx.restore();
       }
 
       ctx.restore();
 
-      const barH = canvas.height * 0.05;
+      const barH = canvas.height * 0.04;
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, barH);
       ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
@@ -627,11 +619,11 @@
     }
 
     document.getElementById("remixBtn").addEventListener("click", () => {
-      statusText.textContent = "Shuffled fresh motion sequence!";
+      statusText.textContent = "Shuffled full-screen animations!";
       startPlayback(null);
     });
     document.getElementById("replayBtn").addEventListener("click", () => {
-      statusText.textContent = "Playing new random sequence...";
+      statusText.textContent = "Playing full-screen sequence...";
       startPlayback(null);
     });
 
@@ -645,7 +637,7 @@
       const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || "";
 
       exportBtn.disabled = true;
-      statusText.textContent = "Exporting unique AI motion video...";
+      statusText.textContent = "Exporting full-screen AI video...";
 
       const chunks = [];
       activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3500000 } : {});
@@ -655,7 +647,7 @@
         const blob = new Blob(chunks, { type: mimeType || "video/webm" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = mimeType.includes("mp4") ? "pro-ai-motion.mp4" : "pro-ai-motion.webm";
+        a.download = mimeType.includes("mp4") ? "revid-style-short.mp4" : "revid-style-short.webm";
         a.click();
         exportBtn.disabled = false;
         activeRecorder = null;
