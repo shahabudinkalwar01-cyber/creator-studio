@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CreatorMotion AI — Dynamic YouTube Studio</title>
+  <style>
+    :root {
+      --bg: #090b10;
+      --card: #121620;
+      --border: #232a3b;
+      --gold: #f5c542;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 16px;
+      line-height: 1.5;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 197, 66, 0.14);
+      color: var(--gold);
+      border: 1px solid rgba(245, 197, 66, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 24px; margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    label.title {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 105px;
+      background: #0b0e15;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #fff;
+      padding: 12px;
+      font-size: 14px;
+      resize: vertical;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+    .upload-box {
+      background: #0b0e15;
+      border: 1px dashed #3b4663;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .upload-box strong { display: block; color: #fff; margin-bottom: 3px; }
+    .upload-box span { color: var(--muted); font-size: 12px; }
+    select {
+      width: 100%;
+      background: #0b0e15;
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .styles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .style-card {
+      background: #0b0e15;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .style-card.active { border-color: var(--gold); background: rgba(245, 197, 66, 0.08); }
+    .style-card h4 { margin: 0 0 4px; font-size: 14px; }
+    .style-card p { margin: 0; font-size: 12px; color: var(--muted); }
+    .btn-gen {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f5c542, #d99b1e);
+      color: #090b10;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+    canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #050608;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: block;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-small {
+      background: #1e2536;
+      color: #fff;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+    }
+    th { background: #0b0e15; color: var(--gold); }
+    .win { color: #4ade80; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="badge">FREE SANDBOX PROTOTYPE</span>
+    <h1>Dynamic YouTube Video Engine</h1>
+    <p class="sub">Paste script or upload voice, add your images, choose format & style, and generate a brand-new edit automatically.</p>
+
+    <div class="panel">
+      <label class="title">1. Script or Voiceover Input</label>
+      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and retention win on YouTube. Imagine turning a raw voice memo into a $10,000 agency-level edit in 60 seconds. Every scene adapts automatically to your exact words.</textarea>
+
+      <div class="row">
+        <div class="upload-box" onclick="document.getElementById('voiceFile').click()">
+          <strong id="voiceLabel">+ Upload Voiceover (Optional)</strong>
+          <span>MP3 / WAV / M4A — Syncs video to your audio</span>
+          <input type="file" id="voiceFile" accept="audio/*" hidden />
+        </div>
+        <div class="upload-box" onclick="document.getElementById('imgFiles').click()">
+          <strong id="imgLabel">+ Add Custom Images / Screenshots</strong>
+          <span>Select 1 to 10 images to weave into scenes</span>
+          <input type="file" id="imgFiles" accept="image/*" multiple hidden />
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label class="title">2. Choose Video Mode & Length</label>
+      <select id="lengthMode">
+        <option value="full_1_4">Full YouTube Video (1 – 4 Minutes Pacing)</option>
+        <option value="full_4_8">Deep-Dive YouTube Video (4 – 8 Minutes Pacing)</option>
+        <option value="clips">High-Retention Short Clips (30 – 60 Seconds)</option>
+        <option value="templates">Editable Scene Template Pack</option>
+      </select>
+
+      <label class="title" style="margin-top:16px;">3. Choose Visual & Sound Style</label>
+      <div class="styles-grid" id="styleGrid">
+        <div class="style-card active" data-style="luxury" onclick="selectStyle(this)">
+          <h4>Style 1: Dark Luxury</h4>
+          <p>Iman Gadzhi black & gold kinetic text, glowing stat cards & bass hits.</p>
+        </div>
+        <div class="style-card" data-style="doc" onclick="selectStyle(this)">
+          <h4>Style 2: Documentary</h4>
+          <p>Warm paper texture, red marker highlights & investigative zoom.</p>
+        </div>
+        <div class="style-card" data-style="tech" onclick="selectStyle(this)">
+          <h4>Style 3: Clean Apple Tech</h4>
+          <p>Frosted slate glass, crisp white typography & smooth spring motion.</p>
+        </div>
+        <div class="style-card" data-style="neon" onclick="selectStyle(this)">
+          <h4>Style 4: Dark Neon Finance</h4>
+          <p>Pitch black with emerald green growth counters & fast cuts.</p>
+        </div>
+      </div>
+
+      <button class="btn-gen" onclick="startGeneration()">Generate New Video Automatically</button>
+    </div>
+
+    <div class="panel">
+      <label class="title">4. Live Dynamic Preview & Export</label>
+      <canvas id="stage" width="1280" height="720"></canvas>
+      <div class="controls">
+        <span id="sceneStatus" style="font-size:13px; color:var(--muted);">Ready — Tap Generate above</span>
+        <div>
+          <button class="btn-small" onclick="replayVideo()">Replay</button>
+          <a id="downloadBtn" class="btn-small" style="display:none; background:#f5c542; color:#000; font-weight:700;">Download Video (.webm)</a>
+        </div>
+      </div>
+      <audio id="bgAudio" style="display:none;"></audio>
+    </div>
+
+    <div class="panel">
+      <label class="title">Why Creators Leave Competitors For This Platform</label>
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Big Competitors (InVideo / Submagic)</th>
+            <th>Your Platform</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Visuals</strong></td>
+            <td>Generic stock clips & repetitive templates</td>
+            <td class="win">Dynamic Iman Gadzhi motion graphics built fresh per script</td>
+          </tr>
+          <tr>
+            <td><strong>Voice & Media</strong></td>
+            <td>Forces robotic AI voices or basic captions only</td>
+            <td class="win">Auto-cleans creator's real voice + weaves in their own images</td>
+          </tr>
+          <tr>
+            <td><strong>Video Length</strong></td>
+            <td>Mostly 60s vertical Shorts or expensive credits</td>
+            <td class="win">Built for 1–4 min & 4–8 min horizontal YouTube retention</td>
+          </tr>
+          <tr>
+            <td><strong>Preview & Billing</strong></td>
+            <td>Burns paid credits every time you regenerate</td>
+            <td class="win">Unlimited free scene previews; pay only for finished minutes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let currentStyle = 'luxury';
+    let userImages = [];
+    let audioDuration = 0;
+    let scenes = [];
+    let animId = null;
+    let startTime = 0;
+    let lastSceneIdx = -1;
+
+    const THEMES = {
+      luxury: { bg1: '#14110a', bg2: '#050608', accent: '#f5c542', text: '#ffffff', card: 'rgba(245,197,66,0.12)' },
+      doc:    { bg1: '#262118', bg2: '#120f0b', accent: '#ef4444', text: '#f8f5ee', card: 'rgba(239,68,68,0.16)' },
+      tech:   { bg1: '#162033', bg2: '#080c14', accent: '#38bdf8', text: '#f8fafc', card: 'rgba(56,189,248,0.14)' },
+      neon:   { bg1: '#071f14', bg2: '#030806', accent: '#22c55e', text: '#ffffff', card: 'rgba(34,197,94,0.15)' }
+    };
+
+    function selectStyle(el) {
+      document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      currentStyle = el.dataset.style;
+    }
+
