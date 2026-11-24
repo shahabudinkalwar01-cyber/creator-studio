@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio — Dynamic YouTube Video Engine</title>
+  <title>Studio v4 — Dynamic YouTube Video Engine</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -82,7 +82,7 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">LIVE MOBILE ENGINE v3.1</span>
+      <span class="badge">LIVE MOBILE ENGINE v4</span>
       <a href="index.html" class="back-link">← Back to Home</a>
     </div>
 
@@ -93,7 +93,7 @@
       <label class="upload-box">
         <input type="file" id="audioUpload" accept="audio/*" />
         <strong id="audioLabel">+ Upload Voiceover (Optional)</strong>
-        <span>MP3 / WAV / M4A — Syncs video & audio</span>
+        <span>MP3 / WAV / M4A — Mixes into exported video</span>
       </label>
 
       <label class="upload-box" style="margin-bottom:0;">
@@ -104,33 +104,33 @@
     </div>
 
     <div class="card">
-      <div class="step-title">2. Choose Video Mode & Length</div>
+      <div class="step-title">2. Choose Video Mode & Format</div>
       <select id="modeSelect">
-        <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
-        <option value="shorts">YouTube Shorts / Reels (9:16 Vertical)</option>
+        <option value="shorts">YouTube Shorts / Reels / TikTok (9:16 Vertical)</option>
+        <option value="landscape" selected>Full YouTube Video (16:9 Horizontal)</option>
       </select>
 
       <div class="step-title">3. Choose Visual & Sound Style</div>
       <div class="style-grid">
         <div class="style-card active" data-style="luxury">
           <h4>Style 1: Dark Luxury</h4>
-          <p>Black & gold kinetic text, glowing stat cards & charts.</p>
+          <p>Black & gold kinetic text, glowing stat cards & particles.</p>
         </div>
         <div class="style-card" data-style="doc">
           <h4>Style 2: Documentary</h4>
-          <p>Warm paper texture, red marker highlights & zoom.</p>
+          <p>Warm paper texture, red marker highlight sweep & zoom.</p>
         </div>
         <div class="style-card" data-style="apple">
           <h4>Style 3: Clean Apple Tech</h4>
-          <p>Frosted slate glass, crisp white typography & motion.</p>
+          <p>Frosted slate glass, sheen sweep & crisp white type.</p>
         </div>
         <div class="style-card" data-style="finance">
           <h4>Style 4: Dark Neon Finance</h4>
-          <p>Pitch black with emerald green growth charts & cuts.</p>
+          <p>Pitch black with animated emerald growth charts & cuts.</p>
         </div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">Generate New Video Automatically</button>
+      <button class="btn-generate" id="generateBtn">Generate Pro Video Automatically</button>
     </div>
 
     <div class="card">
@@ -160,15 +160,22 @@
     let audioEl = null;
     let animId = null;
     let scenes = [];
-    const sceneDurationMs = 3200;
+    const sceneDurationMs = 3000;
     let startTime = null;
+    let lastSceneIdx = -1;
     let activeRecorder = null;
+    let sharedActx = null;
+    let sfxDest = null;
+
+    const particles = Array.from({ length: 24 }, () => ({
+      x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.5, speed: 0.015 + Math.random() * 0.03
+    }));
 
     const THEMES = {
-      luxury:  { bg: "#09090b", card: "rgba(245,185,66,0.08)", accent: "#f5b942", text: "#ffffff", grid: "rgba(255,255,255,0.04)" },
-      doc:     { bg: "#efe6d5", card: "rgba(220,38,38,0.08)", accent: "#dc2626", text: "#1c1917", grid: "rgba(0,0,0,0.05)" },
-      apple:   { bg: "#0f172a", card: "rgba(255,255,255,0.08)", accent: "#38bdf8", text: "#f8fafc", grid: "rgba(255,255,255,0.04)" },
-      finance: { bg: "#030712", card: "rgba(16,185,129,0.09)", accent: "#10b981", text: "#ecfdf5", grid: "rgba(16,185,129,0.06)" }
+      luxury:  { bg: "#070709", bg2: "#161208", accent: "#f5b942", text: "#ffffff", card: "rgba(245,185,66,0.10)" },
+      doc:     { bg: "#efe5d2", bg2: "#e2d3b8", accent: "#dc2626", text: "#18181b", card: "rgba(220,38,38,0.10)" },
+      apple:   { bg: "#0b1120", bg2: "#1e293b", accent: "#38bdf8", text: "#f8fafc", card: "rgba(255,255,255,0.09)" },
+      finance: { bg: "#02060d", bg2: "#041c15", accent: "#10b981", text: "#ecfdf5", card: "rgba(16,185,129,0.12)" }
     };
 
     document.querySelectorAll(".style-card").forEach(card => {
@@ -207,10 +214,129 @@
       document.getElementById("imageLabel").textContent = `Loaded ${files.length} image(s)`;
     });
 
+    function extractStat(text) {
+      const m = text.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|mins|seconds|x)\b)/i);
+      return m ? m[0].toUpperCase() : null;
+    }
+
     function buildScenes() {
       const raw = scriptInput.value.trim();
       const parts = raw.split(/(?<=[.!?])\s+|\n+/).filter(Boolean);
-      scenes = parts.length ? parts : ["Add your script above to generate scenes."];
+      scenes = (parts.length ? parts : ["Paste your script to generate a pro edit."]).map(t => ({
+        text: t,
+        stat: extractStat(t)
+      }));
+    }
+
+    // Pure Web Audio synthesized whoosh + bass thump
+    function playTransitionSfx() {
+      if (!sharedActx) return;
+      try {
+        const now = sharedActx.currentTime;
+        // Sub bass hit
+        const osc = sharedActx.createOscillator();
+        const gain = sharedActx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(115, now);
+        osc.frequency.exponentialRampToValueAtTime(38, now + 0.25);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.connect(gain);
+        gain.connect(sharedActx.destination);
+        if (sfxDest) gain.connect(sfxDest);
+        osc.start(now);
+        osc.stop(now + 0.3);
+
+        // Soft air whoosh
+        const bufSize = sharedActx.sampleRate * 0.22;
+        const buf = sharedActx.createBuffer(1, bufSize, sharedActx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+        const noise = sharedActx.createBufferSource();
+        noise.buffer = buf;
+        const filter = sharedActx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(400, now);
+        filter.frequency.exponentialRampToValueAtTime(1800, now + 0.2);
+        const nGain = sharedActx.createGain();
+        nGain.gain.setValueAtTime(0.14, now);
+        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(sharedActx.destination);
+        if (sfxDest) nGain.connect(sfxDest);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    function drawBackgroundExtras(theme, p, elapsed) {
+      // Gradient backdrop
+      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 40, canvas.width/2, canvas.height/2, canvas.width*0.7);
+      grad.addColorStop(0, theme.bg2);
+      grad.addColorStop(1, theme.bg);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle grid
+      ctx.strokeStyle = selectedStyle === "doc" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)";
+      ctx.lineWidth = 1;
+      const step = 64;
+      for (let x = 0; x < canvas.width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Style 4: Animated rising finance chart
+      if (selectedStyle === "finance") {
+        const pts = [0.78, 0.74, 0.77, 0.65, 0.68, 0.50, 0.53, 0.34, 0.22];
+        const progressPts = Math.min(1, p * 1.35);
+        const maxIdx = Math.floor(progressPts * (pts.length - 1));
+        ctx.save();
+        ctx.strokeStyle = theme.accent;
+        ctx.lineWidth = 5;
+        ctx.shadowColor = theme.accent;
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        for (let i = 0; i <= maxIdx; i++) {
+          const px = (i / (pts.length - 1)) * canvas.width;
+          const py = pts[i] * canvas.height;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Style 1: Floating gold particles
+      if (selectedStyle === "luxury") {
+        ctx.fillStyle = "rgba(245, 185, 66, 0.45)";
+        particles.forEach(pt => {
+          const py = ((pt.y - (elapsed * 0.00004 * pt.speed * 10)) % 1 + 1) % 1;
+          ctx.beginPath();
+          ctx.arc(pt.x * canvas.width, py * canvas.height, pt.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Style 2: Documentary film frame bars
+      if (selectedStyle === "doc") {
+        ctx.fillStyle = "#18181b";
+        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.06);
+        ctx.fillRect(0, canvas.height * 0.94, canvas.width, canvas.height * 0.06);
+      }
+
+      // Style 3: Apple glass sheen
+      if (selectedStyle === "apple") {
+        const sheenX = -canvas.width * 0.3 + p * canvas.width * 1.6;
+        const sheen = ctx.createLinearGradient(sheenX, 0, sheenX + 180, canvas.height);
+        sheen.addColorStop(0, "rgba(255,255,255,0)");
+        sheen.addColorStop(0.5, "rgba(255,255,255,0.06)");
+        sheen.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = sheen;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
     }
 
     function drawFrame(now) {
@@ -223,84 +349,104 @@
         if (activeRecorder && activeRecorder.state === "recording") {
           activeRecorder.stop();
         } else {
-          statusText.textContent = "Playback complete — Tap Replay or Export";
+          statusText.textContent = "Complete — Tap Replay or Export";
         }
         return;
       }
 
       const idx = Math.min(scenes.length - 1, Math.floor(elapsed / sceneDurationMs));
-      const localProgress = (elapsed % sceneDurationMs) / sceneDurationMs;
+      if (idx !== lastSceneIdx) {
+        lastSceneIdx = idx;
+        playTransitionSfx();
+      }
+
+      const p = (elapsed % sceneDurationMs) / sceneDurationMs;
       const theme = THEMES[selectedStyle];
+      const scene = scenes[idx];
 
-      // 1. Background
-      ctx.fillStyle = theme.bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawBackgroundExtras(theme, p, elapsed);
 
-      // 2. Subtle motion grid
-      ctx.strokeStyle = theme.grid;
-      ctx.lineWidth = 1;
-      const step = 64;
-      const shift = (elapsed * 0.03) % step;
-      for (let x = -step + shift; x < canvas.width; x += step) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-      }
-      for (let y = -step + shift; y < canvas.height; y += step) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-      }
-
-      // 3. Optional uploaded image with Ken Burns zoom
+      // Uploaded image layer with zoom
       if (uploadedImages.length > 0) {
         const img = uploadedImages[idx % uploadedImages.length];
         if (img.complete && img.naturalWidth > 0) {
           ctx.save();
-          ctx.globalAlpha = 0.32;
-          const scale = 1 + localProgress * 0.08;
-          const w = canvas.width * scale;
-          const h = canvas.height * scale;
-          ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+          ctx.globalAlpha = 0.25;
+          const s = 1 + p * 0.08;
+          ctx.drawImage(img, (canvas.width - canvas.width*s)/2, (canvas.height - canvas.height*s)/2, canvas.width*s, canvas.height*s);
           ctx.restore();
         }
       }
 
-      // 4. Center card backing
+      // Spring ease-out for scene entry
+      const pop = Math.min(1, p * 4.5);
+      const ease = 1 - Math.pow(1 - pop, 3);
+
+      // Center frosted / glowing panel
+      const isVertical = canvas.height > canvas.width;
       const padX = canvas.width * 0.08;
-      const padY = canvas.height * 0.22;
+      const boxH = isVertical ? canvas.height * 0.44 : canvas.height * 0.56;
+      const boxY = (canvas.height - boxH) / 2 + (1 - ease) * 28;
+
+      ctx.save();
       ctx.fillStyle = theme.card;
       ctx.strokeStyle = theme.accent;
       ctx.lineWidth = 2;
+      ctx.shadowColor = theme.accent;
+      ctx.shadowBlur = selectedStyle === "doc" ? 0 : 20;
       ctx.beginPath();
-      ctx.roundRect(padX, padY, canvas.width - padX * 2, canvas.height - padY * 2, 24);
+      ctx.roundRect(padX, boxY, canvas.width - padX * 2, boxH, 24);
       ctx.fill();
       ctx.stroke();
+      ctx.restore();
 
-      // 5. Top progress bar
-      ctx.fillStyle = theme.accent;
-      ctx.fillRect(padX, padY - 18, (canvas.width - padX * 2) * localProgress, 6);
+      // Hero Stat Card popup (if scene contains a stat like $10,000, 95%, 10 HOURS)
+      if (scene.stat) {
+        ctx.save();
+        const statW = isVertical ? canvas.width * 0.55 : 320;
+        const statH = 68;
+        const statX = (canvas.width - statW) / 2;
+        const statY = boxY - 34;
 
-      // 6. Kinetic text with word-reveal
-      const words = scenes[idx].split(" ");
-      const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, localProgress * 1.45)));
-      const fontSize = canvas.width < 800 ? 40 : 48;
+        ctx.fillStyle = theme.accent;
+        ctx.shadowColor = theme.accent;
+        ctx.shadowBlur = 22;
+        ctx.beginPath();
+        ctx.roundRect(statX, statY, statW, statH, 16);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = selectedStyle === "doc" ? "#ffffff" : "#07090e";
+        ctx.font = `900 ${isVertical ? 34 : 38}px -apple-system, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(scene.stat, canvas.width / 2, statY + statH / 2 + 2);
+        ctx.restore();
+      }
+
+      // Kinetic word-by-word caption inside card
+      const words = scene.text.split(" ");
+      const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
+      const fontSize = isVertical ? 38 : 46;
       ctx.font = `800 ${fontSize}px -apple-system, sans-serif`;
-      ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
       let lines = [];
       let line = "";
       const maxWidth = canvas.width * 0.76;
-      for (let i = 0; i < words.length; i++) {
-        const test = line + words[i] + " ";
+      for (let w of words) {
+        const test = line + w + " ";
         if (ctx.measureText(test).width > maxWidth && line !== "") {
           lines.push(line.trim());
-          line = words[i] + " ";
+          line = w + " ";
         } else {
           line = test;
         }
       }
       lines.push(line.trim());
 
-      const lineH = fontSize * 1.28;
-      const startY = canvas.height / 2 - ((lines.length - 1) * lineH) / 2;
+      const lineH = fontSize * 1.32;
+      const startY = boxY + boxH / 2 + (scene.stat ? 14 : 0) - ((lines.length - 1) * lineH) / 2;
 
       let wordCursor = 0;
       lines.forEach((l, lineIdx) => {
@@ -311,39 +457,57 @@
 
         lineWords.forEach((w) => {
           const isActive = wordCursor < revealedCount;
-          ctx.fillStyle = isActive ? (wordCursor === revealedCount - 1 ? theme.accent : theme.text) : "rgba(156,163,175,0.28)";
+          const isCurrent = wordCursor === revealedCount - 1;
+
+          // Documentary red marker highlight behind active word
+          if (selectedStyle === "doc" && isCurrent) {
+            const ww = ctx.measureText(w).width;
+            ctx.fillStyle = "rgba(220, 38, 38, 0.25)";
+            ctx.fillRect(xCursor - 4, startY + lineIdx * lineH - fontSize * 0.55, ww + 8, fontSize * 1.1);
+          }
+
+          ctx.fillStyle = isActive
+            ? (isCurrent ? theme.accent : theme.text)
+            : (selectedStyle === "doc" ? "rgba(24,24,27,0.22)" : "rgba(255,255,255,0.22)");
+
           ctx.fillText(w, xCursor, startY + lineIdx * lineH);
           xCursor += ctx.measureText(w + " ").width;
           wordCursor++;
         });
       });
 
-      // 7. Scene indicator
-      ctx.textAlign = "center";
-      ctx.fillStyle = theme.accent;
-      ctx.font = `700 22px -apple-system, sans-serif`;
-      ctx.fillText(`SCENE ${idx + 1} / ${scenes.length}`, canvas.width / 2, canvas.height - padY * 0.45);
-
       animId = requestAnimationFrame(drawFrame);
     }
 
-    function startPlayback(recordAudioStream = null) {
+    function initAudioContext(streamToAttach = null) {
+      if (!sharedActx) {
+        sharedActx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (sharedActx.state === "suspended") sharedActx.resume();
+      if (streamToAttach) {
+        sfxDest = sharedActx.createMediaStreamDestination();
+        sfxDest.stream.getAudioTracks().forEach(t => streamToAttach.addTrack(t));
+      } else {
+        sfxDest = null;
+      }
+    }
+
+    function startPlayback(recordStream = null) {
       cancelAnimationFrame(animId);
       buildScenes();
       startTime = null;
+      lastSceneIdx = -1;
+      initAudioContext(recordStream);
 
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
         audioEl = new Audio(audioBufferUrl);
         audioEl.crossOrigin = "anonymous";
-        if (recordAudioStream) {
+        if (recordStream && sharedActx) {
           try {
-            const actx = new (window.AudioContext || window.webkitAudioContext)();
-            const src = actx.createMediaElementSource(audioEl);
-            const dest = actx.createMediaStreamDestination();
-            src.connect(dest);
-            src.connect(actx.destination);
-            dest.stream.getAudioTracks().forEach(t => recordAudioStream.addTrack(t));
+            const src = sharedActx.createMediaElementSource(audioEl);
+            src.connect(sharedActx.destination);
+            if (sfxDest) src.connect(sfxDest);
           } catch (err) {}
         }
         audioEl.play().catch(() => {});
@@ -353,12 +517,12 @@
     }
 
     document.getElementById("generateBtn").addEventListener("click", () => {
-      statusText.textContent = "Playing live preview...";
+      statusText.textContent = "Playing pro preview...";
       startPlayback();
     });
 
     document.getElementById("replayBtn").addEventListener("click", () => {
-      statusText.textContent = "Replaying preview...";
+      statusText.textContent = "Replaying...";
       startPlayback();
     });
 
@@ -367,6 +531,8 @@
       buildScenes();
 
       const stream = canvas.captureStream(30);
+      startPlayback(stream);
+
       const mimeTypes = [
         "video/webm;codecs=vp8,opus",
         "video/webm;codecs=vp8",
@@ -376,22 +542,21 @@
       const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || "";
 
       exportBtn.disabled = true;
-      statusText.textContent = "Recording & exporting (please wait)...";
-      startPlayback(stream);
+      statusText.textContent = "Rendering & exporting with audio...";
 
       const chunks = [];
-      activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3000000 } : {});
+      activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3500000 } : {});
       activeRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
       activeRecorder.onstop = () => {
         const blob = new Blob(chunks, { type: mimeType || "video/webm" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = mimeType.includes("mp4") ? "generated-video.mp4" : "generated-video.webm";
+        a.download = mimeType.includes("mp4") ? "pro-edit.mp4" : "pro-edit.webm";
         a.click();
         exportBtn.disabled = false;
         activeRecorder = null;
-        statusText.textContent = `Exported (${(blob.size / 1024).toFixed(0)} KB)! Check Downloads.`;
+        statusText.textContent = `Exported (${(blob.size / 1024).toFixed(0)} KB)! Ready to post.`;
       };
 
       activeRecorder.start(250);
