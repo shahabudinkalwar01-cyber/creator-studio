@@ -34,18 +34,18 @@
       font-weight: 600;
       margin-bottom: 8px;
     }
-    h1 { font-size: 24px; margin: 0 0 6px; }
-    .sub { color: var(--muted); font-size: 14px; margin: 0 0 20px; }
+    h1 { font-size: 23px; margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
     .panel {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
     }
     label.title {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--gold);
       margin-bottom: 8px;
@@ -54,7 +54,7 @@
     }
     textarea {
       width: 100%;
-      min-height: 105px;
+      min-height: 100px;
       background: #0b0e15;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -66,8 +66,8 @@
     .row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 14px;
+      gap: 10px;
+      margin-top: 12px;
     }
     @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
     .upload-box {
@@ -101,7 +101,6 @@
       border-radius: 12px;
       padding: 12px;
       cursor: pointer;
-      transition: 0.2s;
     }
     .style-card.active { border-color: var(--gold); background: rgba(245, 197, 66, 0.08); }
     .style-card h4 { margin: 0 0 4px; font-size: 14px; }
@@ -161,13 +160,13 @@
 </head>
 <body>
   <div class="container">
-    <span class="badge">FREE SANDBOX PROTOTYPE</span>
+    <span class="badge">LIVE MOBILE ENGINE v2</span>
     <h1>Dynamic YouTube Video Engine</h1>
     <p class="sub">Paste script or upload voice, add your images, choose format & style, and generate a brand-new edit automatically.</p>
 
     <div class="panel">
       <label class="title">1. Script or Voiceover Input</label>
-      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and retention win on YouTube. Imagine turning a raw voice memo into a $10,000 agency-level edit in 60 seconds. Every scene adapts automatically to your exact words.</textarea>
+      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Imagine turning a raw voice memo into a $10,000 agency-level edit in 60 seconds. Every scene adapts automatically to your exact words.</textarea>
 
       <div class="row">
         <div class="upload-box" onclick="document.getElementById('voiceFile').click()">
@@ -196,7 +195,7 @@
       <div class="styles-grid" id="styleGrid">
         <div class="style-card active" data-style="luxury" onclick="selectStyle(this)">
           <h4>Style 1: Dark Luxury</h4>
-          <p>Iman Gadzhi black & gold kinetic text, glowing stat cards & bass hits.</p>
+          <p>Iman Gadzhi black & gold kinetic text, glowing stat cards & charts.</p>
         </div>
         <div class="style-card" data-style="doc" onclick="selectStyle(this)">
           <h4>Style 2: Documentary</h4>
@@ -208,7 +207,7 @@
         </div>
         <div class="style-card" data-style="neon" onclick="selectStyle(this)">
           <h4>Style 4: Dark Neon Finance</h4>
-          <p>Pitch black with emerald green growth counters & fast cuts.</p>
+          <p>Pitch black with emerald green growth charts & fast cuts.</p>
         </div>
       </div>
 
@@ -219,10 +218,10 @@
       <label class="title">4. Live Dynamic Preview & Export</label>
       <canvas id="stage" width="1280" height="720"></canvas>
       <div class="controls">
-        <span id="sceneStatus" style="font-size:13px; color:var(--muted);">Ready — Tap Generate above</span>
+        <span id="sceneStatus" style="font-size:13px; color:#4ade80;">Ready — Tap Generate above</span>
         <div>
-          <button class="btn-small" onclick="replayVideo()">Replay</button>
-          <a id="downloadBtn" class="btn-small" style="display:none; background:#f5c542; color:#000; font-weight:700;">Download Video (.webm)</a>
+          <button class="btn-small" onclick="startGeneration()">Replay</button>
+          <a id="downloadBtn" class="btn-small" style="display:none; background:#f5c542; color:#000; font-weight:700;">Download Video</a>
         </div>
       </div>
       <audio id="bgAudio" style="display:none;"></audio>
@@ -274,15 +273,16 @@
     let lastSceneIdx = -1;
 
     const THEMES = {
-      luxury: { bg1: '#14110a', bg2: '#050608', accent: '#f5c542', text: '#ffffff', card: 'rgba(245,197,66,0.12)' },
-      doc:    { bg1: '#262118', bg2: '#120f0b', accent: '#ef4444', text: '#f8f5ee', card: 'rgba(239,68,68,0.16)' },
-      tech:   { bg1: '#162033', bg2: '#080c14', accent: '#38bdf8', text: '#f8fafc', card: 'rgba(56,189,248,0.14)' },
-      neon:   { bg1: '#071f14', bg2: '#030806', accent: '#22c55e', text: '#ffffff', card: 'rgba(34,197,94,0.15)' }
+      luxury: { bg1: '#1c160b', bg2: '#050608', accent: '#f5c542', text: '#ffffff', card: 'rgba(245,197,66,0.14)' },
+      doc:    { bg1: '#292117', bg2: '#110e0a', accent: '#ef4444', text: '#f8f5ee', card: 'rgba(239,68,68,0.16)' },
+      tech:   { bg1: '#162238', bg2: '#080c14', accent: '#38bdf8', text: '#f8fafc', card: 'rgba(56,189,248,0.14)' },
+      neon:   { bg1: '#072417', bg2: '#030806', accent: '#22c55e', text: '#ffffff', card: 'rgba(34,197,94,0.15)' }
     };
 
     function selectStyle(el) {
       document.querySelectorAll('.style-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       currentStyle = el.dataset.style;
+      drawIdlePreview();
     }
 
