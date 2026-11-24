@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v6 — Multi-Language Viral Video Engine</title>
+  <title>Studio v7 — Cinematic AI Video Engine</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -61,9 +61,9 @@
     .toggle-row {
       display: flex; justify-content: space-between; align-items: center;
       background: var(--input); border: 1px solid var(--border); border-radius: 12px;
-      padding: 11px 14px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600;
+      padding: 11px 14px; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600;
     }
-    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+    .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; }
     .style-card {
       background: var(--input); border: 1.5px solid var(--border);
       border-radius: 12px; padding: 12px; cursor: pointer;
@@ -81,7 +81,7 @@
       background: #000; border-radius: 12px; border: 1px solid var(--border); display: block; margin: 0 auto 12px;
     }
     .controls-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .status { font-size: 0.83rem; color: var(--green); }
+    .status { font-size: 0.82rem; color: var(--green); flex: 1; min-width: 180px; }
     .btn-small {
       background: #1e293b; color: var(--text); border: 1px solid var(--border);
       padding: 9px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
@@ -93,14 +93,14 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">VIRAL ENGINE v6 • MULTI-LANGUAGE</span>
+      <span class="badge">CINEMATIC ENGINE v7</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
-    <!-- Step 0: Topic -> Auto Viral Script -->
+    <!-- Step 0: Topic -> Auto Script -->
     <div class="card">
-      <div class="step-title">⚡ Auto-Write Viral Script (Topic → Video)</div>
-      <input type="text" id="topicInput" placeholder="Type any topic (e.g. AI Freelancing, Crypto, Fitness)" value="AI Freelancing" />
+      <div class="step-title">⚡ Auto-Write Movie Script (No Writing Needed)</div>
+      <input type="text" id="topicInput" placeholder="Type any topic (e.g. AI Freelancing, Crypto, Empire)" value="AI Freelancing" />
       <div class="grid-2">
         <select id="langSelect">
           <option value="en" selected>🇺🇸 English</option>
@@ -116,13 +116,13 @@
           <option value="shift">📈 2026 Wealth Shift</option>
         </select>
       </div>
-      <button class="btn-write" id="writeScriptBtn">✨ Auto-Write Viral Script</button>
+      <button class="btn-write" id="writeScriptBtn">✨ Auto-Write Script & Preview</button>
     </div>
 
     <!-- Step 1 -->
     <div class="card">
-      <div class="step-title">1. Script, Mic Voiceover & Images</div>
-      <textarea id="scriptInput">Most people ignore AI Freelancing and waste 10 hours a day. In 2026, 95% of top earners use speed and systems. Learn one high-income skill and build a $10,000/month asset in 90 days.</textarea>
+      <div class="step-title">1. Script & Optional Voice / Images</div>
+      <textarea id="scriptInput">95% of creators waste 10 hours editing a single video. In 2026, speed and cinema-grade retention win every algorithm. Build a $10,000 digital asset in 90 days starting today.</textarea>
 
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record Voice Memo</button>
@@ -134,51 +134,56 @@
 
       <label class="upload-mini" style="width:100%;">
         <input type="file" id="imageUpload" accept="image/*" multiple />
-        <span id="imageLabel">🖼️ + Add 1–10 Custom Images / Screenshots</span>
+        <span id="imageLabel">🖼️ Optional: Add Images (Leave empty for Auto Skyline)</span>
       </label>
     </div>
 
     <!-- Step 2 & 3 -->
     <div class="card">
-      <div class="step-title">2. Format, Beat & Viral Style</div>
+      <div class="step-title">2. Format, Voice Preview & Cinema Style</div>
       <select id="modeSelect">
         <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
-        <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
+        <option value="landscape">Full YouTube Movie (16:9 Horizontal)</option>
       </select>
 
       <label class="toggle-row">
-        <span>🎵 Built-in Dark Background Beat</span>
+        <span>🎵 Built-in Dark Cinema Beat (Included in Export)</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px; height:20px;" />
+      </label>
+
+      <label class="toggle-row">
+        <span>🗣️ AI Voice Narrator (Live Preview Speaker)</span>
+        <input type="checkbox" id="ttsToggle" checked style="width:20px; height:20px;" />
       </label>
 
       <div class="style-grid">
         <div class="style-card active" data-style="luxury">
           <h4>Style 1: Dark Luxury</h4>
-          <p>Black & gold stats, glowing cards & particles.</p>
+          <p>3D neon city skyline, gold embers & glowing stats.</p>
         </div>
         <div class="style-card" data-style="doc">
           <h4>Style 2: Documentary</h4>
-          <p>Warm paper, red marker highlight & film bars.</p>
+          <p>Moving searchlight, red highlights & cinema bars.</p>
         </div>
         <div class="style-card" data-style="apple">
           <h4>Style 3: Clean Apple Tech</h4>
-          <p>Frosted slate glass, sheen sweep & clean type.</p>
+          <p>Space starfield, frosted glass & light sweep.</p>
         </div>
         <div class="style-card" data-style="finance">
           <h4>Style 4: Dark Neon Finance</h4>
-          <p>Pitch black + rising green growth chart.</p>
+          <p>Night skyline + rising emerald chart & bass shake.</p>
         </div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">Generate Viral Video Now</button>
+      <button class="btn-generate" id="generateBtn">Generate Cinematic Video Now</button>
     </div>
 
     <!-- Step 4 -->
     <div class="card">
-      <div class="step-title">3. Live Preview & Zero-Watermark Export</div>
+      <div class="step-title">3. Live Cinema Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Type a topic or tap Generate</span>
+        <span class="status" id="statusText">Ready — Tap Generate (works even with 0 uploads)</span>
         <div style="display:flex; gap:8px;">
           <button class="btn-small" id="replayBtn">Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
@@ -197,6 +202,7 @@
     const scriptInput = document.getElementById("scriptInput");
     const modeSelect = document.getElementById("modeSelect");
     const beatToggle = document.getElementById("beatToggle");
+    const ttsToggle = document.getElementById("ttsToggle");
     const exportBtn = document.getElementById("exportBtn");
     const micBtn = document.getElementById("micBtn");
 
@@ -207,7 +213,7 @@
     let animId = null;
     let beatInterval = null;
     let scenes = [];
-    const sceneDurationMs = 3000;
+    const sceneDurationMs = 3400;
     let startTime = null;
     let lastSceneIdx = -1;
     let activeRecorder = null;
@@ -225,28 +231,28 @@
 
     const SCRIPT_TEMPLATES = {
       en: {
-        luxury: t => `95% of beginners fail at ${t} because they waste 10 hours on the wrong things. In 2026, smart systems beat hard work every single time. Master ${t} today and unlock a $10,000/month skill in 90 days.`,
+        luxury: t => `95% of beginners fail at ${t} because they waste 10 hours on the wrong things. In 2026, smart systems beat hard work every single time. Master ${t} today and build a $10,000/month skill in 90 days.`,
         truths: t => `3 harsh truths about ${t} nobody tells you. First, waiting for perfection costs you 100% of your progress. Second, consistency for 90 days beats 5 years of excuses in 2026.`,
         shift:  t => `The 2026 ${t} shift is happening right now. Early creators are scaling 10x faster with zero extra budget. Don't get left behind while 90% keep sleeping.`
       },
       roman: {
         luxury: t => `95% log ${t} mein fail isliye hotay hain kyunki woh 10 ghantay ghalat cheez par zaya karte hain. 2026 mein smart system hi jeet-ta hai. Aaj ${t} seekho aur 90 days mein $5,000/month ka skill banao.`,
-        truths: t => `${t} ke 3 karway sach jo koi nahi batata. Pehla, perfect time ka intezar 100% waqt barbad karta hai. Doosra, 90 din ki mehnat 2026 mein aapki life badal sakti hai.`,
-        shift:  t => `2026 mein ${t} ka sab se bara daur shuru ho chuka hai. Jo log aaj start kar rahe hain woh 10x tez grow kar rahe hain. 90% logon ki tarah peechay mat raho.`
+        truths: t => `${t} ke 3 karway sach jo koi nahi batata. Pehla, perfect time ka intezar 100% waqt barbad karta hai. Doosra, 90 din ki mehnat 2026 mein life badal sakti hai.`,
+        shift:  t => `2026 mein ${t} ka sab se bara daur shuru ho chuka hai. Jo aaj start kar rahe hain woh 10x tez grow kar rahe hain. 90% logon ki tarah peechay mat raho.`
       },
       ur: {
-        luxury: t => `95% لوگ ${t} میں ناکام اس لیے ہوتے ہیں کیونکہ وہ 10 گھنٹے غلط کام میں ضائع کرتے ہیں۔ 2026 میں صرف اسمارٹ سسٹم جیتتا ہے۔ آج ${t} سیکھیں اور 90 دن میں $5,000 ماہانہ کمانے کا ہنر بنائیں۔`,
-        truths: t => `${t} کے 3 کڑوے سچ جو کوئی نہیں بتاتا۔ پہلا، صحیح وقت کا انتظار 100% وقت ضائع کرتا ہے۔ دوسرا، 2026 میں 90 دن کی مستقل محنت زندگی بدل دیتی ہے۔`,
-        shift:  t => `2026 میں ${t} کی سب سے بڑی تبدیلی آ چکی ہے۔ آج شروع کرنے والے لوگ 10x تیزی سے آگے بڑھ رہے ہیں۔ 90% لوگوں کی طرح پیچھے نہ رہیں۔`
+        luxury: t => `95% لوگ ${t} میں ناکام اس لیے ہوتے ہیں کیونکہ وہ 10 گھنٹے غلط کام میں ضائع کرتے ہیں۔ 2026 میں صرف اسمارٹ سسٹم جیتتا ہے۔ آج ${t} سیکھیں اور 90 دن میں $5,000 ماہانہ کا ہنر بنائیں۔`,
+        truths: t => `${t} کے 3 کڑوے سچ جو کوئی نہیں بتاتا۔ پہلا، صحیح وقت کا انتظار 100% وقت ضائع کرتا ہے۔ دوسرا، 2026 میں 90 دن کی محنت زندگی بدل دیتی ہے۔`,
+        shift:  t => `2026 میں ${t} کی سب سے بڑی تبدیلی آ چکی ہے۔ آج شروع کرنے والے 10x تیزی سے آگے بڑھ رہے ہیں۔ 90% لوگوں کی طرح پیچھے نہ رہیں۔`
       },
       hi: {
         luxury: t => `95% लोग ${t} में इसलिए फेल होते हैं क्योंकि वे 10 घंटे गलत काम में बर्बाद करते हैं। 2026 में स्मार्ट सिस्टम ही जीतता है। आज ${t} सीखें और 90 दिनों में $5,000/month की स्किल बनाएं।`,
         truths: t => `${t} के 3 कड़वे सच जो कोई नहीं बताता। पहला, सही समय का इंतजार 100% समय बर्बाद करता है। दूसरा, 2026 में 90 दिन की मेहनत पूरी गेम बदल देती है।`,
-        shift:  t => `2026 में ${t} का सबसे बड़ा बदलाव शुरू हो चुका है। आज शुरू करने वाले लोग 10x तेजी से आगे बढ़ रहे हैं। 90% लोगों की तरह पीछे मत रहो।`
+        shift:  t => `2026 में ${t} का सबसे बड़ा बदलाव शुरू हो चुका है। आज शुरू करने वाले 10x तेजी से आगे बढ़ रहे हैं। 90% लोगों की तरह पीछे मत रहो।`
       },
       ar: {
         luxury: t => `95% من المبتدئين يفشلون في ${t} لأنهم يضيعون 10 ساعات في الطريق الخطأ. في 2026، الأنظمة الذكية تنتصر دائماً. تعلّم ${t} اليوم وابنِ مهارة بقيمة $10,000 خلال 90 يوماً.`,
-        truths: t => `3 حقائق قاسية حول ${t} لا يخبرك بها أحد. أولاً، انتظار الكمال يضيع 100% من وقتك. ثانياً، الاستمرار لمدة 90 يوماً في 2026 يغير مستقبلك بالكامل.`,
+        truths: t => `3 حقائق قاسية حول ${t} لا يخبرك بها أحد. أولاً، انتظار الكمال يضيع 100% من وقتك. ثانياً، الاستمرار لمدة 90 يوماً في 2026 يغير مستقبلك.`,
         shift:  t => `تحوّل ${t} الكبير في 2026 يحدث الآن. المبدعون الأوائل ينمون أسرع بـ 10x بدون ميزانية إضافية. لا تبقَ خلف 90% من الناس.`
       },
       es: {
@@ -257,14 +263,24 @@
     };
 
     const THEMES = {
-      luxury:  { bg: "#070709", bg2: "#161208", accent: "#f5b942", text: "#ffffff", card: "rgba(245,185,66,0.10)" },
-      doc:     { bg: "#efe5d2", bg2: "#e2d3b8", accent: "#dc2626", text: "#18181b", card: "rgba(220,38,38,0.10)" },
-      apple:   { bg: "#0b1120", bg2: "#1e293b", accent: "#38bdf8", text: "#f8fafc", card: "rgba(255,255,255,0.09)" },
-      finance: { bg: "#02060d", bg2: "#041c15", accent: "#10b981", text: "#ecfdf5", card: "rgba(16,185,129,0.12)" }
+      luxury:  { bg: "#050508", bg2: "#1d1405", accent: "#f5b942", text: "#ffffff", card: "rgba(15,12,6,0.72)" },
+      doc:     { bg: "#e8dcc4", bg2: "#cfb997", accent: "#dc2626", text: "#18181b", card: "rgba(255,248,235,0.82)" },
+      apple:   { bg: "#070d1a", bg2: "#16243d", accent: "#38bdf8", text: "#f8fafc", card: "rgba(15,23,42,0.72)" },
+      finance: { bg: "#02060a", bg2: "#032218", accent: "#10b981", text: "#ecfdf5", card: "rgba(3,18,14,0.74)" }
     };
 
-    const particles = Array.from({ length: 24 }, () => ({
-      x: Math.random(), y: Math.random(), r: 1.5 + Math.random() * 2.5, speed: 0.015 + Math.random() * 0.03
+    // Deterministic procedural skyline buildings for movie-like backdrop
+    const BUILDINGS = Array.from({ length: 28 }, (_, i) => ({
+      w: 40 + ((i * 37) % 55),
+      h: 140 + ((i * 83) % 280),
+      wins: 3 + (i % 4)
+    }));
+
+    const STARS = Array.from({ length: 45 }, (_, i) => ({
+      x: ((i * 73) % 100) / 100,
+      y: ((i * 41) % 100) / 100,
+      r: 1 + (i % 3),
+      speed: 0.008 + (i % 5) * 0.005
     }));
 
     function selectStyle(styleName) {
@@ -278,19 +294,16 @@
       card.addEventListener("click", () => selectStyle(card.dataset.style));
     });
 
-    // Auto-write script from topic + language + tone
     document.getElementById("writeScriptBtn").addEventListener("click", () => {
       const topic = topicInput.value.trim() || "Online Business";
       const lang = langSelect.value;
       const tone = toneSelect.value;
       scriptInput.value = SCRIPT_TEMPLATES[lang][tone](topic);
       scriptInput.dir = (lang === "ur" || lang === "ar") ? "rtl" : "ltr";
-
       if (tone === "shift") selectStyle("finance");
       else if (tone === "luxury") selectStyle("luxury");
-
-      statusText.textContent = "Viral script written! Playing preview...";
-      startPlayback();
+      statusText.textContent = "Script written! Playing cinematic preview...";
+      startPlayback(null);
     });
 
     langSelect.addEventListener("change", () => {
@@ -328,7 +341,7 @@
           audioBufferUrl = URL.createObjectURL(blob);
           document.getElementById("audioLabel").textContent = "✅ Voice Memo Ready";
           micStream.getTracks().forEach(t => t.stop());
-          statusText.textContent = "Voice memo saved! Tap Generate.";
+          statusText.textContent = "Voice memo ready! Included in export.";
         };
         micRecorder.start();
 
@@ -355,7 +368,7 @@
         micBtn.textContent = "⏹️ Stop Recording";
         statusText.textContent = "Listening... Speak clearly now";
       } catch (err) {
-        statusText.textContent = "Mic blocked — allow microphone permission";
+        statusText.textContent = "Mic blocked — allow permission";
       }
     });
 
@@ -389,11 +402,23 @@
     function buildScenes() {
       const raw = scriptInput.value.trim();
       const parts = raw.split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Tap Auto-Write Viral Script above."]).map(t => ({
+      scenes = (parts.length ? parts : ["Tap Auto-Write Script above."]).map(t => ({
         text: t,
         stat: extractStat(t),
         rtl: isRTLText(t)
       }));
+    }
+
+    function speakScene(text) {
+      if (!ttsToggle.checked || !("speechSynthesis" in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang = LANG_CODES[langSelect.value] || "en-US";
+        utt.rate = 1.05;
+        utt.pitch = 0.95;
+        window.speechSynthesis.speak(utt);
+      } catch (e) {}
     }
 
     function playTransitionSfx() {
@@ -403,15 +428,15 @@
         const osc = sharedActx.createOscillator();
         const gain = sharedActx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(115, now);
-        osc.frequency.exponentialRampToValueAtTime(38, now + 0.25);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.frequency.setValueAtTime(118, now);
+        osc.frequency.exponentialRampToValueAtTime(36, now + 0.28);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
         osc.connect(gain);
         gain.connect(sharedActx.destination);
         if (sfxDest) gain.connect(sfxDest);
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.32);
       } catch (e) {}
     }
 
@@ -460,30 +485,63 @@
       beatInterval = setInterval(playTick, 450);
     }
 
-    function drawBackgroundExtras(theme, p, elapsed) {
-      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 40, canvas.width/2, canvas.height/2, canvas.width*0.7);
+    function drawCinemaBackdrop(theme, p, elapsed) {
+      // Deep atmospheric radial sky
+      const grad = ctx.createRadialGradient(canvas.width/2, canvas.height*0.42, 40, canvas.width/2, canvas.height/2, canvas.width*0.85);
       grad.addColorStop(0, theme.bg2);
       grad.addColorStop(1, theme.bg);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = selectedStyle === "doc" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.04)";
-      ctx.lineWidth = 1;
-      for (let x = 0; x < canvas.width; x += 64) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-      }
-      for (let y = 0; y < canvas.height; y += 64) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      // Floating stars / gold dust
+      ctx.fillStyle = selectedStyle === "doc" ? "rgba(0,0,0,0.12)" : theme.accent;
+      STARS.forEach(st => {
+        ctx.save();
+        ctx.globalAlpha = 0.38;
+        const sy = ((st.y - elapsed * 0.00003 * st.speed * 15) % 1 + 1) % 1;
+        ctx.beginPath();
+        ctx.arc(st.x * canvas.width, sy * canvas.height, st.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Moving 3D Neon City Skyline (for Luxury & Finance)
+      if (selectedStyle === "luxury" || selectedStyle === "finance") {
+        const pan = (elapsed * 0.025) % 900;
+        let bx = -pan;
+        const baseLine = canvas.height * 0.92;
+        for (let pass = 0; pass < 3; pass++) {
+          BUILDINGS.forEach((b, idx) => {
+            if (bx + b.w > -20 && bx < canvas.width + 20) {
+              ctx.fillStyle = selectedStyle === "luxury" ? "#0d0b08" : "#04110d";
+              ctx.fillRect(bx, baseLine - b.h, b.w - 4, b.h);
+              ctx.strokeStyle = theme.accent;
+              ctx.globalAlpha = 0.22;
+              ctx.strokeRect(bx, baseLine - b.h, b.w - 4, b.h);
+              // Lit windows
+              ctx.fillStyle = theme.accent;
+              ctx.globalAlpha = 0.35;
+              for (let wy = baseLine - b.h + 18; wy < baseLine - 20; wy += 24) {
+                for (let wx = bx + 8; wx < bx + b.w - 14; wx += 14) {
+                  if ((wx + wy + idx) % 3 !== 0) ctx.fillRect(wx, wy, 6, 10);
+                }
+              }
+              ctx.globalAlpha = 1;
+            }
+            bx += b.w;
+          });
+        }
       }
 
+      // Finance rising neon chart
       if (selectedStyle === "finance") {
-        const pts = [0.78, 0.74, 0.77, 0.65, 0.68, 0.50, 0.53, 0.34, 0.22];
+        const pts = [0.78, 0.74, 0.77, 0.64, 0.67, 0.48, 0.52, 0.32, 0.19];
         const maxIdx = Math.floor(Math.min(1, p * 1.35) * (pts.length - 1));
         ctx.save();
         ctx.strokeStyle = theme.accent;
         ctx.lineWidth = 5;
         ctx.shadowColor = theme.accent;
-        ctx.shadowBlur = 18;
+        ctx.shadowBlur = 20;
         ctx.beginPath();
         for (let i = 0; i <= maxIdx; i++) {
           const px = (i / (pts.length - 1)) * canvas.width;
@@ -494,28 +552,25 @@
         ctx.restore();
       }
 
-      if (selectedStyle === "luxury") {
-        ctx.fillStyle = "rgba(245, 185, 66, 0.45)";
-        particles.forEach(pt => {
-          const py = ((pt.y - (elapsed * 0.00004 * pt.speed * 10)) % 1 + 1) % 1;
-          ctx.beginPath();
-          ctx.arc(pt.x * canvas.width, py * canvas.height, pt.r, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-
+      // Documentary moving searchlight
       if (selectedStyle === "doc") {
-        ctx.fillStyle = "#18181b";
-        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.05);
-        ctx.fillRect(0, canvas.height * 0.95, canvas.width, canvas.height * 0.05);
+        const beamX = canvas.width * (0.2 + p * 0.6);
+        ctx.save();
+        const beam = ctx.createRadialGradient(beamX, canvas.height * 0.45, 20, beamX, canvas.height * 0.45, canvas.width * 0.5);
+        beam.addColorStop(0, "rgba(220,38,38,0.14)");
+        beam.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = beam;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
       }
 
+      // Apple diagonal light beam
       if (selectedStyle === "apple") {
         const sheenX = -canvas.width * 0.3 + p * canvas.width * 1.6;
-        const sheen = ctx.createLinearGradient(sheenX, 0, sheenX + 180, canvas.height);
-        sheen.addColorStop(0, "rgba(255,255,255,0)");
-        sheen.addColorStop(0.5, "rgba(255,255,255,0.07)");
-        sheen.addColorStop(1, "rgba(255,255,255,0)");
+        const sheen = ctx.createLinearGradient(sheenX, 0, sheenX + 220, canvas.height);
+        sheen.addColorStop(0, "rgba(56,189,248,0)");
+        sheen.addColorStop(0.5, "rgba(56,189,248,0.12)");
+        sheen.addColorStop(1, "rgba(56,189,248,0)");
         ctx.fillStyle = sheen;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
@@ -529,6 +584,8 @@
       if (elapsed >= totalDuration) {
         clearInterval(beatInterval);
         if (audioEl) audioEl.pause();
+        if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+
         if (activeRecorder && activeRecorder.state === "recording") {
           activeRecorder.stop();
         } else {
@@ -538,23 +595,35 @@
       }
 
       const idx = Math.min(scenes.length - 1, Math.floor(elapsed / sceneDurationMs));
+      const sceneElapsed = elapsed % sceneDurationMs;
+      const p = sceneElapsed / sceneDurationMs;
+      const scene = scenes[idx];
+
       if (idx !== lastSceneIdx) {
         lastSceneIdx = idx;
         playTransitionSfx();
+        if (!activeRecorder) speakScene(scene.text);
       }
 
-      const p = (elapsed % sceneDurationMs) / sceneDurationMs;
       const theme = THEMES[selectedStyle];
-      const scene = scenes[idx];
 
-      drawBackgroundExtras(theme, p, elapsed);
+      // Bass-hit camera shake on first 220ms of each scene
+      const shakePower = Math.max(0, 1 - sceneElapsed / 220) * 9;
+      const shakeX = (Math.sin(elapsed * 0.25) * shakePower);
+      const shakeY = (Math.cos(elapsed * 0.32) * shakePower);
 
+      ctx.save();
+      ctx.translate(shakeX, shakeY);
+
+      drawCinemaBackdrop(theme, p, elapsed);
+
+      // Optional user images override backdrop with Ken Burns zoom
       if (uploadedImages.length > 0) {
         const img = uploadedImages[idx % uploadedImages.length];
         if (img.complete && img.naturalWidth > 0) {
           ctx.save();
-          ctx.globalAlpha = 0.28;
-          const s = 1 + p * 0.08;
+          ctx.globalAlpha = 0.42;
+          const s = 1 + p * 0.1;
           ctx.drawImage(img, (canvas.width - canvas.width*s)/2, (canvas.height - canvas.height*s)/2, canvas.width*s, canvas.height*s);
           ctx.restore();
         }
@@ -564,15 +633,15 @@
       const ease = 1 - Math.pow(1 - pop, 3);
       const isVertical = canvas.height > canvas.width;
       const padX = canvas.width * 0.08;
-      const boxH = isVertical ? canvas.height * 0.44 : canvas.height * 0.56;
-      const boxY = (canvas.height - boxH) / 2 + (1 - ease) * 28;
+      const boxH = isVertical ? canvas.height * 0.42 : canvas.height * 0.52;
+      const boxY = (canvas.height - boxH) / 2 + (1 - ease) * 32;
 
       ctx.save();
       ctx.fillStyle = theme.card;
       ctx.strokeStyle = theme.accent;
       ctx.lineWidth = 2;
       ctx.shadowColor = theme.accent;
-      ctx.shadowBlur = selectedStyle === "doc" ? 0 : 20;
+      ctx.shadowBlur = selectedStyle === "doc" ? 0 : 22;
       ctx.beginPath();
       ctx.roundRect(padX, boxY, canvas.width - padX * 2, boxH, 24);
       ctx.fill();
@@ -589,7 +658,7 @@
 
         ctx.fillStyle = theme.accent;
         ctx.shadowColor = theme.accent;
-        ctx.shadowBlur = 22;
+        ctx.shadowBlur = 24;
         ctx.beginPath();
         ctx.roundRect(statX, statY, statW, statH, 16);
         ctx.fill();
@@ -603,7 +672,6 @@
         ctx.restore();
       }
 
-      // Wrap lines
       const words = scene.text.split(" ");
       const fontSize = scene.rtl ? (isVertical ? 36 : 42) : (isVertical ? 38 : 46);
       ctx.font = `800 ${fontSize}px -apple-system, sans-serif`;
@@ -627,7 +695,6 @@
       const startY = boxY + boxH / 2 + (scene.stat ? 14 : 0) - ((lines.length - 1) * lineH) / 2;
 
       if (scene.rtl) {
-        // Connected RTL rendering for Urdu / Arabic
         ctx.save();
         ctx.direction = "rtl";
         ctx.textAlign = "center";
@@ -640,7 +707,6 @@
         });
         ctx.restore();
       } else {
-        // Word-by-word kinetic highlight for English / Roman Urdu / Hindi / Spanish
         ctx.save();
         ctx.direction = "ltr";
         const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
@@ -673,6 +739,14 @@
         ctx.restore();
       }
 
+      ctx.restore(); // End camera shake
+
+      // Cinematic movie letterbox bars (top & bottom)
+      const barH = canvas.height * 0.055;
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, canvas.width, barH);
+      ctx.fillRect(0, canvas.height - barH, canvas.width, barH);
+
       animId = requestAnimationFrame(drawFrame);
     }
 
@@ -692,6 +766,7 @@
     function startPlayback(recordStream = null) {
       cancelAnimationFrame(animId);
       clearInterval(beatInterval);
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       buildScenes();
       startTime = null;
       lastSceneIdx = -1;
@@ -716,13 +791,13 @@
     }
 
     document.getElementById("generateBtn").addEventListener("click", () => {
-      statusText.textContent = "Playing viral preview...";
-      startPlayback();
+      statusText.textContent = "Playing cinematic preview...";
+      startPlayback(null);
     });
 
     document.getElementById("replayBtn").addEventListener("click", () => {
       statusText.textContent = "Replaying...";
-      startPlayback();
+      startPlayback(null);
     });
 
     exportBtn.addEventListener("click", () => {
@@ -741,7 +816,7 @@
       const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || "";
 
       exportBtn.disabled = true;
-      statusText.textContent = "Exporting video + beat + audio...";
+      statusText.textContent = "Exporting cinematic video + beat...";
 
       const chunks = [];
       activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3500000 } : {});
@@ -752,11 +827,13 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = mimeType.includes("mp4") ? "viral-edit.mp4" : "viral-edit.webm";
+        a.download = mimeType.includes("mp4") ? "cinema-edit.mp4" : "cinema-edit.webm";
         a.click();
         exportBtn.disabled = false;
         activeRecorder = null;
-        statusText.textContent = `Exported (${(blob.size / 1024).toFixed(0)} KB)! Ready to post.`;
+        statusText.textContent = audioBufferUrl
+          ? `Exported with voice + beat (${(blob.size / 1024).toFixed(0)} KB)!`
+          : `Exported with beat (${(blob.size / 1024).toFixed(0)} KB)! Tip: Record Mic to embed voice.`;
       };
 
       activeRecorder.start(250);
