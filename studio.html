@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v5 — Free Viral Video Engine</title>
+  <title>Studio v6 — Multi-Language Viral Video Engine</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -34,17 +34,16 @@
       font-size: 0.82rem; font-weight: 700; color: var(--gold);
       letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px;
     }
-    .tpl-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 4px; }
-    .tpl-btn {
-      flex: 0 0 auto; background: var(--input); color: var(--text); border: 1px solid var(--border);
-      padding: 9px 13px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
-    }
-    .tpl-btn:hover { border-color: var(--gold); color: var(--gold); }
-
-    textarea {
-      width: 100%; min-height: 110px; background: var(--input); color: var(--text);
+    input[type="text"], select, textarea {
+      width: 100%; background: var(--input); color: var(--text);
       border: 1px solid var(--border); border-radius: 12px; padding: 12px;
-      font-size: 0.95rem; line-height: 1.45; resize: vertical; margin-bottom: 10px;
+      font-size: 0.94rem; margin-bottom: 10px;
+    }
+    textarea { min-height: 110px; line-height: 1.45; resize: vertical; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-write {
+      width: 100%; background: #1e293b; color: var(--gold); border: 1px solid var(--gold);
+      border-radius: 12px; padding: 12px; font-size: 0.94rem; font-weight: 700; cursor: pointer;
     }
     .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .mic-btn {
@@ -63,11 +62,6 @@
       display: flex; justify-content: space-between; align-items: center;
       background: var(--input); border: 1px solid var(--border); border-radius: 12px;
       padding: 11px 14px; margin-bottom: 14px; font-size: 0.88rem; font-weight: 600;
-    }
-    select {
-      width: 100%; background: var(--input); color: var(--text);
-      border: 1px solid var(--border); border-radius: 12px;
-      padding: 13px 12px; font-size: 0.92rem; margin-bottom: 14px;
     }
     .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
     .style-card {
@@ -99,26 +93,36 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">VIRAL ENGINE v5</span>
+      <span class="badge">VIRAL ENGINE v6 • MULTI-LANGUAGE</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
-    <!-- 1-Tap Viral Templates -->
+    <!-- Step 0: Topic -> Auto Viral Script -->
     <div class="card">
-      <div class="step-title">⚡ 1-Tap Viral Templates</div>
-      <div class="tpl-row">
-        <button class="tpl-btn" data-tpl="money">💰 $10k Agency Rule</button>
-        <button class="tpl-btn" data-tpl="finance">📈 2026 Wealth Shift</button>
-        <button class="tpl-btn" data-tpl="discipline">🔥 3 Harsh Truths</button>
-        <button class="tpl-btn" data-tpl="apple">⚡ Tech Speed Secret</button>
-        <button class="tpl-btn" data-tpl="doc">🕵️ Hidden Mystery</button>
+      <div class="step-title">⚡ Auto-Write Viral Script (Topic → Video)</div>
+      <input type="text" id="topicInput" placeholder="Type any topic (e.g. AI Freelancing, Crypto, Fitness)" value="AI Freelancing" />
+      <div class="grid-2">
+        <select id="langSelect">
+          <option value="en" selected>🇺🇸 English</option>
+          <option value="roman">🇵🇰 Roman Urdu</option>
+          <option value="ur">🇵🇰 اردو (Urdu)</option>
+          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+          <option value="ar">🇸🇦 العربية (Arabic)</option>
+          <option value="es">🇪🇸 Español (Spanish)</option>
+        </select>
+        <select id="toneSelect">
+          <option value="luxury">💰 $10k Rule</option>
+          <option value="truths">🔥 3 Harsh Truths</option>
+          <option value="shift">📈 2026 Wealth Shift</option>
+        </select>
       </div>
+      <button class="btn-write" id="writeScriptBtn">✨ Auto-Write Viral Script</button>
     </div>
 
     <!-- Step 1 -->
     <div class="card">
       <div class="step-title">1. Script, Mic Voiceover & Images</div>
-      <textarea id="scriptInput">Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Turn any voice memo into a $10,000 agency-level edit in seconds.</textarea>
+      <textarea id="scriptInput">Most people ignore AI Freelancing and waste 10 hours a day. In 2026, 95% of top earners use speed and systems. Learn one high-income skill and build a $10,000/month asset in 90 days.</textarea>
 
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record Voice Memo</button>
@@ -174,7 +178,7 @@
       <div class="step-title">3. Live Preview & Zero-Watermark Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Tap a Template or Generate</span>
+        <span class="status" id="statusText">Ready — Type a topic or tap Generate</span>
         <div style="display:flex; gap:8px;">
           <button class="btn-small" id="replayBtn">Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
@@ -187,6 +191,9 @@
     const canvas = document.getElementById("previewCanvas");
     const ctx = canvas.getContext("2d");
     const statusText = document.getElementById("statusText");
+    const topicInput = document.getElementById("topicInput");
+    const langSelect = document.getElementById("langSelect");
+    const toneSelect = document.getElementById("toneSelect");
     const scriptInput = document.getElementById("scriptInput");
     const modeSelect = document.getElementById("modeSelect");
     const beatToggle = document.getElementById("beatToggle");
@@ -207,32 +214,45 @@
     let sharedActx = null;
     let sfxDest = null;
 
-    // Mic recording state
     let micRecorder = null;
     let micChunks = [];
     let recognition = null;
     let isMicRecording = false;
 
-    const TEMPLATES = {
-      money: {
-        style: "luxury",
-        text: "Most creators waste 10 hours editing a single video. In 2026, speed and 95% retention win on YouTube. Turn any voice memo into a $10,000 agency-level edit in seconds."
+    const LANG_CODES = {
+      en: "en-US", roman: "en-PK", ur: "ur-PK", hi: "hi-IN", ar: "ar-SA", es: "es-ES"
+    };
+
+    const SCRIPT_TEMPLATES = {
+      en: {
+        luxury: t => `95% of beginners fail at ${t} because they waste 10 hours on the wrong things. In 2026, smart systems beat hard work every single time. Master ${t} today and unlock a $10,000/month skill in 90 days.`,
+        truths: t => `3 harsh truths about ${t} nobody tells you. First, waiting for perfection costs you 100% of your progress. Second, consistency for 90 days beats 5 years of excuses in 2026.`,
+        shift:  t => `The 2026 ${t} shift is happening right now. Early creators are scaling 10x faster with zero extra budget. Don't get left behind while 90% keep sleeping.`
       },
-      finance: {
-        style: "finance",
-        text: "90% of people ignore compounding until it is too late. Saving $500 a month at 12% growth changes your entire bloodline. Start before 2027 leaves you behind."
+      roman: {
+        luxury: t => `95% log ${t} mein fail isliye hotay hain kyunki woh 10 ghantay ghalat cheez par zaya karte hain. 2026 mein smart system hi jeet-ta hai. Aaj ${t} seekho aur 90 days mein $5,000/month ka skill banao.`,
+        truths: t => `${t} ke 3 karway sach jo koi nahi batata. Pehla, perfect time ka intezar 100% waqt barbad karta hai. Doosra, 90 din ki mehnat 2026 mein aapki life badal sakti hai.`,
+        shift:  t => `2026 mein ${t} ka sab se bara daur shuru ho chuka hai. Jo log aaj start kar rahe hain woh 10x tez grow kar rahe hain. 90% logon ki tarah peechay mat raho.`
       },
-      discipline: {
-        style: "luxury",
-        text: "Nobody is coming to save you in 2026. Delete the distractions costing you 4 hours every night. Lock in for 90 days and watch your life flip."
+      ur: {
+        luxury: t => `95% لوگ ${t} میں ناکام اس لیے ہوتے ہیں کیونکہ وہ 10 گھنٹے غلط کام میں ضائع کرتے ہیں۔ 2026 میں صرف اسمارٹ سسٹم جیتتا ہے۔ آج ${t} سیکھیں اور 90 دن میں $5,000 ماہانہ کمانے کا ہنر بنائیں۔`,
+        truths: t => `${t} کے 3 کڑوے سچ جو کوئی نہیں بتاتا۔ پہلا، صحیح وقت کا انتظار 100% وقت ضائع کرتا ہے۔ دوسرا، 2026 میں 90 دن کی مستقل محنت زندگی بدل دیتی ہے۔`,
+        shift:  t => `2026 میں ${t} کی سب سے بڑی تبدیلی آ چکی ہے۔ آج شروع کرنے والے لوگ 10x تیزی سے آگے بڑھ رہے ہیں۔ 90% لوگوں کی طرح پیچھے نہ رہیں۔`
       },
-      apple: {
-        style: "apple",
-        text: "Why pay $30 every month for bloated editors? One tap turns raw words into clean 60fps motion graphics. Faster workflow, zero watermark, built for mobile."
+      hi: {
+        luxury: t => `95% लोग ${t} में इसलिए फेल होते हैं क्योंकि वे 10 घंटे गलत काम में बर्बाद करते हैं। 2026 में स्मार्ट सिस्टम ही जीतता है। आज ${t} सीखें और 90 दिनों में $5,000/month की स्किल बनाएं।`,
+        truths: t => `${t} के 3 कड़वे सच जो कोई नहीं बताता। पहला, सही समय का इंतजार 100% समय बर्बाद करता है। दूसरा, 2026 में 90 दिन की मेहनत पूरी गेम बदल देती है।`,
+        shift:  t => `2026 में ${t} का सबसे बड़ा बदलाव शुरू हो चुका है। आज शुरू करने वाले लोग 10x तेजी से आगे बढ़ रहे हैं। 90% लोगों की तरह पीछे मत रहो।`
       },
-      doc: {
-        style: "doc",
-        text: "In 2024, one faceless channel made $42,000 in 30 days. Not from luck, but from 3-second visual hooks. Here is the exact retention formula they hid."
+      ar: {
+        luxury: t => `95% من المبتدئين يفشلون في ${t} لأنهم يضيعون 10 ساعات في الطريق الخطأ. في 2026، الأنظمة الذكية تنتصر دائماً. تعلّم ${t} اليوم وابنِ مهارة بقيمة $10,000 خلال 90 يوماً.`,
+        truths: t => `3 حقائق قاسية حول ${t} لا يخبرك بها أحد. أولاً، انتظار الكمال يضيع 100% من وقتك. ثانياً، الاستمرار لمدة 90 يوماً في 2026 يغير مستقبلك بالكامل.`,
+        shift:  t => `تحوّل ${t} الكبير في 2026 يحدث الآن. المبدعون الأوائل ينمون أسرع بـ 10x بدون ميزانية إضافية. لا تبقَ خلف 90% من الناس.`
+      },
+      es: {
+        luxury: t => `El 95% fracasa en ${t} porque pierde 10 horas en lo incorrecto. En 2026, los sistemas inteligentes siempre ganan. Domina ${t} hoy y crea un ingreso de $5,000 al mes en 90 días.`,
+        truths: t => `3 verdades duras sobre ${t} que nadie te dice. Esperar el momento perfecto cuesta el 100% de tu progreso. 90 días de enfoque en 2026 cambian tu vida.`,
+        shift:  t => `El gran cambio de ${t} en 2026 está pasando ahora. Los primeros creadores crecen 10x más rápido. No te quedes atrás como el 90%.`
       }
     };
 
@@ -258,14 +278,24 @@
       card.addEventListener("click", () => selectStyle(card.dataset.style));
     });
 
-    document.querySelectorAll(".tpl-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const tpl = TEMPLATES[btn.dataset.tpl];
-        scriptInput.value = tpl.text;
-        selectStyle(tpl.style);
-        statusText.textContent = "Template loaded! Playing preview...";
-        startPlayback();
-      });
+    // Auto-write script from topic + language + tone
+    document.getElementById("writeScriptBtn").addEventListener("click", () => {
+      const topic = topicInput.value.trim() || "Online Business";
+      const lang = langSelect.value;
+      const tone = toneSelect.value;
+      scriptInput.value = SCRIPT_TEMPLATES[lang][tone](topic);
+      scriptInput.dir = (lang === "ur" || lang === "ar") ? "rtl" : "ltr";
+
+      if (tone === "shift") selectStyle("finance");
+      else if (tone === "luxury") selectStyle("luxury");
+
+      statusText.textContent = "Viral script written! Playing preview...";
+      startPlayback();
+    });
+
+    langSelect.addEventListener("change", () => {
+      const lang = langSelect.value;
+      scriptInput.dir = (lang === "ur" || lang === "ar") ? "rtl" : "ltr";
     });
 
     modeSelect.addEventListener("change", () => {
@@ -278,7 +308,6 @@
       }
     });
 
-    // Mic Voice Memo + Live Auto-Transcription
     micBtn.addEventListener("click", async () => {
       if (isMicRecording) {
         isMicRecording = false;
@@ -303,13 +332,12 @@
         };
         micRecorder.start();
 
-        // Live speech-to-text on supported mobile Chrome
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SR) {
           recognition = new SR();
           recognition.continuous = true;
           recognition.interimResults = false;
-          recognition.lang = "en-US";
+          recognition.lang = LANG_CODES[langSelect.value] || "en-US";
           let transcript = "";
           recognition.onresult = (ev) => {
             for (let i = ev.resultIndex; i < ev.results.length; i++) {
@@ -324,7 +352,7 @@
 
         isMicRecording = true;
         micBtn.classList.add("recording");
-        micBtn.textContent = "⏹️ Tap to Stop Recording";
+        micBtn.textContent = "⏹️ Stop Recording";
         statusText.textContent = "Listening... Speak clearly now";
       } catch (err) {
         statusText.textContent = "Mic blocked — allow microphone permission";
@@ -350,16 +378,21 @@
     });
 
     function extractStat(text) {
-      const m = text.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|mins|seconds|x)\b)/i);
+      const m = text.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|mins|seconds|ghantay|din|días|x)\b)/i);
       return m ? m[0].toUpperCase() : null;
+    }
+
+    function isRTLText(text) {
+      return /[\u0600-\u06FF]/.test(text);
     }
 
     function buildScenes() {
       const raw = scriptInput.value.trim();
-      const parts = raw.split(/(?<=[.!?])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Tap a template or speak into the mic."]).map(t => ({
+      const parts = raw.split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
+      scenes = (parts.length ? parts : ["Tap Auto-Write Viral Script above."]).map(t => ({
         text: t,
-        stat: extractStat(t)
+        stat: extractStat(t),
+        rtl: isRTLText(t)
       }));
     }
 
@@ -391,7 +424,6 @@
         try {
           const now = sharedActx.currentTime;
           if (step % 2 === 0) {
-            // Deep dark bass pulse
             const osc = sharedActx.createOscillator();
             const g = sharedActx.createGain();
             osc.type = "triangle";
@@ -404,7 +436,6 @@
             osc.start(now);
             osc.stop(now + 0.4);
           } else {
-            // Crisp dark hi-hat
             const bufSize = sharedActx.sampleRate * 0.05;
             const buf = sharedActx.createBuffer(1, bufSize, sharedActx.sampleRate);
             const d = buf.getChannelData(0);
@@ -550,6 +581,7 @@
 
       if (scene.stat) {
         ctx.save();
+        ctx.direction = "ltr";
         const statW = isVertical ? canvas.width * 0.55 : 320;
         const statH = 68;
         const statX = (canvas.width - statW) / 2;
@@ -571,9 +603,9 @@
         ctx.restore();
       }
 
+      // Wrap lines
       const words = scene.text.split(" ");
-      const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
-      const fontSize = isVertical ? 38 : 46;
+      const fontSize = scene.rtl ? (isVertical ? 36 : 42) : (isVertical ? 38 : 46);
       ctx.font = `800 ${fontSize}px -apple-system, sans-serif`;
       ctx.textBaseline = "middle";
 
@@ -591,35 +623,55 @@
       }
       lines.push(line.trim());
 
-      const lineH = fontSize * 1.32;
+      const lineH = fontSize * 1.38;
       const startY = boxY + boxH / 2 + (scene.stat ? 14 : 0) - ((lines.length - 1) * lineH) / 2;
 
-      let wordCursor = 0;
-      lines.forEach((l, lineIdx) => {
-        const lineWords = l.split(" ");
-        const totalW = ctx.measureText(l).width;
-        let xCursor = canvas.width / 2 - totalW / 2;
-        ctx.textAlign = "left";
-
-        lineWords.forEach((w) => {
-          const isActive = wordCursor < revealedCount;
-          const isCurrent = wordCursor === revealedCount - 1;
-
-          if (selectedStyle === "doc" && isCurrent) {
-            const ww = ctx.measureText(w).width;
-            ctx.fillStyle = "rgba(220, 38, 38, 0.25)";
-            ctx.fillRect(xCursor - 4, startY + lineIdx * lineH - fontSize * 0.55, ww + 8, fontSize * 1.1);
-          }
-
-          ctx.fillStyle = isActive
-            ? (isCurrent ? theme.accent : theme.text)
+      if (scene.rtl) {
+        // Connected RTL rendering for Urdu / Arabic
+        ctx.save();
+        ctx.direction = "rtl";
+        ctx.textAlign = "center";
+        const visibleLines = Math.max(1, Math.ceil(lines.length * Math.min(1, p * 1.4)));
+        lines.forEach((l, lineIdx) => {
+          ctx.fillStyle = lineIdx < visibleLines
+            ? (lineIdx === visibleLines - 1 ? theme.accent : theme.text)
             : (selectedStyle === "doc" ? "rgba(24,24,27,0.22)" : "rgba(255,255,255,0.22)");
-
-          ctx.fillText(w, xCursor, startY + lineIdx * lineH);
-          xCursor += ctx.measureText(w + " ").width;
-          wordCursor++;
+          ctx.fillText(l, canvas.width / 2, startY + lineIdx * lineH);
         });
-      });
+        ctx.restore();
+      } else {
+        // Word-by-word kinetic highlight for English / Roman Urdu / Hindi / Spanish
+        ctx.save();
+        ctx.direction = "ltr";
+        const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
+        let wordCursor = 0;
+        lines.forEach((l, lineIdx) => {
+          const lineWords = l.split(" ");
+          const totalW = ctx.measureText(l).width;
+          let xCursor = canvas.width / 2 - totalW / 2;
+          ctx.textAlign = "left";
+
+          lineWords.forEach((w) => {
+            const isActive = wordCursor < revealedCount;
+            const isCurrent = wordCursor === revealedCount - 1;
+
+            if (selectedStyle === "doc" && isCurrent) {
+              const ww = ctx.measureText(w).width;
+              ctx.fillStyle = "rgba(220, 38, 38, 0.25)";
+              ctx.fillRect(xCursor - 4, startY + lineIdx * lineH - fontSize * 0.55, ww + 8, fontSize * 1.1);
+            }
+
+            ctx.fillStyle = isActive
+              ? (isCurrent ? theme.accent : theme.text)
+              : (selectedStyle === "doc" ? "rgba(24,24,27,0.22)" : "rgba(255,255,255,0.22)");
+
+            ctx.fillText(w, xCursor, startY + lineIdx * lineH);
+            xCursor += ctx.measureText(w + " ").width;
+            wordCursor++;
+          });
+        });
+        ctx.restore();
+      }
 
       animId = requestAnimationFrame(drawFrame);
     }
