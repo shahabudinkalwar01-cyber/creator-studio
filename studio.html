@@ -3,37 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v9 — Self-Made Iman Gadzhi AI Engine</title>
+  <title>Studio v10 — Self-Animating AI Video Engine</title>
   <style>
     :root {
-      --bg: #0b0f19; --card: #121826; --input: #0a0e17; --border: #232d42;
-      --gold: #f5b942; --text: #f3f4f6; --muted: #9ca3af; --green: #10b981; --red: #ef4444;
+      --bg: #07090e; --card: #10141f; --input: #0a0e17; --border: #21293b;
+      --gold: #f5c542; --text: #f8fafc; --muted: #94a3b8; --green: #10b981; --red: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 16px 14px 50px; }
     .container { max-width: 680px; margin: 0 auto; }
     .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .badge { font-size: 11px; font-weight: 700; color: var(--gold); border: 1px solid rgba(245,185,66,0.4); background: rgba(245,185,66,0.08); padding: 5px 11px; border-radius: 999px; }
+    .badge { font-size: 11px; font-weight: 700; color: var(--gold); border: 1px solid rgba(245,197,66,0.4); background: rgba(245,197,66,0.08); padding: 5px 11px; border-radius: 999px; }
     .back-link { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
     .step-title { font-size: 0.82rem; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 10px; }
     input[type="text"], select, textarea { width: 100%; background: var(--input); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-size: 0.94rem; margin-bottom: 10px; }
-    textarea { min-height: 100px; line-height: 1.45; resize: vertical; }
+    textarea { min-height: 95px; line-height: 1.45; resize: vertical; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn-ai { width: 100%; background: linear-gradient(90deg, #f5b942, #fbbf24); color: #0b0f19; border: none; border-radius: 12px; padding: 14px; font-size: 0.96rem; font-weight: 800; cursor: pointer; }
+    .btn-ai { width: 100%; background: linear-gradient(90deg, #f5c542, #fbbf24); color: #07090e; border: none; border-radius: 12px; padding: 14px; font-size: 0.96rem; font-weight: 800; cursor: pointer; }
     .btn-ai:disabled { opacity: 0.6; }
     .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
     .mic-btn { background: #1f1622; color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); border-radius: 12px; padding: 12px; font-size: 0.86rem; font-weight: 700; cursor: pointer; }
     .mic-btn.recording { background: var(--red); color: #fff; border-color: var(--red); }
-    .upload-mini { display: flex; align-items: center; justify-content: center; text-align: center; background: rgba(245,185,66,0.08); color: var(--gold); border: 1.5px dashed var(--gold); border-radius: 12px; padding: 12px; font-size: 0.86rem; font-weight: 700; cursor: pointer; }
+    .upload-mini { display: flex; align-items: center; justify-content: center; text-align: center; background: rgba(245,197,66,0.08); color: var(--gold); border: 1.5px dashed var(--gold); border-radius: 12px; padding: 12px; font-size: 0.86rem; font-weight: 700; cursor: pointer; }
     input[type="file"] { display: none; }
     .toggle-row { display: flex; justify-content: space-between; align-items: center; background: var(--input); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; margin-bottom: 10px; font-size: 0.85rem; font-weight: 600; }
     .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 14px 0; }
     .style-card { background: var(--input); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; }
-    .style-card.active { border-color: var(--gold); background: rgba(245,185,66,0.06); }
+    .style-card.active { border-color: var(--gold); background: rgba(245,197,66,0.06); }
     .style-card h4 { font-size: 0.88rem; margin-bottom: 4px; }
     .style-card p { font-size: 0.75rem; color: var(--muted); }
-    .btn-generate { width: 100%; background: #1e293b; color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; padding: 13px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+    .btn-remix { width: 100%; background: #1e293b; color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; padding: 13px; font-size: 0.94rem; font-weight: 700; cursor: pointer; }
     canvas { width: 100%; aspect-ratio: 9 / 16; max-height: 520px; object-fit: contain; background: #000; border-radius: 12px; border: 1px solid var(--border); display: block; margin: 0 auto 12px; }
     .controls-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
     .status { font-size: 0.82rem; color: var(--green); flex: 1; min-width: 180px; }
@@ -45,13 +45,13 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">SELF-MADE AI ENGINE v9</span>
+      <span class="badge">PROCEDURAL AI ENGINE v10</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
-    <!-- Option A: Voice -> Self-Made AI Visuals -->
+    <!-- Option A: Voice -> Auto Random Animations + AI Art -->
     <div class="card">
-      <div class="step-title">🎙️ Option A: Upload / Record Voice → Self-Made Video</div>
+      <div class="step-title">🎙️ Option A: Add Voice → Auto-Invented Motion Video</div>
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
         <label class="upload-mini">
@@ -59,17 +59,17 @@
           <span id="audioLabel">📁 Upload Audio (MP3/M4A)</span>
         </label>
       </div>
-      <textarea id="scriptInput">95% of creators waste 10 hours on weak edits. In 2026, dark luxury motion and speed win every algorithm. Build a $10,000 digital asset in 90 days.</textarea>
+      <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, automated motion graphics win every algorithm. Turn any voice into a $10,000 agency edit in seconds.</textarea>
     </div>
 
-    <!-- Option B: Topic -> AI Script + AI Images + AI Voice -->
+    <!-- Option B: Topic -> AI Script + AI Art + AI Voice -->
     <div class="card">
       <div class="step-title">⚡ Option B: Type Topic → AI Creates Everything</div>
       <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, AI Freelancing)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
-          <option value="en" selected>🇺🇸 English</option>
-          <option value="es">🇪🇸 Español</option>
+          <option value="en" selected>🇺🇸 English (AI Voice)</option>
+          <option value="es">🇪🇸 Español (AI Voice)</option>
           <option value="roman">🇵🇰 Roman Urdu</option>
           <option value="ur">🇵🇰 اردو (Urdu)</option>
           <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
@@ -84,39 +84,39 @@
           <option value="aura-es:sirio">Sirio (Spanish Male)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Everything (Script + Own Art + Voice)</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Everything (Script + Art + Voice + Motion)</button>
     </div>
 
-    <!-- Style & Motion -->
+    <!-- Style & Motion Brain -->
     <div class="card">
-      <div class="step-title">2. Format, Beat & Iman Gadzhi Style</div>
+      <div class="step-title">2. Format, Beat & Color Theme</div>
       <select id="modeSelect">
         <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
         <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
       </select>
       <label class="toggle-row">
-        <span>🎵 Built-in Dark Luxury Beat + Bass Hits</span>
+        <span>🎵 Dark Luxury Beat + Bass Impacts</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px; height:20px;" />
       </label>
 
       <div class="style-grid">
-        <div class="style-card active" data-style="luxury"><h4>Dark Luxury</h4><p>Gold stats, AI art & bass zoom.</p></div>
-        <div class="style-card" data-style="doc"><h4>Documentary</h4><p>Red marker highlight & cinema bars.</p></div>
-        <div class="style-card" data-style="apple"><h4>Clean Apple Tech</h4><p>Frosted glass & cyan motion.</p></div>
-        <div class="style-card" data-style="finance"><h4>Dark Neon Finance</h4><p>Animated emerald growth chart.</p></div>
+        <div class="style-card active" data-style="luxury"><h4>Dark Luxury</h4><p>Black & gold + 10 random widgets.</p></div>
+        <div class="style-card" data-style="doc"><h4>Documentary</h4><p>Red highlights, radar & film bars.</p></div>
+        <div class="style-card" data-style="apple"><h4>Clean Apple Tech</h4><p>Cyan glow, gauges & light sweeps.</p></div>
+        <div class="style-card" data-style="finance"><h4>Dark Neon Finance</h4><p>Emerald charts, candlesticks & dials.</p></div>
       </div>
 
-      <button class="btn-generate" id="generateBtn">Preview Animation</button>
+      <button class="btn-remix" id="remixBtn">🎲 Shuffle New Random Animations & Preview</button>
     </div>
 
     <!-- Output -->
     <div class="card">
-      <div class="step-title">3. Live Preview & Export</div>
+      <div class="step-title">3. Live Voice-Reactive Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Tap AI Build Everything above</span>
+        <span class="status" id="statusText">Ready — Add voice or tap AI Build above</span>
         <div style="display:flex; gap:8px;">
-          <button class="btn-small" id="replayBtn">Replay</button>
+          <button class="btn-small" id="replayBtn">Shuffle Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
         </div>
       </div>
@@ -147,19 +147,25 @@
     let animId = null;
     let beatInterval = null;
     let scenes = [];
+    let sceneModules = [];
     let sceneDurationMs = 3400;
     let startTime = null;
     let lastSceneIdx = -1;
     let activeRecorder = null;
     let sharedActx = null;
     let sfxDest = null;
+    let analyser = null;
+    let freqData = null;
     let micRecorder = null, micChunks = [], isMicRecording = false;
 
+    const MODULES = ["candlesticks", "radar", "donut", "waveform", "notification", "speedometer", "split", "counter", "grid3d", "starfield"];
+    const STARS = Array.from({ length: 48 }, () => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8 }));
+
     const THEMES = {
-      luxury:  { accent: "#f5b942", text: "#ffffff", card: "rgba(8,8,12,0.70)" },
-      doc:     { accent: "#dc2626", text: "#ffffff", card: "rgba(18,14,12,0.72)" },
-      apple:   { accent: "#38bdf8", text: "#f8fafc", card: "rgba(15,23,42,0.70)" },
-      finance: { accent: "#10b981", text: "#ecfdf5", card: "rgba(3,16,12,0.72)" }
+      luxury:  { accent: "#f5c542", text: "#ffffff", card: "rgba(8,8,12,0.72)", glow: "rgba(245,197,66,0.22)" },
+      doc:     { accent: "#ef4444", text: "#ffffff", card: "rgba(18,12,12,0.75)", glow: "rgba(239,68,68,0.22)" },
+      apple:   { accent: "#38bdf8", text: "#f8fafc", card: "rgba(15,23,42,0.72)", glow: "rgba(56,189,248,0.22)" },
+      finance: { accent: "#10b981", text: "#ecfdf5", card: "rgba(3,16,12,0.74)", glow: "rgba(16,185,129,0.22)" }
     };
 
     document.querySelectorAll(".style-card").forEach(card => {
@@ -188,25 +194,19 @@
 
     async function generateOwnAiImages(scriptText) {
       const res = await fetch(`${WORKER_URL}/images`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ script: scriptText, style: selectedStyle })
       });
       const data = await res.json();
-      aiImages = (data.images || []).map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-      });
+      aiImages = (data.images || []).map(src => { const img = new Image(); img.src = src; return img; });
     }
 
-    // Upload or Record Voice -> Understands + Generates Own AI Illustrations
     async function processUploadedVoice(blobOrFile, labelText) {
       audioBufferUrl = URL.createObjectURL(blobOrFile);
       audioDurationMs = await getAudioDurationMs(audioBufferUrl);
       document.getElementById("audioLabel").textContent = labelText;
 
-      statusText.textContent = "1/2 AI listening to your voice...";
+      statusText.textContent = "1/2 Listening to your voice...";
       try {
         const res = await fetch(`${WORKER_URL}/transcribe`, { method: "POST", body: blobOrFile });
         const data = await res.json();
@@ -214,10 +214,9 @@
         scriptInput.value = data.transcript;
         scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
 
-        statusText.textContent = "2/2 Painting 3 custom Iman Gadzhi AI visuals...";
+        statusText.textContent = "2/2 Painting AI visuals & shuffling animations...";
         await generateOwnAiImages(data.transcript);
-
-        statusText.textContent = "Ready! Playing your self-made AI movie...";
+        statusText.textContent = "Ready! Playing unique voice-reactive edit...";
         startPlayback(null);
       } catch (err) {
         statusText.textContent = err.message;
@@ -250,12 +249,11 @@
         micRecorder.start();
         isMicRecording = true;
         micBtn.classList.add("recording");
-        micBtn.textContent = "⏹️ Stop & Generate";
+        micBtn.textContent = "⏹️ Stop & Invent Edit";
         statusText.textContent = "Recording... Speak clearly";
-      } catch (e) { statusText.textContent = "Mic blocked"; }
+      } catch (e) { statusText.textContent = "Mic permission blocked"; }
     });
 
-    // Option B: 1 Topic -> Self-Made Script + Self-Made AI Art + AI Voice
     aiMagicBtn.addEventListener("click", async () => {
       const topic = topicInput.value.trim() || "Luxury Watch Empire";
       const lang = langSelect.value;
@@ -273,7 +271,7 @@
           scriptInput.dir = (lang === "ur" || lang === "ar") ? "rtl" : "ltr";
         }
 
-        statusText.textContent = "2/3 Generating custom AI visuals & voice...";
+        statusText.textContent = "2/3 Painting AI visuals & generating voice...";
         const jobs = [generateOwnAiImages(scriptInput.value)];
         if (lang === "en" || lang === "es") {
           jobs.push(
@@ -291,7 +289,7 @@
           document.getElementById("audioLabel").textContent = "✅ AI Voice Ready";
         }
 
-        statusText.textContent = "3/3 Ready! Playing your AI-generated movie...";
+        statusText.textContent = "3/3 Ready! Playing randomized motion edit...";
         startPlayback(null);
       } catch (err) {
         statusText.textContent = "Error: " + err.message;
@@ -308,23 +306,130 @@
     function buildScenes() {
       const raw = scriptInput.value.trim();
       const parts = raw.split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Tap AI Build Everything above."]).map(t => ({
+      scenes = (parts.length ? parts : ["Tap AI Build or add voice."]).map(t => ({
         text: t, stat: extractStat(t), rtl: /[\u0600-\u06FF]/.test(t)
       }));
       sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
+
+      // Shuffle a completely fresh random animation module for each scene!
+      const pool = [...MODULES].sort(() => Math.random() - 0.5);
+      sceneModules = scenes.map((_, i) => pool[i % pool.length]);
+    }
+
+    function getVoiceEnergy(elapsed) {
+      if (analyser && freqData) {
+        analyser.getByteFrequencyData(freqData);
+        let sum = 0;
+        for (let i = 0; i < 12; i++) sum += freqData[i];
+        const v = sum / (12 * 255);
+        if (v > 0.02) return v;
+      }
+      return 0.25 + 0.2 * Math.abs(Math.sin(elapsed * 0.006));
+    }
+
+    function drawMotionModule(mod, theme, p, energy, elapsed) {
+      const W = canvas.width, H = canvas.height;
+      ctx.save();
+
+      if (mod === "candlesticks") {
+        const bars = 12, bw = W / (bars + 4);
+        for (let i = 0; i < bars; i++) {
+          const prog = Math.max(0, Math.min(1, p * 1.5 - i * 0.05));
+          const bh = (60 + ((i * 47) % 180)) * prog * (0.9 + energy * 0.35);
+          const x = (i + 2) * bw;
+          const y = H * 0.85 - bh - i * 18;
+          ctx.fillStyle = i % 3 === 0 ? "rgba(255,255,255,0.25)" : theme.accent;
+          ctx.globalAlpha = 0.55;
+          ctx.fillRect(x, y, bw * 0.55, bh);
+          ctx.fillRect(x + bw * 0.22, y - 20, 3, bh + 40);
+        }
+      } else if (mod === "radar") {
+        const cx = W / 2, cy = H * 0.22, r = Math.min(W, H) * 0.14;
+        ctx.strokeStyle = theme.accent;
+        ctx.globalAlpha = 0.45;
+        [0.4, 0.7, 1].forEach(k => { ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, Math.PI * 2); ctx.stroke(); });
+        const ang = elapsed * 0.004;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, ang, ang + 0.7); ctx.closePath();
+        ctx.fillStyle = theme.glow; ctx.fill();
+      } else if (mod === "donut") {
+        const cx = W / 2, cy = H * 0.19, r = 64;
+        ctx.lineWidth = 14;
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = theme.accent;
+        ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(0.95, p * 1.3)); ctx.stroke();
+        ctx.fillStyle = "#fff"; ctx.font = "800 28px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
+      } else if (mod === "waveform") {
+        const count = 28, bw = W / (count * 1.4);
+        ctx.fillStyle = theme.accent;
+        ctx.globalAlpha = 0.75;
+        for (let i = 0; i < count; i++) {
+          const h = (18 + Math.abs(Math.sin(elapsed * 0.012 + i * 0.6)) * 95) * (0.6 + energy * 1.1);
+          const x = (W - count * bw * 1.4) / 2 + i * bw * 1.4;
+          ctx.fillRect(x, H * 0.84 - h / 2, bw, h);
+        }
+      } else if (mod === "notification") {
+        const slide = Math.min(1, p * 4);
+        const ny = 48 + (1 - Math.pow(1 - slide, 3)) * -120;
+        const nw = W * 0.78, nx = (W - nw) / 2;
+        ctx.fillStyle = "rgba(15,23,42,0.92)";
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(nx, ny, nw, 76, 18); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.font = "800 24px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("💰 +$10,000 Payout Verified", W / 2, ny + 38);
+      } else if (mod === "speedometer") {
+        const cx = W / 2, cy = H * 0.24, r = 82;
+        ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.stroke();
+        const prog = Math.min(1, p * 1.3);
+        ctx.strokeStyle = theme.accent;
+        ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + Math.PI * prog); ctx.stroke();
+        const na = Math.PI + Math.PI * prog;
+        ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(na) * (r - 12), cy + Math.sin(na) * (r - 12)); ctx.stroke();
+      } else if (mod === "split") {
+        ctx.font = "800 24px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "rgba(239,68,68,0.85)"; ctx.fillRect(W * 0.1, H * 0.14, W * 0.38, 52);
+        ctx.fillStyle = theme.accent; ctx.fillRect(W * 0.52, H * 0.14, W * 0.38, 52);
+        ctx.fillStyle = "#fff"; ctx.fillText("OLD WAY ❌", W * 0.29, H * 0.14 + 26);
+        ctx.fillStyle = "#07090e"; ctx.fillText("AI SYSTEM ✅", W * 0.71, H * 0.14 + 26);
+      } else if (mod === "counter") {
+        const val = Math.floor(Math.min(1, p * 1.2) * 10000);
+        ctx.fillStyle = theme.accent;
+        ctx.font = "900 54px -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("$" + val.toLocaleString(), W / 2, H * 0.19);
+      } else if (mod === "grid3d") {
+        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.28; ctx.lineWidth = 1.5;
+        const horizon = H * 0.58;
+        for (let i = -8; i <= 8; i++) {
+          ctx.beginPath(); ctx.moveTo(W / 2 + i * 24, horizon); ctx.lineTo(W / 2 + i * 160, H); ctx.stroke();
+        }
+        for (let j = 0; j < 7; j++) {
+          const off = ((j / 7 + p * 0.8) % 1);
+          const y = horizon + Math.pow(off, 2) * (H - horizon);
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+      } else if (mod === "starfield") {
+        ctx.fillStyle = theme.accent;
+        STARS.forEach(st => {
+          const sx = (st.x - 0.5) * (1 + p * st.z * 1.4) * W + W / 2;
+          const sy = (st.y - 0.5) * (1 + p * st.z * 1.4) * H + H / 2;
+          ctx.globalAlpha = 0.65;
+          ctx.beginPath(); ctx.arc(sx, sy, 2 + st.z * 3 * energy, 0, Math.PI * 2); ctx.fill();
+        });
+      }
+
+      ctx.restore();
     }
 
     function playBassHit() {
       if (!sharedActx || !beatToggle.checked) return;
       try {
         const now = sharedActx.currentTime;
-        const osc = sharedActx.createOscillator();
-        const g = sharedActx.createGain();
+        const osc = sharedActx.createOscillator(), g = sharedActx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(115, now);
-        osc.frequency.exponentialRampToValueAtTime(36, now + 0.25);
-        g.gain.setValueAtTime(0.32, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        osc.frequency.setValueAtTime(118, now); osc.frequency.exponentialRampToValueAtTime(36, now + 0.25);
+        g.gain.setValueAtTime(0.32, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
         osc.connect(g); g.connect(sharedActx.destination);
         if (sfxDest) g.connect(sfxDest);
         osc.start(now); osc.stop(now + 0.3);
@@ -340,12 +445,9 @@
         try {
           const now = sharedActx.currentTime;
           if (step % 2 === 0) {
-            const osc = sharedActx.createOscillator();
-            const g = sharedActx.createGain();
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(step % 4 === 0 ? 55 : 49, now);
-            g.gain.setValueAtTime(0.09, now);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            const osc = sharedActx.createOscillator(), g = sharedActx.createGain();
+            osc.type = "triangle"; osc.frequency.setValueAtTime(step % 4 === 0 ? 55 : 49, now);
+            g.gain.setValueAtTime(0.09, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
             osc.connect(g); g.connect(sharedActx.destination);
             if (sfxDest) g.connect(sfxDest);
             osc.start(now); osc.stop(now + 0.38);
@@ -357,15 +459,6 @@
       beatInterval = setInterval(playTick, 480);
     }
 
-    function drawCoverImage(img, p) {
-      const iw = img.naturalWidth || 1024, ih = img.naturalHeight || 1024;
-      const zoom = 1.02 + p * 0.14; // Smooth Ken Burns zoom
-      const scale = Math.max(canvas.width / iw, canvas.height / ih) * zoom;
-      const w = iw * scale, h = ih * scale;
-      const panX = (p - 0.5) * 30;
-      ctx.drawImage(img, (canvas.width - w) / 2 + panX, (canvas.height - h) / 2, w, h);
-    }
-
     function drawFrame(now) {
       if (startTime === null) startTime = now;
       const elapsed = Math.max(0, now - startTime);
@@ -375,7 +468,7 @@
         clearInterval(beatInterval);
         if (audioEl) audioEl.pause();
         if (activeRecorder && activeRecorder.state === "recording") activeRecorder.stop();
-        else statusText.textContent = "Complete — Tap Replay or Export Video";
+        else statusText.textContent = "Complete — Tap Shuffle Replay or Export";
         return;
       }
 
@@ -386,8 +479,8 @@
       const p = sceneElapsed / sceneDurationMs;
       const scene = scenes[idx];
       const theme = THEMES[selectedStyle];
+      const energy = getVoiceEnergy(elapsed);
 
-      // Bass-hit camera shake
       const shake = Math.max(0, 1 - sceneElapsed / 200) * 8;
       ctx.save();
       ctx.translate(Math.sin(elapsed * 0.25) * shake, Math.cos(elapsed * 0.3) * shake);
@@ -395,46 +488,33 @@
       ctx.fillStyle = "#06080f";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Self-made Flux AI image with Ken Burns zoom
+      // AI-generated image backdrop with Ken Burns zoom
       if (aiImages.length > 0) {
         const img = aiImages[idx % aiImages.length];
         if (img.complete && img.naturalWidth > 0) {
-          drawCoverImage(img, p);
-          ctx.fillStyle = "rgba(0,0,0,0.40)";
+          const iw = img.naturalWidth, ih = img.naturalHeight;
+          const zoom = 1.03 + p * 0.14;
+          const sc = Math.max(canvas.width / iw, canvas.height / ih) * zoom;
+          ctx.drawImage(img, (canvas.width - iw * sc) / 2, (canvas.height - ih * sc) / 2, iw * sc, ih * sc);
+          ctx.fillStyle = "rgba(0,0,0,0.45)";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
       }
 
-      // Animated Neon Finance growth line overlay
-      if (selectedStyle === "finance") {
-        const pts = [0.78, 0.74, 0.77, 0.64, 0.67, 0.48, 0.52, 0.32, 0.19];
-        const maxIdx = Math.floor(Math.min(1, p * 1.35) * (pts.length - 1));
-        ctx.save();
-        ctx.strokeStyle = theme.accent;
-        ctx.lineWidth = 5;
-        ctx.shadowColor = theme.accent;
-        ctx.shadowBlur = 18;
-        ctx.beginPath();
-        for (let i = 0; i <= maxIdx; i++) {
-          const px = (i / (pts.length - 1)) * canvas.width;
-          const py = pts[i] * canvas.height;
-          if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-        ctx.restore();
-      }
+      // Draw randomized Iman Gadzhi motion module reacting to voice energy
+      drawMotionModule(sceneModules[idx] || "candlesticks", theme, p, energy, elapsed);
 
       const isVertical = canvas.height > canvas.width;
       const padX = canvas.width * 0.08;
-      const boxH = isVertical ? canvas.height * 0.36 : canvas.height * 0.48;
-      const boxY = (canvas.height - boxH) / 2;
+      const boxH = isVertical ? canvas.height * 0.34 : canvas.height * 0.46;
+      const boxY = (canvas.height - boxH) / 2 + 24;
 
       ctx.save();
       ctx.fillStyle = theme.card;
       ctx.strokeStyle = theme.accent;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2 + energy * 3;
       ctx.shadowColor = theme.accent;
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur = 16 + energy * 24;
       ctx.beginPath();
       ctx.roundRect(padX, boxY, canvas.width - padX * 2, boxH, 22);
       ctx.fill();
@@ -445,26 +525,20 @@
         ctx.save();
         ctx.direction = "ltr";
         const statW = isVertical ? canvas.width * 0.52 : 300;
-        const statH = 62;
+        const statH = 60;
         const statX = (canvas.width - statW) / 2;
-        const statY = boxY - 31;
+        const statY = boxY - 30;
         ctx.fillStyle = theme.accent;
-        ctx.shadowColor = theme.accent;
-        ctx.shadowBlur = 22;
-        ctx.beginPath();
-        ctx.roundRect(statX, statY, statW, statH, 14);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.roundRect(statX, statY, statW, statH, 14); ctx.fill();
         ctx.fillStyle = "#07090e";
         ctx.font = `900 ${isVertical ? 32 : 36}px -apple-system, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(scene.stat, canvas.width / 2, statY + statH / 2 + 2);
         ctx.restore();
       }
 
       const words = scene.text.split(" ");
-      const fontSize = isVertical ? 36 : 44;
+      const fontSize = isVertical ? 34 : 42;
       ctx.font = `800 ${fontSize}px -apple-system, sans-serif`;
       ctx.textBaseline = "middle";
 
@@ -480,14 +554,11 @@
       const startY = boxY + boxH / 2 + (scene.stat ? 12 : 0) - ((lines.length - 1) * lineH) / 2;
 
       if (scene.rtl) {
-        ctx.save();
-        ctx.direction = "rtl";
-        ctx.textAlign = "center";
+        ctx.save(); ctx.direction = "rtl"; ctx.textAlign = "center";
         lines.forEach((l, i) => { ctx.fillStyle = theme.text; ctx.fillText(l, canvas.width / 2, startY + i * lineH); });
         ctx.restore();
       } else {
-        ctx.save();
-        ctx.direction = "ltr";
+        ctx.save(); ctx.direction = "ltr";
         const revealedCount = Math.max(1, Math.ceil(words.length * Math.min(1, p * 1.45)));
         let wordCursor = 0;
         lines.forEach((l, lineIdx) => {
@@ -507,7 +578,7 @@
         ctx.restore();
       }
 
-      ctx.restore(); // end shake
+      ctx.restore();
 
       const barH = canvas.height * 0.05;
       ctx.fillStyle = "#000";
@@ -526,6 +597,12 @@
 
       if (!sharedActx) sharedActx = new (window.AudioContext || window.webkitAudioContext)();
       if (sharedActx.state === "suspended") sharedActx.resume();
+      if (!analyser) {
+        analyser = sharedActx.createAnalyser();
+        analyser.fftSize = 64;
+        freqData = new Uint8Array(analyser.frequencyBinCount);
+      }
+
       if (recordStream) {
         sfxDest = sharedActx.createMediaStreamDestination();
         sfxDest.stream.getAudioTracks().forEach(t => recordStream.addTrack(t));
@@ -536,10 +613,11 @@
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
         audioEl = new Audio(audioBufferUrl);
-        if (recordStream && sharedActx) {
+        if (sharedActx) {
           try {
             const src = sharedActx.createMediaElementSource(audioEl);
-            src.connect(sharedActx.destination);
+            src.connect(analyser);
+            analyser.connect(sharedActx.destination);
             if (sfxDest) src.connect(sfxDest);
           } catch (e) {}
         }
@@ -548,11 +626,13 @@
       animId = requestAnimationFrame(drawFrame);
     }
 
-    document.getElementById("generateBtn").addEventListener("click", () => {
-      statusText.textContent = "Playing preview..."; startPlayback(null);
+    document.getElementById("remixBtn").addEventListener("click", () => {
+      statusText.textContent = "Shuffled fresh motion sequence!";
+      startPlayback(null);
     });
     document.getElementById("replayBtn").addEventListener("click", () => {
-      statusText.textContent = "Replaying..."; startPlayback(null);
+      statusText.textContent = "Playing new random sequence...";
+      startPlayback(null);
     });
 
     exportBtn.addEventListener("click", () => {
@@ -565,7 +645,7 @@
       const mimeType = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || "";
 
       exportBtn.disabled = true;
-      statusText.textContent = "Exporting AI movie + audio...";
+      statusText.textContent = "Exporting unique AI motion video...";
 
       const chunks = [];
       activeRecorder = new MediaRecorder(stream, mimeType ? { mimeType, videoBitsPerSecond: 3500000 } : {});
@@ -575,7 +655,7 @@
         const blob = new Blob(chunks, { type: mimeType || "video/webm" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = mimeType.includes("mp4") ? "iman-ai-movie.mp4" : "iman-ai-movie.webm";
+        a.download = mimeType.includes("mp4") ? "pro-ai-motion.mp4" : "pro-ai-motion.webm";
         a.click();
         exportBtn.disabled = false;
         activeRecorder = null;
