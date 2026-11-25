@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v11 — Dynamic Camera, SFX, BGM & Objects</title>
+  <title>Studio v12 — 3D Parallax & Realistic Motion Engine</title>
   <style>
     :root { --bg:#07090e; --card:#10141f; --input:#0a0e17; --border:#21293b; --gold:#f5c542; --text:#f8fafc; --muted:#94a3b8; --green:#10b981; --red:#ef4444; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
@@ -37,12 +37,12 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">AI DIRECTOR v11 • FULL RANDOMIZER</span>
+      <span class="badge">3D PARALLAX DIRECTOR v12</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
     <div class="card">
-      <div class="step-title">🎙️ Option A: Voice → New Camera, SFX, BGM & Objects</div>
+      <div class="step-title">🎙️ Option A: Voice → 3D Moving Video</div>
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
         <label class="upload-mini">
@@ -50,12 +50,12 @@
           <span id="audioLabel">📁 Upload Audio</span>
         </label>
       </div>
-      <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, automated motion graphics win every algorithm. Turn any voice into a $10,000 agency edit in seconds.</textarea>
+      <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, 3D motion graphics win every algorithm. Build a $10,000 digital asset in 90 days.</textarea>
     </div>
 
     <div class="card">
-      <div class="step-title">⚡ Option B: Topic → AI Script + Art + Voice + Random Look</div>
-      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watches, Cyberpunk AI, Crypto)" value="Luxury Watch Empire" />
+      <div class="step-title">⚡ Option B: Topic → AI Script + AI Art + 3D + Voice</div>
+      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watches, AI Empire, Crypto)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
           <option value="en" selected>🇺🇸 English (AI Voice)</option>
@@ -76,29 +76,29 @@
           <option value="aura-es:sirio">Sirio (Spanish Male)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Completely New Video</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build 3D Movie</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. Format & Audio Engine</div>
+      <div class="step-title">2. Format & 3D Camera Controls</div>
       <select id="modeSelect">
         <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
         <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
       </select>
       <label class="toggle-row">
-        <span>🎵 Auto-Switch BGM + Random SFX Each Video</span>
+        <span>🎵 Auto-Switch BGM + Random SFX</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <button class="btn-remix" id="remixBtn">🎲 Switch Camera, BGM, SFX, Objects & Color</button>
+      <button class="btn-remix" id="remixBtn">🎲 New 3D Objects, Moving Angles & BGM</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live Preview & Export</div>
+      <div class="step-title">3. 3D Live Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Every tap changes BGM, SFX, Camera & Objects</span>
+        <span class="status" id="statusText">Ready — Tap AI Build 3D Movie or New 3D Mix</span>
         <div style="display:flex;gap:8px;">
-          <button class="btn-small" id="replayBtn">New Mix</button>
+          <button class="btn-small" id="replayBtn">New 3D Mix</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
         </div>
       </div>
@@ -121,19 +121,20 @@
     let activeThemeKey = "luxury", activeBgm = "Dark Trap";
 
     const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:odysseus","aura-en:apollo","aura-en:thalia","aura-en:asteria"];
-    const MODULES = ["candlesticks","radar","donut","waveform","notification","speedometer","counter","grid3d","coins","ticker","rings","bars"];
-    const LAYOUTS = ["fullbleed","splitscreen","polaroid","hud","poster"];
-    const CAMERAS = ["dutch_l","dutch_r","zoom_in","zoom_out","pan_x","elevator"];
+    const OBJ_3D = ["phone_3d","cube_3d","globe_3d","coins_3d","card_3d","candles_3d","donut_3d","waveform_3d"];
+    const CAMERAS_3D = ["orbit_3d","whip_zoom","pullback_3d","pan_parallax","swing_tilt"];
     const SFX_LIST = ["bass","whoosh","ding","shutter","riser"];
     const BGM_LIST = ["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
     const THEMES = {
-      luxury:  {bg:"#0b0803",accent:"#f5c542",text:"#ffffff",glow:"rgba(245,197,66,0.32)"},
-      crimson: {bg:"#140507",accent:"#ef4444",text:"#ffffff",glow:"rgba(239,68,68,0.32)"},
-      cyber:   {bg:"#051024",accent:"#38bdf8",text:"#f8fafc",glow:"rgba(56,189,248,0.32)"},
-      finance: {bg:"#02140d",accent:"#10b981",text:"#ecfdf5",glow:"rgba(16,185,129,0.32)"},
-      violet:  {bg:"#110621",accent:"#c084fc",text:"#faf5ff",glow:"rgba(192,132,252,0.32)"}
+      luxury:  {bg:"#0b0803",accent:"#f5c542",dark:"#8a6608",text:"#ffffff",glow:"rgba(245,197,66,0.34)"},
+      crimson: {bg:"#140507",accent:"#ef4444",dark:"#7f1d1d",text:"#ffffff",glow:"rgba(239,68,68,0.34)"},
+      cyber:   {bg:"#051024",accent:"#38bdf8",dark:"#0369a1",text:"#f8fafc",glow:"rgba(56,189,248,0.34)"},
+      finance: {bg:"#02140d",accent:"#10b981",dark:"#047857",text:"#ecfdf5",glow:"rgba(16,185,129,0.34)"},
+      violet:  {bg:"#110621",accent:"#c084fc",dark:"#6b21a8",text:"#faf5ff",glow:"rgba(192,132,252,0.34)"}
     };
-    const COINS = Array.from({length:16},(_,i)=>({x:(i*0.07)%1,y:Math.random(),sp:0.2+Math.random()*0.4}));
+    const COINS = Array.from({length:12},(_,i)=>({x:0.1+(i*0.075)%0.8, y:(i*0.17)%1, sp:0.25+(i%4)*0.12, ph:i*0.9}));
+    const CUBE_VERTS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+    const CUBE_EDGES = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
     modeSelect.addEventListener("change", () => {
       const sh = modeSelect.value === "shorts";
@@ -168,7 +169,7 @@
         if (!res.ok) throw new Error(data.error || "Transcribe failed");
         scriptInput.value = data.transcript;
         scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
-        statusText.textContent = "2/2 Painting AI art & randomizing everything...";
+        statusText.textContent = "2/2 Generating AI art & 3D scene...";
         await generateOwnAiImages(data.transcript);
         startPlayback(null);
       } catch (e) { statusText.textContent = e.message; startPlayback(null); }
@@ -211,7 +212,7 @@
         const sData = await sRes.json();
         if (sData.script) { scriptInput.value = sData.script; scriptInput.dir = (lang==="ur"||lang==="ar")?"rtl":"ltr"; }
 
-        statusText.textContent = "2/3 Painting AI pictures & voice...";
+        statusText.textContent = "2/3 Creating AI visuals & voice...";
         const jobs = [generateOwnAiImages(scriptInput.value)];
         if (lang === "en" || lang === "es") {
           jobs.push(fetch(`${WORKER_URL}/tts`, {
@@ -246,13 +247,11 @@
         text:t, stat:extractStat(t), rtl:/[\u0600-\u06FF]/.test(t)
       }));
       sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
-      const mp = [...MODULES].sort(() => Math.random() - 0.5);
-      const lp = [...LAYOUTS].sort(() => Math.random() - 0.5);
-      const cp = [...CAMERAS].sort(() => Math.random() - 0.5);
+      const op = [...OBJ_3D].sort(() => Math.random() - 0.5);
+      const cp = [...CAMERAS_3D].sort(() => Math.random() - 0.5);
       const sp = [...SFX_LIST].sort(() => Math.random() - 0.5);
       scenePlans = scenes.map((_, i) => ({
-        mod: mp[i % mp.length], layout: lp[i % lp.length],
-        cam: cp[i % cp.length], sfx: sp[i % sp.length]
+        obj: op[i % op.length], cam: cp[i % cp.length], sfx: sp[i % sp.length]
       }));
     }
 
@@ -265,104 +264,117 @@
       return 0.25 + 0.2 * Math.abs(Math.sin(el * 0.006));
     }
 
-    function drawObject(mod, theme, p, e, el) {
-      const W = canvas.width, H = canvas.height; ctx.save();
-      if (mod === "candlesticks") {
-        const bw = W / 16;
-        for (let i = 0; i < 12; i++) {
-          const bh = (70 + ((i * 53) % 190)) * Math.min(1, p * 1.5) * (0.9 + e * 0.35);
-          ctx.fillStyle = i % 3 === 0 ? "rgba(255,255,255,0.28)" : theme.accent; ctx.globalAlpha = 0.55;
-          ctx.fillRect((i + 2) * bw, H * 0.88 - bh - i * 16, bw * 0.55, bh);
-        }
-      } else if (mod === "radar") {
-        const cx = W / 2, cy = H * 0.22, r = Math.min(W, H) * 0.15;
-        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.55; ctx.lineWidth = 2;
-        [0.4, 0.7, 1].forEach(k => { ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, 6.28); ctx.stroke(); });
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, el * 0.005, el * 0.005 + 0.8); ctx.closePath();
-        ctx.fillStyle = theme.glow; ctx.fill();
-      } else if (mod === "donut") {
-        const cx = W / 2, cy = H * 0.2, r = 64; ctx.lineWidth = 14;
-        ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.28); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, r, -1.57, -1.57 + 6.28 * Math.min(0.95, p * 1.3)); ctx.stroke();
-        ctx.fillStyle = "#fff"; ctx.font = "900 28px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
-      } else if (mod === "waveform") {
-        const bw = W / 39; ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.85;
-        for (let i = 0; i < 28; i++) {
-          const h = (20 + Math.abs(Math.sin(el * 0.012 + i * 0.6)) * 100) * (0.6 + e * 1.1);
-          ctx.fillRect((W - 28 * bw * 1.4) / 2 + i * bw * 1.4, H * 0.84 - h / 2, bw, h);
-        }
-      } else if (mod === "notification") {
-        const ny = H * 0.08 + (1 - Math.pow(1 - Math.min(1, p * 4), 3)) * -120, nw = W * 0.8;
-        ctx.fillStyle = "rgba(15,23,42,0.92)"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect((W - nw) / 2, ny, nw, 68, 18); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = theme.accent; ctx.font = "800 22px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("💰 +$10,000 Payout Received", W / 2, ny + 34);
-      } else if (mod === "speedometer") {
-        const cx = W / 2, cy = H * 0.24, r = 82, pr = Math.min(1, p * 1.3);
-        ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + Math.PI * pr); ctx.stroke();
-      } else if (mod === "counter") {
-        ctx.fillStyle = theme.accent; ctx.font = "900 54px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("$" + Math.floor(Math.min(1, p * 1.2) * 10000).toLocaleString(), W / 2, H * 0.18);
-      } else if (mod === "grid3d") {
-        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.35; ctx.lineWidth = 1.5; const hz = H * 0.56;
-        for (let i = -8; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(W / 2 + i * 24, hz); ctx.lineTo(W / 2 + i * 170, H); ctx.stroke(); }
-        for (let j = 0; j < 7; j++) { const y = hz + Math.pow((j / 7 + p * 0.8) % 1, 2) * (H - hz); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-      } else if (mod === "coins") {
-        ctx.font = "800 26px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        COINS.forEach(c => {
-          const cy = ((c.y + p * c.sp * 1.8) % 1) * H;
-          ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.75;
-          ctx.beginPath(); ctx.arc(c.x * W, cy, 20, 0, 6.28); ctx.fill();
-          ctx.fillStyle = "#000"; ctx.fillText("$", c.x * W, cy + 1);
+    function project3D(x, y, z, rx, ry, cx, cy, scale) {
+      let x1 = x * Math.cos(ry) - z * Math.sin(ry), z1 = x * Math.sin(ry) + z * Math.cos(ry);
+      let y2 = y * Math.cos(rx) - z1 * Math.sin(rx), z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
+      const fov = scale / (4.2 + z2);
+      return [cx + x1 * fov, cy + y2 * fov];
+    }
+
+    function draw3DObject(obj, theme, p, e, el) {
+      const W = canvas.width, H = canvas.height, cx = W / 2, cy = H * 0.27;
+      ctx.save();
+
+      if (obj === "cube_3d") {
+        const rx = el * 0.0012, ry = el * 0.0018, sc = Math.min(W, H) * (0.45 + e * 0.12);
+        const pts = CUBE_VERTS.map(v => project3D(v[0], v[1], v[2], rx, ry, cx, cy, sc));
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.shadowColor = theme.accent; ctx.shadowBlur = 20;
+        CUBE_EDGES.forEach(([a, b]) => {
+          ctx.beginPath(); ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); ctx.stroke();
         });
-      } else if (mod === "ticker") {
-        ctx.fillStyle = "rgba(0,0,0,0.75)"; ctx.fillRect(0, H * 0.87, W, 46);
-        ctx.fillStyle = theme.accent; ctx.font = "800 22px monospace"; ctx.textBaseline = "middle";
-        const tx = W - ((el * 0.25) % (W * 2));
-        ctx.fillText("▲ AI +340%   ▲ REV $10,000   ▲ RETENTION 95%   ▲ BTC +18%", tx, H * 0.87 + 23);
-      } else if (mod === "rings") {
-        const cx = W / 2, cy = H * 0.24; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3; ctx.globalAlpha = 0.6;
-        for (let r = 0; r < 3; r++) {
-          ctx.beginPath(); ctx.ellipse(cx, cy, 90 + r * 26, 32 + r * 12, el * 0.002 * (r + 1), 0, 6.28); ctx.stroke();
+        ctx.fillStyle = theme.glow;
+        ctx.beginPath(); [0,1,2,3].forEach((i, idx) => idx===0 ? ctx.moveTo(pts[i][0], pts[i][1]) : ctx.lineTo(pts[i][0], pts[i][1]));
+        ctx.closePath(); ctx.fill();
+      } else if (obj === "globe_3d") {
+        const ry = el * 0.0015, r = 1.25, sc = Math.min(W, H) * 0.36;
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2; ctx.globalAlpha = 0.85;
+        for (let lat = -1; lat <= 1; lat += 0.5) {
+          const rad = Math.sqrt(Math.max(0.05, r * r - lat * lat));
+          ctx.beginPath();
+          for (let a = 0; a <= 24; a++) {
+            const ang = (a / 24) * Math.PI * 2;
+            const [px, py] = project3D(Math.cos(ang)*rad, lat, Math.sin(ang)*rad, 0.35, ry, cx, cy, sc);
+            a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          }
+          ctx.stroke();
         }
-      } else if (mod === "bars") {
-        for (let i = 0; i < 5; i++) {
-          const bh = (50 + i * 42) * Math.min(1, p * 1.4), bx = W * 0.16 + i * (W * 0.14);
-          ctx.fillStyle = i === 4 ? theme.accent : "rgba(255,255,255,0.25)";
-          ctx.fillRect(bx, H * 0.34 - bh, W * 0.09, bh);
+        for (let lon = 0; lon < 6; lon++) {
+          const lang = (lon / 6) * Math.PI;
+          ctx.beginPath();
+          for (let a = 0; a <= 24; a++) {
+            const phi = (a / 24) * Math.PI * 2;
+            const [px, py] = project3D(Math.cos(phi)*Math.cos(lang)*r, Math.sin(phi)*r, Math.cos(phi)*Math.sin(lang)*r, 0.35, ry, cx, cy, sc);
+            a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+      } else if (obj === "phone_3d") {
+        ctx.translate(cx, cy + Math.sin(el * 0.003) * 10);
+        ctx.transform(1, -0.06, 0.08, 0.94, 0, 0);
+        const pw = 210, ph = 350;
+        ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.roundRect(-pw/2 + 12, -ph/2 + 10, pw, ph, 28); ctx.fill();
+        ctx.fillStyle = "#0b1120"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.roundRect(-pw/2, -ph/2, pw, ph, 28); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.font = "900 28px -apple-system,sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("+$10,420", 0, -90);
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.beginPath();
+        [60, 40, 50, 10, -20, -50].forEach((yy, i) => i===0 ? ctx.moveTo(-75+i*30, yy) : ctx.lineTo(-75+i*30, yy));
+        ctx.stroke();
+        // Diagonal glass shine
+        const sx = -160 + p * 340;
+        ctx.fillStyle = "rgba(255,255,255,0.12)";
+        ctx.beginPath(); ctx.moveTo(sx, -ph/2); ctx.lineTo(sx+50, -ph/2); ctx.lineTo(sx-30, ph/2); ctx.lineTo(sx-80, ph/2); ctx.closePath(); ctx.fill();
+      } else if (obj === "coins_3d") {
+        COINS.forEach(c => {
+          const y = ((c.y + p * c.sp * 1.4) % 1) * H, x = c.x * W;
+          const spin = Math.cos(el * 0.005 + c.ph), w = Math.max(0.12, Math.abs(spin)) * 26;
+          ctx.save(); ctx.translate(x, y);
+          ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.ellipse(4, 0, w, 26, 0, 0, 6.28); ctx.fill();
+          const cg = ctx.createLinearGradient(-w, -26, w, 26);
+          cg.addColorStop(0, "#fff8dc"); cg.addColorStop(0.5, theme.accent); cg.addColorStop(1, theme.dark);
+          ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(0, 0, w, 26, 0, 0, 6.28); ctx.fill();
+          if (w > 10) {
+            ctx.fillStyle = "#07090e"; ctx.font = `900 ${Math.round(w*1.1)}px -apple-system,sans-serif`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("$", 0, 2);
+          }
+          ctx.restore();
+        });
+      } else if (obj === "card_3d") {
+        const spin = Math.cos(el * 0.003);
+        ctx.translate(cx, cy + Math.sin(el * 0.004) * 10);
+        ctx.scale(Math.max(0.15, Math.abs(spin)), 1);
+        const cw = 300, ch = 180;
+        ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.roundRect(-cw/2 + 12, -ch/2 + 10, cw, ch, 20); ctx.fill();
+        const g = ctx.createLinearGradient(-cw/2, -ch/2, cw/2, ch/2);
+        g.addColorStop(0, "#1e293b"); g.addColorStop(1, "#09090b");
+        ctx.fillStyle = g; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.roundRect(-cw/2, -ch/2, cw, ch, 20); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.roundRect(-110, -30, 48, 36, 6); ctx.fill();
+        ctx.font = "800 22px monospace"; ctx.textAlign = "left"; ctx.fillText("VIP CREATOR • 2026", -110, 52);
+      } else if (obj === "candles_3d") {
+        for (let i = 0; i < 8; i++) {
+          const bh = (60 + i * 32) * Math.min(1, p * 1.4) * (0.85 + e * 0.3), bw = 34, bx = W * 0.14 + i * 62, by = H * 0.38 - bh;
+          ctx.fillStyle = theme.dark; ctx.fillRect(bx + 10, by - 10, bw, bh);
+          ctx.fillStyle = theme.accent; ctx.fillRect(bx, by, bw, bh);
+          ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.fillRect(bx, by - 10, bw, 10);
+        }
+      } else if (obj === "donut_3d") {
+        const r = 74; ctx.lineWidth = 18;
+        ctx.strokeStyle = theme.dark; ctx.beginPath(); ctx.arc(cx + 6, cy + 6, r, 0, 6.28); ctx.stroke();
+        ctx.strokeStyle = theme.accent; ctx.shadowColor = theme.accent; ctx.shadowBlur = 24;
+        ctx.beginPath(); ctx.arc(cx, cy, r, -1.57, -1.57 + 6.28 * Math.min(0.95, p * 1.3)); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.fillStyle = "#fff"; ctx.font = "900 32px -apple-system,sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
+      } else if (obj === "waveform_3d") {
+        const bw = W / 34;
+        for (let i = 0; i < 24; i++) {
+          const h = (24 + Math.abs(Math.sin(el * 0.012 + i * 0.6)) * 110) * (0.6 + e * 1.1);
+          const x = (W - 24 * bw * 1.35) / 2 + i * bw * 1.35;
+          ctx.fillStyle = theme.dark; ctx.fillRect(x + 6, H * 0.84 - h / 2 + 6, bw, h);
+          ctx.fillStyle = theme.accent; ctx.fillRect(x, H * 0.84 - h / 2, bw, h);
         }
       }
       ctx.restore();
-    }
-
-    function drawVisualLayout(img, layout, theme, p) {
-      const W = canvas.width, H = canvas.height, hasImg = img && img.complete && img.naturalWidth > 0;
-      const drawImgInBox = (bx, by, bw, bh) => {
-        if (!hasImg) return;
-        ctx.save(); ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.clip();
-        const z = 1.05 + p * 0.14, sc = Math.max(bw / img.naturalWidth, bh / img.naturalHeight) * z;
-        ctx.drawImage(img, bx + (bw - img.naturalWidth * sc) / 2, by + (bh - img.naturalHeight * sc) / 2, img.naturalWidth * sc, img.naturalHeight * sc);
-        ctx.restore();
-      };
-      if (layout === "splitscreen") {
-        drawImgInBox(0, H * 0.04, W, H * 0.45);
-        ctx.fillStyle = theme.accent; ctx.fillRect(0, H * 0.49, W, 5);
-      } else if (layout === "polaroid") {
-        const cw = W * 0.72, ch = H * 0.36;
-        ctx.fillStyle = "#111"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
-        ctx.fillRect((W - cw) / 2, H * 0.1, cw, ch); ctx.strokeRect((W - cw) / 2, H * 0.1, cw, ch);
-        drawImgInBox((W - cw) / 2 + 6, H * 0.1 + 6, cw - 12, ch - 12);
-      } else if (layout === "hud") {
-        drawImgInBox(W * 0.08, H * 0.11, W * 0.84, H * 0.35);
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.strokeRect(W * 0.08, H * 0.11, W * 0.84, H * 0.35);
-      } else {
-        drawImgInBox(0, 0, W, H);
-        const vig = ctx.createLinearGradient(0, 0, 0, H);
-        vig.addColorStop(0, "rgba(0,0,0,0.35)"); vig.addColorStop(0.55, "rgba(0,0,0,0.58)"); vig.addColorStop(1, "rgba(0,0,0,0.86)");
-        ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
-      }
     }
 
     function playSceneSfx(type) {
@@ -403,16 +415,16 @@
     function startBgm() {
       clearInterval(beatInterval); if (!beatToggle.checked || !sharedActx) return;
       let step = 0;
-      const intervalMs = activeBgm === "Doc Heartbeat" ? 650 : activeBgm === "Cyber Synth" ? 260 : 440;
+      const ms = activeBgm === "Doc Heartbeat" ? 650 : activeBgm === "Cyber Synth" ? 260 : 440;
       const tick = () => {
         if (!sharedActx) return;
         try {
           const now = sharedActx.currentTime, o = sharedActx.createOscillator(), g = sharedActx.createGain();
           if (activeBgm === "Cyber Synth") {
-            const notes = [110, 130.8, 164.8, 146.8]; o.type = "sawtooth"; o.frequency.setValueAtTime(notes[step % 4], now);
+            o.type = "sawtooth"; o.frequency.setValueAtTime([110, 130.8, 164.8, 146.8][step % 4], now);
             g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
           } else if (activeBgm === "Tech Ambient") {
-            const notes = [220, 277.2, 329.6]; o.type = "sine"; o.frequency.setValueAtTime(notes[step % 3], now);
+            o.type = "sine"; o.frequency.setValueAtTime([220, 277.2, 329.6][step % 3], now);
             g.gain.setValueAtTime(0.06, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
           } else if (activeBgm === "Doc Heartbeat") {
             o.type = "sine"; o.frequency.setValueAtTime(step % 2 === 0 ? 62 : 48, now);
@@ -425,19 +437,22 @@
           o.start(now); o.stop(now + 0.43); step++;
         } catch (e) {}
       };
-      tick(); beatInterval = setInterval(tick, intervalMs);
+      tick(); beatInterval = setInterval(tick, ms);
     }
 
-    function applyCamera(cam, p) {
-      const W = canvas.width, H = canvas.height;
-      ctx.translate(W / 2, H / 2);
-      if (cam === "dutch_l") { ctx.rotate(-0.07 + p * 0.04); ctx.scale(1.12, 1.12); }
-      else if (cam === "dutch_r") { ctx.rotate(0.07 - p * 0.04); ctx.scale(1.12, 1.12); }
-      else if (cam === "zoom_in") { const z = 1 + p * 0.18; ctx.scale(z, z); }
-      else if (cam === "zoom_out") { const z = 1.22 - p * 0.18; ctx.scale(z, z); }
-      else if (cam === "pan_x") { ctx.scale(1.12, 1.12); ctx.translate((p - 0.5) * -50, 0); }
-      else if (cam === "elevator") { ctx.scale(1.1, 1.1); ctx.translate(0, (p - 0.5) * 45); }
-      ctx.translate(-W / 2, -H / 2);
+    function getCameraOffset(cam, p, depth) {
+      const ease = 1 - Math.pow(1 - p, 3);
+      if (cam === "orbit_3d") return { x: Math.sin(p * 6.28) * 26 * depth, y: Math.cos(p * 6.28) * 18 * depth, z: 1.08 + Math.sin(p * 3.14) * 0.08 * depth, rot: Math.sin(p * 6.28) * 0.04 };
+      if (cam === "whip_zoom") return { x: 0, y: 0, z: 1 + ease * 0.22 * depth, rot: (1 - ease) * 0.08 };
+      if (cam === "pullback_3d") return { x: 0, y: (1 - ease) * -20 * depth, z: 1.32 - ease * 0.26 * depth, rot: (1 - ease) * -0.06 };
+      if (cam === "pan_parallax") return { x: (p - 0.5) * -80 * depth, y: 0, z: 1.12, rot: 0 };
+      return { x: Math.sin(p * 3.14) * 20 * depth, y: 0, z: 1.1, rot: Math.sin(p * 6.28) * 0.065 };
+    }
+
+    function withCam(camOff, fn) {
+      ctx.save(); ctx.translate(canvas.width/2 + camOff.x, canvas.height/2 + camOff.y);
+      ctx.rotate(camOff.rot); ctx.scale(camOff.z, camOff.z); ctx.translate(-canvas.width/2, -canvas.height/2);
+      fn(); ctx.restore();
     }
 
     function drawFrame(now) {
@@ -453,29 +468,39 @@
       const idx = Math.min(scenes.length - 1, Math.floor(el / sceneDurationMs)), sel = el % sceneDurationMs;
       const plan = scenePlans[idx];
       if (idx !== lastSceneIdx) { lastSceneIdx = idx; playSceneSfx(plan.sfx); }
-
       const p = sel / sceneDurationMs, sc = scenes[idx], theme = THEMES[activeThemeKey], en = getEnergy(el);
 
-      ctx.save();
-      applyCamera(plan.cam, p);
+      // Layer 1 (Depth 1.0x): Atmospheric backdrop + AI picture
+      withCam(getCameraOffset(plan.cam, p, 1.0), () => {
+        const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
+        g.addColorStop(0, theme.glow); g.addColorStop(1, theme.bg);
+        ctx.fillStyle = g; ctx.fillRect(-100, -100, canvas.width + 200, canvas.height + 200);
 
-      const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
-      g.addColorStop(0, theme.glow); g.addColorStop(1, theme.bg);
-      ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const img = aiImages[idx % Math.max(1, aiImages.length)];
+        if (img && img.complete && img.naturalWidth > 0) {
+          const scImg = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.08;
+          ctx.drawImage(img, (canvas.width - img.naturalWidth * scImg) / 2, (canvas.height - img.naturalHeight * scImg) / 2, img.naturalWidth * scImg, img.naturalHeight * scImg);
+          const vig = ctx.createLinearGradient(0, 0, 0, canvas.height);
+          vig.addColorStop(0, "rgba(0,0,0,0.35)"); vig.addColorStop(0.6, "rgba(0,0,0,0.6)"); vig.addColorStop(1, "rgba(0,0,0,0.88)");
+          ctx.fillStyle = vig; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+      });
 
-      drawVisualLayout(aiImages[idx % Math.max(1, aiImages.length)], plan.layout, theme, p);
-      drawObject(plan.mod, theme, p, en, el);
-      ctx.restore();
+      // Layer 2 (Depth 1.6x): 3D Projected Objects moving faster than background!
+      withCam(getCameraOffset(plan.cam, p, 1.6), () => {
+        draw3DObject(plan.obj, theme, p, en, el);
+      });
 
-      const isV = canvas.height > canvas.width, capY = plan.layout === "splitscreen" ? canvas.height * 0.66 : canvas.height * 0.58;
+      // Layer 3 (Foreground): Stat badge + Submagic Captions
+      const isV = canvas.height > canvas.width, capY = canvas.height * 0.62;
       if (sc.stat) {
         ctx.save(); ctx.direction = "ltr";
-        const sw = isV ? canvas.width * 0.48 : 280, sx = (canvas.width - sw) / 2, sy = capY - 115;
+        const sw = isV ? canvas.width * 0.48 : 280, sx = (canvas.width - sw) / 2, sy = capY - 105;
         ctx.fillStyle = theme.accent; ctx.shadowColor = theme.accent; ctx.shadowBlur = 22;
-        ctx.beginPath(); ctx.roundRect(sx, sy, sw, 58, 14); ctx.fill();
+        ctx.beginPath(); ctx.roundRect(sx, sy, sw, 56, 14); ctx.fill();
         ctx.shadowBlur = 0; ctx.fillStyle = "#07090e"; ctx.font = `900 ${isV?32:36}px -apple-system,sans-serif`;
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(sc.stat, canvas.width / 2, sy + 29); ctx.restore();
+        ctx.fillText(sc.stat, canvas.width / 2, sy + 28); ctx.restore();
       }
 
       const words = sc.text.split(" ");
@@ -515,7 +540,7 @@
       else sfxDest = null;
 
       startBgm();
-      statusText.textContent = `${aiImages.length} AI pics | BGM: ${activeBgm} | Color: ${activeThemeKey}`;
+      statusText.textContent = `${aiImages.length} AI pics | 3D Cam | BGM: ${activeBgm}`;
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
         audioEl = new Audio(audioBufferUrl);
@@ -536,13 +561,13 @@
       if (activeRecorder && activeRecorder.state === "recording") return;
       const stream = canvas.captureStream(30); startPlayback(stream, false);
       const mt = ["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm","video/mp4"].find(m => MediaRecorder.isTypeSupported(m)) || "";
-      exportBtn.disabled = true; statusText.textContent = "Exporting unique AI video...";
+      exportBtn.disabled = true; statusText.textContent = "Exporting 3D AI video...";
       const chunks = []; activeRecorder = new MediaRecorder(stream, mt ? {mimeType:mt, videoBitsPerSecond:3500000} : {});
       activeRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
       activeRecorder.onstop = () => {
         clearInterval(beatInterval); const blob = new Blob(chunks, {type:mt || "video/webm"});
         const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-        a.download = mt.includes("mp4") ? "ai-director-v11.mp4" : "ai-director-v11.webm"; a.click();
+        a.download = mt.includes("mp4") ? "ai-3d-v12.mp4" : "ai-3d-v12.webm"; a.click();
         exportBtn.disabled = false; activeRecorder = null;
         statusText.textContent = `Exported (${(blob.size/1024).toFixed(0)} KB)!`;
       };
