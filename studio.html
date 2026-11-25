@@ -517,6 +517,221 @@
       activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-director.mp4":"3d-director.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
       activeRecorder.start(250);
     });
+    // =========================================================================
+// v16.0 UPGRADE: PC STUDIO BASS ENGINE + PRE-EXPORT EDITABLE SCENE CARDS
+// =========================================================================
+
+let studioBassEnabled = true;
+let studioBassLevel = 6; // +6 dB warmth boost
+let editableScenes = [];
+
+// 1. INJECT STUDIO BASS CONTROL & SCENE EDITOR UI AUTOMATICALLY
+function injectStudioUpgradeUI() {
+  const scriptBox = document.getElementById("scriptInput");
+  if (scriptBox && !document.getElementById("studioBassBar")) {
+    const bassBar = document.createElement("div");
+    bassBar.id = "studioBassBar";
+    bassBar.style.cssText = "margin-top:10px; padding:10px; background:#141824; border:1px solid #f5b942; border-radius:10px; display:flex; flex-direction:column; gap:8px;";
+    bassBar.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="color:#f5b942; font-weight:700; font-size:13px;">🎙️ PC Studio Bass (Remove Thin Voice)</span>
+        <button id="toggleBassBtn" type="button" style="background:#10b981; color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">ON (Studio Pro)</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="color:#9ca3af; font-size:11px;">Deep Bass:</span>
+        <input id="bassGainSlider" type="range" min="0" max="12" value="6" step="1" style="flex:1; accent-color:#f5b942;">
+        <span id="bassGainLabel" style="color:#fff; font-size:11px; width:36px;">+6 dB</span>
+      </div>
+    `;
+    scriptBox.parentNode.appendChild(bassBar);
+
+    document.getElementById("toggleBassBtn").onclick = function () {
+      studioBassEnabled = !studioBassEnabled;
+      this.textContent = studioBassEnabled ? "ON (Studio Pro)" : "OFF (Original)";
+      this.style.background = studioBassEnabled ? "#10b981" : "#374151";
+      this.style.color = studioBassEnabled ? "#000" : "#fff";
+    };
+
+    document.getElementById("bassGainSlider").oninput = function () {
+      studioBassLevel = Number(this.value);
+      document.getElementById("bassGainLabel").textContent = `+${studioBassLevel} dB`;
+    };
+  }
+
+  // Inject Pre-Export Editable Scene Cards right above Replay/Export buttons
+  const exportBtn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Export MP4"));
+  if (exportBtn && !document.getElementById("sceneEditorPanel")) {
+    const editorPanel = document.createElement("div");
+    editorPanel.id = "sceneEditorPanel";
+    editorPanel.style.cssText = "margin:12px 0; padding:10px; background:#111520; border:1px solid #2a3142; border-radius:10px;";
+    editorPanel.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="color:#f5b942; font-weight:700; font-size:13px;">🎬 Edit Scenes Before Export</span>
+        <button id="refreshCardsBtn" type="button" style="background:#2563eb; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Sync Script</button>
+      </div>
+      <div id="sceneCardsContainer" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto;"></div>
+    `;
+    exportBtn.parentNode.parentNode.insertBefore(editorPanel, exportBtn.parentNode);
+    document.getElementById("refreshCardsBtn").onclick = generateEditableSceneCards;
+  }
+}
+
+// 2. WEB AUDIO "PC STUDIO BASS" CHAIN (Removes Thinness + Adds Warmth & Punch)
+function applyPCStudioVoiceChain(audioCtx, sourceNode, destinationNode) {
+  if (!studioBassEnabled) {
+    sourceNode.connect(destinationNode);
+    return;
+  }
+
+  // Stage 1: Clean low rumble below 75 Hz
+  const highpass = audioCtx.createBiquadFilter();
+  highpass.type = "highpass";
+  highpass.frequency.value = 75;
+
+  // Stage 2: Deep Chest & Radio Bass Boost at 140 Hz
+  const warmBass = audioCtx.createBiquadFilter();
+  warmBass.type = "peaking";
+  warmBass.frequency.value = 140;
+  warmBass.Q.value = 1.1;
+  warmBass.gain.value = studioBassLevel;
+
+  // Stage 3: Cut hollow "thin phone box" resonance at 420 Hz
+  const deBox = audioCtx.createBiquadFilter();
+  deBox.type = "peaking";
+  deBox.frequency.value = 420;
+  deBox.Q.value = 1.5;
+  deBox.gain.value = -3.5;
+
+  // Stage 4: Studio Mic Air & Crispness at 8500 Hz
+  const studioAir = audioCtx.createBiquadFilter();
+  studioAir.type = "highshelf";
+  studioAir.frequency.value = 8500;
+  studioAir.gain.value = 3.5;
+
+  // Stage 5: Broadcast Compressor for thick, consistent loudness
+  const compressor = audioCtx.createDynamicsCompressor();
+  compressor.threshold.value = -20;
+  compressor.knee.value = 12;
+  compressor.ratio.value = 4;
+  compressor.attack.value = 0.008;
+  compressor.release.value = 0.15;
+
+  sourceNode.connect(highpass);
+  highpass.connect(warmBass);
+  warmBass.connect(deBox);
+  deBox.connect(studioAir);
+  studioAir.connect(compressor);
+  compressor.connect(destinationNode);
+}
+
+// 3. BUILD & RENDER PRE-EXPORT EDITABLE SCENE CARDS
+const AUTO_SCENE_RULES = [
+  { words: ["fight", "hit", "punch", "attack", "beat", "airport", "angry", "rival"], mode: "two_fight" },
+  { words: ["talk", "meet", "people", "friend", "ask", "tell", "say", "karachi"], mode: "two_talk" },
+  { words: ["desk", "work", "study", "office", "watch", "explain", "street", "win"], mode: "desk" }
+];
+
+function generateEditableSceneCards() {
+  const scriptEl = document.getElementById("scriptInput");
+  const container = document.getElementById("sceneCardsContainer");
+  if (!scriptEl || !container) return;
+
+  const phrases = scriptEl.value
+    .split(/(?<=[,.!?])|\b(?=and\b|then\b|on\b|to\b)/i)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  let cursor = 0;
+  editableScenes = phrases.map((phrase, idx) => {
+    const duration = Math.max(1.2, phrase.split(/\s+/).length * 0.42);
+    const lower = phrase.toLowerCase();
+    let detectedMode = "desk";
+    for (const rule of AUTO_SCENE_RULES) {
+      if (rule.words.some(w => lower.includes(w))) {
+        detectedMode = rule.mode;
+        break;
+      }
+    }
+    const item = { id: idx, text: phrase, mode: detectedMode, start: cursor, end: cursor + duration };
+    cursor += duration;
+    return item;
+  });
+
+  renderSceneCardsUI();
+}
+
+function renderSceneCardsUI() {
+  const container = document.getElementById("sceneCardsContainer");
+  if (!container) return;
+
+  container.innerHTML = editableScenes.map((sc, i) => `
+    <div style="background:#1a2030; border:1px solid #333c52; border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+        <span style="color:#9ca3af; font-size:11px; font-weight:700;">Scene ${i + 1}</span>
+        <select data-idx="${i}" class="sceneModeOverride" style="background:#0f131d; color:#f5b942; border:1px solid #3b445c; border-radius:5px; padding:3px 6px; font-size:11px;">
+          <option value="desk" ${sc.mode === "desk" ? "selected" : ""}>💻 1 Char + Desk</option>
+          <option value="two_talk" ${sc.mode === "two_talk" ? "selected" : ""}>🗣️ 2 Chars Talking</option>
+          <option value="two_fight" ${sc.mode === "two_fight" ? "selected" : ""}>🥊 2 Chars Fighting</option>
+        </select>
+      </div>
+      <input data-idx="${i}" class="sceneTextOverride" type="text" value="${sc.text.replace(/"/g, '&quot;')}" style="background:#0f131d; color:#fff; border:1px solid #2b3245; border-radius:5px; padding:5px 8px; font-size:12px; width:100%; box-sizing:border-box;">
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".sceneModeOverride").forEach(sel => {
+    sel.onchange = function () {
+      const idx = Number(this.dataset.idx);
+      editableScenes[idx].mode = this.value;
+      const mainDropdown = document.getElementById("sceneMode");
+      if (mainDropdown) {
+        mainDropdown.value = this.value;
+        mainDropdown.dispatchEvent(new Event("change"));
+      }
+    };
+  });
+
+  container.querySelectorAll(".sceneTextOverride").forEach(inp => {
+    inp.oninput = function () {
+      const idx = Number(this.dataset.idx);
+      editableScenes[idx].text = this.value;
+      const scriptEl = document.getElementById("scriptInput");
+      if (scriptEl) scriptEl.value = editableScenes.map(s => s.text).join(" ");
+    };
+  });
+}
+
+// 4. HOOK INTO EXISTING PLAYBACK & AUDIO ENGINE
+if (typeof startPlayback === "function") {
+  const _origPlayback = startPlayback;
+  startPlayback = function (recStream = null) {
+    if (editableScenes.length === 0) generateEditableSceneCards();
+    _origPlayback(recStream);
+
+    const sceneSelect = document.getElementById("sceneMode");
+    const t0 = performance.now();
+    const watcher = setInterval(() => {
+      const elapsed = (performance.now() - t0) / 1000;
+      const active = editableScenes.find(s => elapsed >= s.start && elapsed < s.end);
+      if (active && sceneSelect && sceneSelect.value !== active.mode) {
+        sceneSelect.value = active.mode;
+        sceneSelect.dispatchEvent(new Event("change"));
+      }
+      if (editableScenes.length > 0 && elapsed > editableScenes[editableScenes.length - 1].end) {
+        clearInterval(watcher);
+      }
+    }, 150);
+  };
+}
+
+// Initialize UI immediately when page loads
+window.addEventListener("DOMContentLoaded", () => {
+  injectStudioUpgradeUI();
+  generateEditableSceneCards();
+});
+if (document.readyState !== "loading") {
+  injectStudioUpgradeUI();
+  generateEditableSceneCards();
+}
     // === SMART WORD-TO-SCENE AUTO-DIRECTOR ===
 const WORD_SCENE_MAP = [
   { words: ["fight", "hit", "punch", "attack", "beat", "airport", "angry"], mode: "two_fight" },
