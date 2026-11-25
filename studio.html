@@ -3,62 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v15.1 — Full 3D Blender Room + AI Reels</title>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-      }
-    }
-  </script>
+  <title>Studio v15.2 — 2-Character 3D Director + Multi-Object Camera</title>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
   <style>
     :root{--bg:#07090e;--card:#10141f;--input:#0a0e17;--border:#21293b;--gold:#f5c542;--text:#f8fafc;--muted:#94a3b8;--green:#10b981;--red:#ef4444;}
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-    body{background:var(--bg);color:var(--text);padding:16px 14px 50px;}
+    body{background:var(--bg);color:var(--text);padding:14px 12px 46px;}
     .container{max-width:680px;margin:0 auto;}
-    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
     .badge{font-size:11px;font-weight:700;color:var(--gold);border:1px solid rgba(245,197,66,0.4);background:rgba(245,197,66,0.08);padding:5px 11px;border-radius:999px;}
     .back-link{color:var(--muted);text-decoration:none;font-size:0.85rem;}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
-    .step-title{font-size:0.8rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;}
-    input[type="text"],select,textarea{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:11px;font-size:0.92rem;margin-bottom:10px;}
-    textarea{min-height:80px;line-height:1.4;resize:vertical;}
-    .grid-2,.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-    .btn-ai{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:12px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:13px;}
+    .step-title{font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:9px;}
+    input[type="text"],select,textarea{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:11px;padding:10px;font-size:0.9rem;margin-bottom:9px;}
+    textarea{min-height:78px;line-height:1.4;resize:vertical;}
+    .grid-2,.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+    .btn-ai{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:11px;padding:13px;font-size:0.94rem;font-weight:800;cursor:pointer;}
     .btn-ai:disabled,.btn-small:disabled{opacity:0.55;}
-    .mic-btn{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:11px;font-size:0.85rem;font-weight:700;cursor:pointer;}
-    .mic-btn.recording{background:var(--red);color:#fff;border-color:var(--red);}
-    .upload-mini{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(245,197,66,0.08);color:var(--gold);border:1.5px dashed var(--gold);border-radius:12px;padding:11px;font-size:0.84rem;font-weight:700;cursor:pointer;}
+    .mic-btn{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,0.4);border-radius:11px;padding:10px;font-size:0.84rem;font-weight:700;cursor:pointer;}
+    .mic-btn.recording{background:var(--red);color:#fff;}
+    .upload-mini{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(245,197,66,0.08);color:var(--gold);border:1.5px dashed var(--gold);border-radius:11px;padding:10px;font-size:0.83rem;font-weight:700;cursor:pointer;}
     input[type="file"]{display:none;}
-    .toggle-row{display:flex;justify-content:space-between;align-items:center;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:0.84rem;font-weight:600;}
-    .btn-remix{width:100%;background:#1e293b;color:var(--gold);border:1px solid var(--gold);border-radius:12px;padding:12px;font-size:0.92rem;font-weight:700;cursor:pointer;}
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:10px 13px;margin-bottom:9px;font-size:0.83rem;font-weight:600;}
+    .btn-remix{width:100%;background:#1e293b;color:var(--gold);border:1px solid var(--gold);border-radius:11px;padding:12px;font-size:0.9rem;font-weight:700;cursor:pointer;}
     canvas{width:100%;aspect-ratio:9/16;max-height:500px;object-fit:contain;background:#000;border-radius:12px;border:1px solid var(--border);display:block;margin:0 auto 12px;}
     .controls-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-    .status{font-size:0.8rem;color:var(--green);flex:1;min-width:170px;}
-    .btn-small{background:#1e293b;color:var(--text);border:1px solid var(--border);padding:9px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;}
+    .status{font-size:0.79rem;color:var(--green);flex:1;min-width:170px;}
+    .btn-small{background:#1e293b;color:var(--text);border:1px solid var(--border);padding:9px 13px;border-radius:8px;font-size:0.84rem;font-weight:600;cursor:pointer;}
     .btn-export{background:var(--green);color:#052e16;border:none;}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">3D ROOM + TABLE + LAPTOP v15.1</span>
+      <span class="badge">3D DIRECTOR v15.2 • 2 FIGHT/TALK + MULTI-OBJECT</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
     <div class="card">
-      <div class="step-title">1. Voice or Script</div>
+      <div class="step-title">1. Voice or Script (Words Control Camera & Objects!)</div>
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
         <label class="upload-mini"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Upload Audio</span></label>
       </div>
-      <textarea id="scriptInput">Watch 95% of creators waste 10 hours editing slowly. In 2026, fast AI systems win big. Build a $10,000 empire and celebrate!</textarea>
+      <textarea id="scriptInput">Watch 95% of creators waste 10 hours on their phone. In 2026, two rivals fight for the $10,000 trophy! Smart AI systems win big.</textarea>
     </div>
 
     <div class="card">
       <div class="step-title">⚡ AI Script + Photos + Voice</div>
-      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, AI Future)" value="Luxury Watch Empire" />
+      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, 2 Rivals Fighting)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
           <option value="en" selected>🇺🇸 English (AI Voice)</option>
@@ -74,46 +67,45 @@
           <option value="aura-en:orion">Orion (Luxury)</option>
           <option value="aura-en:apollo">Apollo (YouTube)</option>
           <option value="aura-en:thalia">Thalia (Female)</option>
-          <option value="aura-es:sirio">Sirio (Spanish)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build 3D Room Movie</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Multi-Object 3D Movie</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. 3D Character, Desk Scene & Format</div>
+      <div class="step-title">2. 3D Characters, Fight/Talk Mode & Format</div>
       <div class="grid-2">
-        <select id="glbSelect">
-          <option value="robot" selected>🤖 3D Robot at Desk</option>
-          <option value="soldier">🪖 3D Soldier at Desk</option>
-          <option value="off">❌ No 3D Scene</option>
+        <select id="sceneMode">
+          <option value="desk" selected>💻 1 Char + 3D Table & 5 Objects</option>
+          <option value="two_talk">🗣️ 2 Characters Talking (Face-to-Face)</option>
+          <option value="two_fight">🥊 2 Robots Fighting (Punch & KO)</option>
         </select>
-        <label class="upload-mini"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload .GLB</span></label>
+        <select id="glbSelect">
+          <option value="robot" selected>🤖 3D Robot</option>
+          <option value="soldier">🪖 3D Soldier</option>
+        </select>
       </div>
       <div class="grid-2">
-        <select id="deskToggle">
-          <option value="on" selected>💻 3D Floor + Table + Laptop</option>
-          <option value="floor">🏁 3D Floor Only</option>
-        </select>
+        <label class="upload-mini"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload Custom .GLB</span></label>
         <select id="modeSelect">
           <option value="shorts" selected>9:16 Reels / Shorts</option>
           <option value="landscape">16:9 YouTube</option>
         </select>
       </div>
       <label class="toggle-row">
-        <span>🎵 Auto BGM + Fast Whoosh SFX</span>
+        <span>🎵 Auto BGM + Fast Whoosh & Punch SFX</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <button class="btn-remix" id="remixBtn">🎲 New 3D Camera Angles, Colors & BGM</button>
+      <button class="btn-remix" id="remixBtn">🎲 Play / Remix Camera (Face → Wide → Object)</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live 3D Room Preview & MP4 Export</div>
+      <div class="step-title">3. Live 3D Stage & MP4 Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Loading 3D room & character...</span>
+        <span class="status" id="statusText">Loading 3D characters & props...</span>
         <div style="display:flex;gap:8px;">
-          <button class="btn-small" id="replayBtn">New Mix</button>
+          <button class="btn-small" id="replayBtn">Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export MP4</button>
         </div>
       </div>
@@ -124,343 +116,358 @@
     import * as THREE from "three";
     import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-    const WORKER_URL = "https://viralengine.shahabudinkalwar001.workers.dev";
-    const canvas = document.getElementById("previewCanvas"), ctx = canvas.getContext("2d");
-    const statusText = document.getElementById("statusText"), topicInput = document.getElementById("topicInput");
-    const langSelect = document.getElementById("langSelect"), voiceSelect = document.getElementById("voiceSelect");
-    const scriptInput = document.getElementById("scriptInput"), modeSelect = document.getElementById("modeSelect");
-    const glbSelect = document.getElementById("glbSelect"), deskToggle = document.getElementById("deskToggle");
-    const beatToggle = document.getElementById("beatToggle"), aiMagicBtn = document.getElementById("aiMagicBtn");
-    const exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
+    const WORKER_URL="https://viralengine.shahabudinkalwar001.workers.dev";
+    const canvas=document.getElementById("previewCanvas"),ctx=canvas.getContext("2d");
+    const statusText=document.getElementById("statusText"),topicInput=document.getElementById("topicInput");
+    const langSelect=document.getElementById("langSelect"),voiceSelect=document.getElementById("voiceSelect");
+    const scriptInput=document.getElementById("scriptInput"),modeSelect=document.getElementById("modeSelect");
+    const sceneMode=document.getElementById("sceneMode"),glbSelect=document.getElementById("glbSelect");
+    const beatToggle=document.getElementById("beatToggle"),aiMagicBtn=document.getElementById("aiMagicBtn");
+    const exportBtn=document.getElementById("exportBtn"),micBtn=document.getElementById("micBtn");
 
-    // --- THREE.JS 3D STUDIO STAGE (FLOOR + TABLE + LAPTOP + CHARACTER) ---
-    const threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
-    threeRenderer.setSize(540, 960);
-    threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
-    const threeScene = new THREE.Scene();
-    const threeCam = new THREE.PerspectiveCamera(45, 540 / 960, 0.1, 100);
+    // --- THREE.JS 3D STAGE ---
+    const threeRenderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
+    threeRenderer.setSize(540,960); threeRenderer.outputColorSpace=THREE.SRGBColorSpace;
+    const threeScene=new THREE.Scene();
+    const threeCam=new THREE.PerspectiveCamera(44,540/960,0.1,100);
+    const camPos=new THREE.Vector3(0,1.1,4.2), camLook=new THREE.Vector3(0,0.1,0);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x111827, 1.5);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.3); keyLight.position.set(3, 6, 4);
-    const rimLight = new THREE.DirectionalLight(0xf5c542, 2.4); rimLight.position.set(-4, 4, -3);
-    const laptopGlow = new THREE.PointLight(0xf5c542, 3.2, 5); laptopGlow.position.set(0, 0.25, 0.72);
-    threeScene.add(hemiLight, keyLight, rimLight, laptopGlow);
+    const hemi=new THREE.HemisphereLight(0xffffff,0x111827,1.6);
+    const keyL=new THREE.DirectionalLight(0xffffff,2.4); keyL.position.set(3,6,4);
+    const rimL=new THREE.DirectionalLight(0xf5c542,2.5); rimL.position.set(-4,4,-3);
+    const propL=new THREE.PointLight(0xf5c542,3.2,6); propL.position.set(0,0.4,0.8);
+    threeScene.add(hemi,keyL,rimL,propL);
 
-    // 3D Glossy Floor + Neon Grid
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x06080f, roughness: 0.25, metalness: 0.65, transparent: true, opacity: 0.85 });
-    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), floorMat);
-    floorMesh.rotation.x = -Math.PI / 2; floorMesh.position.y = -1.0;
-    let gridHelper = new THREE.GridHelper(20, 24, 0xf5c542, 0x1e293b);
-    gridHelper.position.y = -0.99;
-    threeScene.add(floorMesh, gridHelper);
+    // 3D Floor + Grid
+    const floor=new THREE.Mesh(new THREE.PlaneGeometry(24,24),new THREE.MeshStandardMaterial({color:0x06080f,roughness:0.25,metalness:0.7,transparent:true,opacity:0.86}));
+    floor.rotation.x=-Math.PI/2; floor.position.y=-1.0;
+    const grid=new THREE.GridHelper(22,26,0xf5c542,0x1e293b); grid.position.y=-0.99;
+    threeScene.add(floor,grid);
 
-    // 3D Desk / Table + 3D Glowing Laptop
-    const deskGroup = new THREE.Group();
-    const darkMetal = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.8 });
-    const trimMat = new THREE.MeshBasicMaterial({ color: 0xf5c542 });
-    const topSlab = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.95), darkMetal);
-    topSlab.position.set(0, -0.18, 0.82);
-    const frontTrim = new THREE.Mesh(new THREE.BoxGeometry(2.12, 0.025, 0.97), trimMat);
-    frontTrim.position.set(0, -0.18, 0.82);
-    deskGroup.add(topSlab, frontTrim);
+    // 3D Table + Multiple 3D Props (Laptop + Gold Coins + Phone + Bars + Trophy)
+    const deskGroup=new THREE.Group();
+    const darkMat=new THREE.MeshStandardMaterial({color:0x0f172a,roughness:0.3,metalness:0.8});
+    const neonMat=new THREE.MeshBasicMaterial({color:0xf5c542});
+    const goldMat=new THREE.MeshStandardMaterial({color:0xf5c542,roughness:0.2,metalness:0.9});
 
-    [[-0.95, 0.42], [0.95, 0.42], [-0.95, 1.22], [0.95, 1.22]].forEach(([lx, lz]) => {
-      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.82, 0.07), darkMetal);
-      leg.position.set(lx, -0.59, lz); deskGroup.add(leg);
-    });
+    const topSlab=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.08,1.0),darkMat); topSlab.position.set(0,-0.18,0.82);
+    const trim=new THREE.Mesh(new THREE.BoxGeometry(2.42,0.025,1.02),neonMat); trim.position.set(0,-0.18,0.82);
+    deskGroup.add(topSlab,trim);
+    [[-1.08,0.4],[1.08,0.4],[-1.08,1.22],[1.08,1.22]].forEach(([lx,lz])=>{const l=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.82,0.07),darkMat);l.position.set(lx,-0.59,lz);deskGroup.add(l);});
 
-    // 3D Laptop on top of Table
-    const lapBase = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.03, 0.46), darkMetal);
-    lapBase.position.set(0, -0.125, 0.82);
-    const lapLidGroup = new THREE.Group();
-    lapLidGroup.position.set(0, -0.11, 1.03);
-    lapLidGroup.rotation.x = -0.32;
-    const lapLid = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.44, 0.025), darkMetal);
-    lapLid.position.set(0, 0.22, 0);
-    const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.38), trimMat);
-    lapScreen.position.set(0, 0.22, -0.015); lapScreen.rotation.y = Math.PI;
-    lapLidGroup.add(lapLid, lapScreen);
-    deskGroup.add(lapBase, lapLidGroup);
+    // Prop 1: 3D Laptop (Center)
+    const lapGroup=new THREE.Group(); lapGroup.position.set(0,-0.125,0.82);
+    lapGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.66,0.03,0.44),darkMat));
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(0.66,0.42,0.025),darkMat); lid.position.set(0,0.21,0.2); lid.rotation.x=-0.3;
+    const scr=new THREE.Mesh(new THREE.PlaneGeometry(0.6,0.36),neonMat); scr.position.set(0,0.21,0.18); scr.rotation.x=-0.3; scr.rotation.y=Math.PI;
+    lapGroup.add(lid,scr); deskGroup.add(lapGroup);
+
+    // Prop 2: 3D Gold Coin Stack (Left on Desk: x=-0.82)
+    const coinGroup=new THREE.Group(); coinGroup.position.set(-0.82,-0.14,0.82);
+    for(let c=0;c<5;c++){const cm=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.04,20),goldMat);cm.position.set((c%2)*0.03,c*0.045,0);coinGroup.add(cm);}
+    deskGroup.add(coinGroup);
+
+    // Prop 3: 3D Glowing Phone (Right on Desk: x=+0.82)
+    const phoneGroup=new THREE.Group(); phoneGroup.position.set(0.82,0.08,0.82); phoneGroup.rotation.y=-0.35;
+    phoneGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.24,0.44,0.03),darkMat));
+    const pScr=new THREE.Mesh(new THREE.PlaneGeometry(0.2,0.38),neonMat); pScr.position.z=0.017; phoneGroup.add(pScr);
+    deskGroup.add(phoneGroup);
+
+    // Prop 4: 3D Rising Chart Bars (Left Floor: x=-1.45)
+    const barsGroup=new THREE.Group(); barsGroup.position.set(-1.45,-1.0,0.2);
+    for(let b=0;b<4;b++){const bm=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.35+b*0.28,0.16),goldMat);bm.position.set(b*0.22,(0.35+b*0.28)/2,0);barsGroup.add(bm);}
+    deskGroup.add(barsGroup);
+
+    // Prop 5: 3D Spinning Trophy (Right Floor: x=+1.45)
+    const trophyGroup=new THREE.Group(); trophyGroup.position.set(1.45,-0.35,0.2);
+    const cup=new THREE.Mesh(new THREE.OctahedronGeometry(0.26,0),goldMat); trophyGroup.add(cup);
+    deskGroup.add(trophyGroup);
+
     threeScene.add(deskGroup);
 
-    const loader = new GLTFLoader();
-    let threeModel = null, threeMixer = null, threeActions = {}, currentClip = "", threeReady = false, prevThreeTime = 0;
-    const GLB_URLS = {
-      robot: "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb",
-      soldier: "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Soldier.glb"
+    // --- 2 CHARACTER SLOTS ---
+    const loader=new GLTFLoader();
+    const URLS={
+      robot:"https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb",
+      soldier:"https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Soldier.glb"
     };
+    const chars=[
+      {model:null,mixer:null,acts:{},cur:"",ready:false},
+      {model:null,mixer:null,acts:{},cur:"",ready:false}
+    ];
 
-    function loadGlbModel(url, isSoldier = false, label = "3D Room Ready!") {
-      threeReady = false;
-      if (threeModel) { threeScene.remove(threeModel); threeModel = null; }
-      threeActions = {}; currentClip = "";
-      statusText.textContent = "Loading 3D scene & model...";
+    function loadChar(slot, url, isSoldier) {
+      const ch = chars[slot]; ch.ready = false;
+      if (ch.model) { threeScene.remove(ch.model); ch.model = null; }
+      ch.acts = {}; ch.cur = "";
       loader.load(url, (gltf) => {
-        threeModel = gltf.scene;
-        if (isSoldier) threeModel.rotation.y = Math.PI; // Face forward toward desk/camera!
-        const box = new THREE.Box3().setFromObject(threeModel);
-        const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray()) || 1;
-        threeModel.scale.setScalar(2.05 / maxDim);
-        box.setFromObject(threeModel);
-        const center = box.getCenter(new THREE.Vector3());
-        threeModel.position.set(-center.x, -box.min.y - 1.0, -center.z - 0.12);
-        threeScene.add(threeModel);
+        ch.model = gltf.scene;
+        if (isSoldier) ch.model.rotation.y = Math.PI;
+        const box = new THREE.Box3().setFromObject(ch.model);
+        const maxD = Math.max(...box.getSize(new THREE.Vector3()).toArray()) || 1;
+        ch.model.scale.setScalar(2.0 / maxD);
+        box.setFromObject(ch.model);
+        const cen = box.getCenter(new THREE.Vector3());
+        ch.model.userData.baseY = -box.min.y - 1.0;
+        ch.model.userData.baseX = -cen.x;
+        ch.model.userData.baseZ = -cen.z;
+        ch.model.position.set(ch.model.userData.baseX, ch.model.userData.baseY, ch.model.userData.baseZ);
+        threeScene.add(ch.model);
 
-        threeMixer = new THREE.AnimationMixer(threeModel);
-        gltf.animations.forEach(c => { threeActions[c.name] = threeMixer.clipAction(c); });
-        threeReady = true;
-        playGlbAnim(Object.keys(threeActions)[0] || "");
-        statusText.textContent = `${label} (${Object.keys(threeActions).length} anims)`;
-      }, undefined, () => { statusText.textContent = "3D load failed — check internet"; });
+        ch.mixer = new THREE.AnimationMixer(ch.model);
+        gltf.animations.forEach(c => { ch.acts[c.name] = ch.mixer.clipAction(c); });
+        ch.ready = true;
+        playCharAnim(slot, Object.keys(ch.acts)[0] || "");
+        positionCharsForMode();
+        if (slot === 0) statusText.textContent = "3D Stage & Multi-Objects Ready!";
+      });
     }
 
-    function playGlbAnim(name) {
-      if (!threeReady || !threeActions[name] || currentClip === name) return;
-      if (currentClip && threeActions[currentClip]) threeActions[currentClip].fadeOut(0.22);
-      threeActions[name].reset().fadeIn(0.22).play();
-      currentClip = name;
+    function playCharAnim(slot, name) {
+      const ch = chars[slot];
+      if (!ch.ready || !ch.acts[name] || ch.cur === name) return;
+      if (ch.cur && ch.acts[ch.cur]) ch.acts[ch.cur].fadeOut(0.2);
+      ch.acts[name].reset().fadeIn(0.2).play();
+      ch.cur = name;
     }
 
-    function matchGlbAnim(text) {
-      const keys = Object.keys(threeActions);
-      if (!keys.length) return "";
-      const f = pat => keys.find(k => pat.test(k));
-      if (/fast|speed|run|hurry/i.test(text)) return f(/run/i) || f(/walk/i) || keys[0];
-      if (/walk|move|step|2026|future/i.test(text)) return f(/walk/i) || keys[0];
-      if (/edit|work|sit|hours|waste/i.test(text)) return f(/sit/i) || f(/idle/i) || keys[0];
-      if (/win|celebrate|\$|empire|95%|100%/i.test(text)) return f(/dance|thumbs/i) || f(/jump/i) || keys[0];
-      if (/watch|hi|hello|look|secret/i.test(text)) return f(/wave|jump/i) || keys[0];
-      return f(/idle|stand/i) || keys[0];
+    function positionCharsForMode() {
+      const m = sceneMode.value;
+      deskGroup.visible = m === "desk";
+      if (chars[0].model) {
+        const u = chars[0].model.userData;
+        if (m === "desk") { chars[0].model.position.set(u.baseX, u.baseY, u.baseZ - 0.12); chars[0].model.rotation.y = glbSelect.value === "soldier" ? Math.PI : 0; }
+        else { chars[0].model.position.set(u.baseX - 0.95, u.baseY, u.baseZ); chars[0].model.rotation.y = Math.PI / 2; }
+      }
+      if (chars[1].model) {
+        chars[1].model.visible = m !== "desk";
+        const u = chars[1].model.userData;
+        chars[1].model.position.set(u.baseX + 0.95, u.baseY, u.baseZ);
+        chars[1].model.rotation.y = -Math.PI / 2;
+      }
     }
 
-    loadGlbModel(GLB_URLS.robot, false, "3D Robot + Desk Ready!");
-    glbSelect.addEventListener("change", () => {
-      if (glbSelect.value === "off") threeReady = false;
-      else loadGlbModel(GLB_URLS[glbSelect.value], glbSelect.value === "soldier", "3D Scene Ready!");
-    });
-    document.getElementById("glbUpload").addEventListener("change", (e) => {
+    function reloadModels() {
+      const m = sceneMode.value;
+      if (m === "two_fight") {
+        loadChar(0, URLS.robot, false);
+        loadChar(1, URLS.robot, false);
+      } else {
+        const isSol = glbSelect.value === "soldier";
+        loadChar(0, URLS[glbSelect.value], isSol);
+        loadChar(1, URLS.robot, false);
+      }
+    }
+    reloadModels();
+    sceneMode.addEventListener("change", reloadModels);
+    glbSelect.addEventListener("change", reloadModels);
+    document.getElementById("glbUpload").addEventListener("change", e => {
       const f = e.target.files[0]; if (!f) return;
       document.getElementById("glbLabel").textContent = "✅ " + f.name.slice(0, 10);
-      loadGlbModel(URL.createObjectURL(f), false, "Custom .GLB Ready!");
+      loadChar(0, URLS.robot && URL.createObjectURL(f), false);
     });
 
-    // --- MAIN STUDIO STATE ---
-    let aiImages = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
-    let animId = null, beatInterval = null, scenes = [], scenePlans = [], sceneDurationMs = 3300;
-    let startTime = null, lastSceneIdx = -1, activeRecorder = null, sharedActx = null, sfxDest = null, analyser = null, freqData = null;
-    let micRecorder = null, micChunks = [], isMicRecording = false;
-    let activeThemeKey = "luxury", activeBgm = "Dark Trap";
+    // --- AUDIO & SCRIPT STATE ---
+    let aiImages=[],audioBufferUrl=null,audioDurationMs=0,audioEl=null,animId=null,beatInterval=null;
+    let scenes=[],scenePlans=[],sceneDurationMs=3400,startTime=null,lastSceneIdx=-1,activeRecorder=null,sharedActx=null,sfxDest=null,analyser=null,freqData=null;
+    let micRecorder=null,micChunks=[],isMicRecording=false,activeThemeKey="luxury",activeBgm="Dark Trap",prevT=0;
 
-    const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:apollo","aura-en:thalia"];
-    const CAMERAS = ["orbit_desk","low_hero","over_laptop","whip_zoom"];
-    const BGM_LIST = ["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
-    const THEMES = {
+    const EN_VOICES=["aura-en:zeus","aura-en:orion","aura-en:apollo","aura-en:thalia"];
+    const BGM_LIST=["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
+    const THEMES={
       luxury:{bg:"#0b0803",accent:"#f5c542",hex:0xf5c542,text:"#ffffff",glow:"rgba(245,197,66,0.38)"},
       crimson:{bg:"#140507",accent:"#ef4444",hex:0xef4444,text:"#ffffff",glow:"rgba(239,68,68,0.38)"},
       cyber:{bg:"#051024",accent:"#38bdf8",hex:0x38bdf8,text:"#f8fafc",glow:"rgba(56,189,248,0.38)"},
       finance:{bg:"#02140d",accent:"#10b981",hex:0x10b981,text:"#ecfdf5",glow:"rgba(16,185,129,0.38)"}
     };
-    const EMOJI_RULES = [
-      [/money|cash|\$|rich|wealth|empire/i,"💸"],[/fire|viral|boom|fast/i,"🔥"],
-      [/time|hour|watch|clock|wait/i,"⏰"],[/win|best|95%|100%|celebrate/i,"🚀"],
-      [/ai|system|smart|tech/i,"🤖"],[/2026|world|future/i,"🌍"],[/waste|fail|stop/i,"❌"]
-    ];
+    const EMOJIS=[[/money|cash|\$|rich|empire/i,"💸"],[/fight|punch|rival|beat/i,"🥊"],[/phone|app|mobile/i,"📱"],[/win|trophy|95%|100%/i,"🏆"],[/2026|fast|fire/i,"🔥"],[/waste|hours/i,"⏰"]];
 
     modeSelect.addEventListener("change",()=>{
-      const sh=modeSelect.value==="shorts";
-      canvas.width=sh?720:1280; canvas.height=sh?1280:720; canvas.style.aspectRatio=sh?"9/16":"16/9";
-      threeRenderer.setSize(sh?540:960, sh?960:540);
-      threeCam.aspect = sh ? (540/960) : (960/540);
-      threeCam.updateProjectionMatrix();
+      const sh=modeSelect.value==="shorts"; canvas.width=sh?720:1280; canvas.height=sh?1280:720; canvas.style.aspectRatio=sh?"9/16":"16/9";
+      threeRenderer.setSize(sh?540:960,sh?960:540); threeCam.aspect=sh?(540/960):(960/540); threeCam.updateProjectionMatrix();
     });
+    const getAudioDur=u=>new Promise(r=>{const a=new Audio(u);a.onloadedmetadata=()=>r(isFinite(a.duration)?a.duration*1000:0);a.onerror=()=>r(0);});
 
-    const getAudioDurationMs=u=>new Promise(r=>{const a=new Audio(u);a.onloadedmetadata=()=>r(isFinite(a.duration)?a.duration*1000:0);a.onerror=()=>r(0);});
-
-    async function loadPhotos(txt, topicFallback) {
-      try {
-        const res = await fetch(`${WORKER_URL}/images`, {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({script:txt,style:activeThemeKey})});
-        if (res.ok) { const d = await res.json(); if (d.images?.length) { aiImages = d.images.map(s=>{const i=new Image();i.src=s;return i;}); return; } }
-      } catch(e){}
-      try {
-        const cq = (topicFallback||txt).replace(/\b(a|an|the|sad|crying|empire)\b/gi,"").trim() || "city";
-        const d = await (await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=6&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(cq)}`)).json();
-        const urls = Object.values(d?.query?.pages||{}).filter(p=>p.thumbnail?.source).map(p=>p.thumbnail.source).slice(0,3);
-        aiImages = urls.map(u=>{const i=new Image();i.crossOrigin="anonymous";i.src=u;return i;});
-      } catch(e){}
+    async function loadPhotos(txt,tf){
+      try{const res=await fetch(`${WORKER_URL}/images`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({script:txt,style:activeThemeKey})});if(res.ok){const d=await res.json();if(d.images?.length){aiImages=d.images.map(s=>{const i=new Image();i.src=s;return i;});return;}}}catch(e){}
+      try{const cq=(tf||txt).replace(/\b(a|an|the|empire|fighting)\b/gi,"").trim()||"city";const d=await(await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=6&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(cq)}`)).json();aiImages=Object.values(d?.query?.pages||{}).filter(p=>p.thumbnail?.source).slice(0,3).map(p=>{const i=new Image();i.crossOrigin="anonymous";i.src=p.thumbnail.source;return i;});}catch(e){}
     }
-
-    async function processVoice(blob, label) {
-      audioBufferUrl = URL.createObjectURL(blob); audioDurationMs = await getAudioDurationMs(audioBufferUrl);
-      document.getElementById("audioLabel").textContent = label; statusText.textContent = "Listening...";
-      try {
-        const res = await fetch(`${WORKER_URL}/transcribe`, {method:"POST",body:blob});
-        const d = await res.json(); if (res.ok && d.transcript) scriptInput.value = d.transcript;
-      } catch(e){}
-      await loadPhotos(scriptInput.value, topicInput.value); startPlayback(null, false);
+    async function processVoice(blob,lbl){
+      audioBufferUrl=URL.createObjectURL(blob);audioDurationMs=await getAudioDur(audioBufferUrl);document.getElementById("audioLabel").textContent=lbl;statusText.textContent="Listening...";
+      try{const res=await fetch(`${WORKER_URL}/transcribe`,{method:"POST",body:blob});const d=await res.json();if(res.ok&&d.transcript)scriptInput.value=d.transcript;}catch(e){}
+      await loadPhotos(scriptInput.value,topicInput.value);startPlayback(null,false);
     }
-
     document.getElementById("audioUpload").addEventListener("change",e=>{if(e.target.files[0])processVoice(e.target.files[0],"✅ Audio");});
     micBtn.addEventListener("click",async()=>{
       if(isMicRecording){isMicRecording=false;micBtn.classList.remove("recording");micBtn.textContent="🎙️ Record & Auto-Build";if(micRecorder?.state==="recording")micRecorder.stop();return;}
-      try{
-        const ms=await navigator.mediaDevices.getUserMedia({audio:true}); micChunks=[]; micRecorder=new MediaRecorder(ms);
-        micRecorder.ondataavailable=e=>{if(e.data.size>0)micChunks.push(e.data);};
-        micRecorder.onstop=()=>{ms.getTracks().forEach(t=>t.stop());processVoice(new Blob(micChunks,{type:"audio/webm"}),"✅ Mic");};
-        micRecorder.start();isMicRecording=true;micBtn.classList.add("recording");micBtn.textContent="⏹️ Stop";statusText.textContent="Recording...";
-      }catch(e){statusText.textContent="Mic blocked";}
+      try{const ms=await navigator.mediaDevices.getUserMedia({audio:true});micChunks=[];micRecorder=new MediaRecorder(ms);micRecorder.ondataavailable=e=>{if(e.data.size>0)micChunks.push(e.data);};micRecorder.onstop=()=>{ms.getTracks().forEach(t=>t.stop());processVoice(new Blob(micChunks,{type:"audio/webm"}),"✅ Mic");};micRecorder.start();isMicRecording=true;micBtn.classList.add("recording");micBtn.textContent="⏹️ Stop";statusText.textContent="Recording...";}catch(e){statusText.textContent="Mic blocked";}
     });
 
     aiMagicBtn.addEventListener("click",async()=>{
       const topic=topicInput.value.trim()||"Luxury Watch Empire",lang=langSelect.value,tk=Object.keys(THEMES);
       activeThemeKey=tk[Math.floor(Math.random()*tk.length)];
-      let cv=voiceSelect.value; if(cv==="random")cv=EN_VOICES[Math.floor(Math.random()*EN_VOICES.length)]; if(lang==="es")cv="aura-es:sirio";
-      aiMagicBtn.disabled=true; statusText.textContent="1/3 Writing script...";
-      let ok=false;
-      try{
-        const sr=await fetch(`${WORKER_URL}/script`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,lang,tone:activeThemeKey})});
-        if(sr.ok){const sd=await sr.json();if(sd.script){scriptInput.value=sd.script;scriptInput.dir=(lang==="ur"||lang==="ar")?"rtl":"ltr";ok=true;}}
-      }catch(e){}
-      if(!ok) scriptInput.value=`Watch 95% of creators waste 10 hours editing slowly. In 2026, fast AI systems win big. Build a $10,000 ${topic} and celebrate!`;
-      statusText.textContent="2/3 Loading 3D backdrop & AI voice...";
+      let cv=voiceSelect.value;if(cv==="random")cv=EN_VOICES[Math.floor(Math.random()*EN_VOICES.length)];if(lang==="es")cv="aura-es:sirio";
+      aiMagicBtn.disabled=true;statusText.textContent="1/3 Writing script...";let ok=false;
+      try{const sr=await fetch(`${WORKER_URL}/script`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,lang,tone:activeThemeKey})});if(sr.ok){const sd=await sr.json();if(sd.script){scriptInput.value=sd.script;scriptInput.dir=(lang==="ur"||lang==="ar")?"rtl":"ltr";ok=true;}}}catch(e){}
+      if(!ok)scriptInput.value=`Watch 95% of creators waste 10 hours on their phone. In 2026, two rivals fight for the $10,000 trophy! Smart AI systems win big.`;
+      statusText.textContent="2/3 Loading 3D backdrop & voice...";
       const jobs=[loadPhotos(scriptInput.value,topic)];
-      if(lang==="en"||lang==="es") jobs.push(fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:scriptInput.value,voice:cv})}).then(r=>r.ok?r.blob():null).catch(()=>null));
+      if(lang==="en"||lang==="es")jobs.push(fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:scriptInput.value,voice:cv})}).then(r=>r.ok?r.blob():null).catch(()=>null));
       const res=await Promise.all(jobs);
-      if(res[1]){audioBufferUrl=URL.createObjectURL(res[1]);audioDurationMs=await getAudioDurationMs(audioBufferUrl);document.getElementById("audioLabel").textContent="✅ "+cv.split(":")[1].toUpperCase();}
-      aiMagicBtn.disabled=false; startPlayback(null,false);
+      if(res[1]){audioBufferUrl=URL.createObjectURL(res[1]);audioDurationMs=await getAudioDur(audioBufferUrl);document.getElementById("audioLabel").textContent="✅ "+cv.split(":")[1].toUpperCase();}
+      aiMagicBtn.disabled=false;startPlayback(null,false);
     });
 
     const extractStat=t=>{const m=t.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|x)\b)/i);return m?m[0].toUpperCase():null;};
-    const findEmoji=txt=>{for(const[rx,em]of EMOJI_RULES){if(rx.test(txt))return em;}return null;};
+    const findEmoji=txt=>{for(const[rx,em]of EMOJIS){if(rx.test(txt))return em;}return null;};
+
+    // Map words in voice/script -> matching 3D Prop Target + Character Animations!
+    function planSceneForText(text, idx) {
+      const m = sceneMode.value;
+      let target = "laptop";
+      if (/money|\$|rich|coin|empire|pay/i.test(text)) target = "coins";
+      else if (/phone|app|mobile|tiktok|reel/i.test(text)) target = "phone";
+      else if (/95%|100%|chart|grow|waste|hours/i.test(text)) target = "bars";
+      else if (/win|trophy|celebrate|2026|best/i.test(text)) target = "trophy";
+
+      let anim1 = "Idle", anim2 = "Idle", isFight = false;
+      if (m === "two_fight" || /fight|punch|rival|beat|attack/i.test(text)) {
+        isFight = true;
+        anim1 = idx % 2 === 0 ? "Punch" : "Running";
+        anim2 = idx % 2 === 0 ? "Death" : "Punch";
+      } else if (m === "two_talk") {
+        anim1 = idx % 2 === 0 ? "Wave" : "Yes";
+        anim2 = idx % 2 === 0 ? "Idle" : "Wave";
+      } else {
+        const k = Object.keys(chars[0].acts);
+        const f = pat => k.find(x => pat.test(x)) || k[0] || "Idle";
+        if (/walk|move|step/i.test(text)) anim1 = f(/walk/i);
+        else if (/fast|run/i.test(text)) anim1 = f(/run/i);
+        else if (/win|celebrate|trophy/i.test(text)) anim1 = f(/dance|thumbs|jump/i);
+        else if (/waste|edit|hours/i.test(text)) anim1 = f(/sit|idle/i);
+        else anim1 = f(/wave|idle/i);
+      }
+      return { target, anim1, anim2, isFight };
+    }
 
     function buildScenes(rand=false){
       if(rand){const tk=Object.keys(THEMES);activeThemeKey=tk[Math.floor(Math.random()*tk.length)];}
       activeBgm=BGM_LIST[Math.floor(Math.random()*BGM_LIST.length)];
       const parts=scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
       scenes=(parts.length?parts:["Tap AI Build above."]).map(t=>({text:t,stat:extractStat(t),rtl:/[\u0600-\u06FF]/.test(t)}));
-      sceneDurationMs=audioDurationMs>1000?Math.max(2200,(audioDurationMs+300)/scenes.length):3200;
-      const cp=[...CAMERAS].sort(()=>Math.random()-0.5);
-      scenePlans=scenes.map((sc,i)=>({anim:matchGlbAnim(sc.text),cam:cp[i%cp.length],dir:(i%2===0?1:-1)}));
+      sceneDurationMs=audioDurationMs>1000?Math.max(2300,(audioDurationMs+300)/scenes.length):3400;
+      scenePlans=scenes.map((sc,i)=>planSceneForText(sc.text,i));
+      positionCharsForMode();
     }
 
-    function getEnergy(el){
-      if(analyser&&freqData){analyser.getByteFrequencyData(freqData);let s=0;for(let i=0;i<12;i++)s+=freqData[i];const v=s/(12*255);if(v>0.02)return v;}
-      return 0.25+0.2*Math.abs(Math.sin(el*0.006));
-    }
-
-    // Fast Whoosh + Punchy Sub-Bass on every camera cut!
-    function playFastWhoosh(){
+    function playWhooshAndPunch(isFight){
       if(!sharedActx||!beatToggle.checked)return;
       try{
-        const now=sharedActx.currentTime, dur=0.24, sz=Math.floor(sharedActx.sampleRate*dur);
-        const buf=sharedActx.createBuffer(1,sz,sharedActx.sampleRate), d=buf.getChannelData(0);
-        for(let i=0;i<sz;i++) d[i]=(Math.random()*2-1)*Math.sin((i/sz)*Math.PI);
-        const src=sharedActx.createBufferSource(); src.buffer=buf;
-        const f=sharedActx.createBiquadFilter(); f.type="bandpass"; f.Q.value=1.8;
-        f.frequency.setValueAtTime(280,now); f.frequency.exponentialRampToValueAtTime(3200,now+0.11); f.frequency.exponentialRampToValueAtTime(500,now+dur);
-        const g=sharedActx.createGain(); g.gain.setValueAtTime(0.35,now); g.gain.exponentialRampToValueAtTime(0.01,now+dur);
-        src.connect(f); f.connect(g); g.connect(sharedActx.destination); if(sfxDest)g.connect(sfxDest);
-        src.start(now);
+        const now=sharedActx.currentTime,dur=0.22,sz=Math.floor(sharedActx.sampleRate*dur),buf=sharedActx.createBuffer(1,sz,sharedActx.sampleRate),d=buf.getChannelData(0);
+        for(let i=0;i<sz;i++)d[i]=(Math.random()*2-1)*Math.sin((i/sz)*Math.PI);
+        const src=sharedActx.createBufferSource();src.buffer=buf;const f=sharedActx.createBiquadFilter();f.type="bandpass";
+        f.frequency.setValueAtTime(300,now);f.frequency.exponentialRampToValueAtTime(3200,now+0.11);f.frequency.exponentialRampToValueAtTime(480,now+dur);
+        const g=sharedActx.createGain();g.gain.setValueAtTime(0.35,now);g.gain.exponentialRampToValueAtTime(0.01,now+dur);
+        src.connect(f);f.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);src.start(now);
 
-        const o=sharedActx.createOscillator(), og=sharedActx.createGain();
-        o.type="sine"; o.frequency.setValueAtTime(125,now); o.frequency.exponentialRampToValueAtTime(36,now+0.22);
-        og.gain.setValueAtTime(0.28,now); og.gain.exponentialRampToValueAtTime(0.001,now+0.24);
-        o.connect(og); og.connect(sharedActx.destination); if(sfxDest)og.connect(sfxDest);
-        o.start(now); o.stop(now+0.25);
+        const o=sharedActx.createOscillator(),og=sharedActx.createGain();o.type="sine";
+        o.frequency.setValueAtTime(isFight?180:120,now);o.frequency.exponentialRampToValueAtTime(32,now+0.22);
+        og.gain.setValueAtTime(isFight?0.45:0.28,now);og.gain.exponentialRampToValueAtTime(0.001,now+0.24);
+        o.connect(og);og.connect(sharedActx.destination);if(sfxDest)og.connect(sfxDest);o.start(now);o.stop(now+0.25);
       }catch(e){}
     }
 
     function startBgm(){
       clearInterval(beatInterval);if(!beatToggle.checked||!sharedActx)return;
       let step=0;const ms=activeBgm==="Doc Heartbeat"?650:activeBgm==="Cyber Synth"?260:440;
-      const tick=()=>{
-        if(!sharedActx)return;
-        try{
-          const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();
-          if(activeBgm==="Cyber Synth"){o.type="sawtooth";o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now);g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);}
-          else if(activeBgm==="Tech Ambient"){o.type="sine";o.frequency.setValueAtTime([220,277.2,329.6][step%3],now);g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.42);}
-          else{o.type="triangle";o.frequency.setValueAtTime(step%4===0?55:49,now);g.gain.setValueAtTime(0.09,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);}
-          o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.43);step++;
-        }catch(e){}
-      };
+      const tick=()=>{if(!sharedActx)return;try{const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();if(activeBgm==="Cyber Synth"){o.type="sawtooth";o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now);g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);}else if(activeBgm==="Tech Ambient"){o.type="sine";o.frequency.setValueAtTime([220,277.2,329.6][step%3],now);g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.42);}else{o.type="triangle";o.frequency.setValueAtTime(step%4===0?55:49,now);g.gain.setValueAtTime(0.09,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);}o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.43);step++;}catch(e){}};
       tick();beatInterval=setInterval(tick,ms);
     }
 
-    function update3DCamera(cam, p, dir) {
-      const ease = 1 - Math.pow(1 - p, 3);
-      if (cam === "low_hero") {
-        const ang = (-0.65 + ease * 1.1) * dir;
-        threeCam.position.set(Math.sin(ang) * 3.1, -0.35 + p * 0.85, Math.cos(ang) * 3.3);
-        threeCam.lookAt(0, 0.15, 0.35);
-      } else if (cam === "over_laptop") {
-        threeCam.position.set((1.6 - p * 2.2) * dir, 0.75 + Math.sin(p * 3.14) * 0.25, 2.75 + p * 0.9);
-        threeCam.lookAt(0, 0.05, 0.2);
-      } else if (cam === "whip_zoom") {
-        const dist = 5.4 - ease * 2.4;
-        threeCam.position.set(Math.sin(p * 1.5) * 0.9 * dir, 0.85 - ease * 0.2, dist);
-        threeCam.lookAt(0, 0.0, 0.3);
+    // 3-BEAT CAMERA DIRECTOR: 1) Close-up Face -> 2) Pull Back Wide -> 3) Zoom to 2nd Char or Word-Matched Object!
+    function updateDirectorCamera(plan, p, idx) {
+      const m = sceneMode.value;
+      const goals = {
+        coins:  { pos: [-0.95, 0.35, 1.9], look: [-0.82, -0.05, 0.82] },
+        phone:  { pos: [0.95, 0.35, 1.9],  look: [0.82, 0.08, 0.82] },
+        bars:   { pos: [-1.1, 0.25, 2.1],  look: [-1.25, -0.4, 0.2] },
+        trophy: { pos: [1.1, 0.25, 2.1],   look: [1.45, -0.35, 0.2] },
+        laptop: { pos: [0.25, 0.45, 2.1],  look: [0, 0.05, 0.82] }
+      };
+
+      let dPos, dLook;
+      if (m !== "desk") {
+        // 2-Character Talk/Fight Camera: Face 1 -> Wide Fight/Talk -> Face 2
+        if (p < 0.36) { dPos = [-0.55, 0.72, 2.1]; dLook = [-0.92, 0.48, 0]; }
+        else if (p < 0.68) { dPos = [0, 0.6, 4.3]; dLook = [0, 0.1, 0]; }
+        else { dPos = [0.55, 0.72, 2.1]; dLook = [0.92, 0.48, 0]; }
       } else {
-        const ang = (-0.8 + p * 1.6) * dir;
-        threeCam.position.set(Math.sin(ang) * 3.8, 1.05 + Math.sin(p * 3.14) * 0.45, Math.cos(ang) * 3.8);
-        threeCam.lookAt(0, -0.05, 0.3);
+        // 1-Char + Desk Camera: Face -> Pull Back Wide -> Zoom to Word-Matched Object!
+        if (p < 0.35) { dPos = [0.18, 0.75, 1.85]; dLook = [0, 0.55, -0.1]; }
+        else if (p < 0.66) { dPos = [-0.35, 0.95, 4.35]; dLook = [0, 0.0, 0.4]; }
+        else {
+          const tgt = goals[plan.target] || goals.laptop;
+          dPos = tgt.pos; dLook = tgt.look;
+        }
       }
+
+      camPos.lerp(new THREE.Vector3(...dPos), 0.12);
+      camLook.lerp(new THREE.Vector3(...dLook), 0.12);
+      threeCam.position.copy(camPos);
+      threeCam.lookAt(camLook);
     }
 
     function drawFrame(now){
-      if(startTime===null){startTime=now;prevThreeTime=now;}
-      const dt=Math.min(0.05,(now-prevThreeTime)/1000); prevThreeTime=now;
+      if(startTime===null){startTime=now;prevT=now;}
+      const dt=Math.min(0.05,(now-prevT)/1000); prevT=now;
       const el=Math.max(0,now-startTime),tot=scenes.length*sceneDurationMs;
-      if(el>=tot){
-        clearInterval(beatInterval);if(audioEl)audioEl.pause();
-        if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();
-        else statusText.textContent=`Done | Anim: ${currentClip||"3D"} | BGM: ${activeBgm}`;
-        return;
-      }
+      if(el>=tot){clearInterval(beatInterval);if(audioEl)audioEl.pause();if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();else statusText.textContent=`Done | BGM: ${activeBgm}`;return;}
 
       const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx],theme=THEMES[activeThemeKey];
-      if(idx!==lastSceneIdx){lastSceneIdx=idx;playFastWhoosh();if(plan.anim)playGlbAnim(plan.anim);}
-      const p=sel/sceneDurationMs,sc=scenes[idx],en=getEnergy(el);
+      if(idx!==lastSceneIdx){
+        lastSceneIdx=idx;
+        playWhooshAndPunch(plan.isFight);
+        playCharAnim(0, plan.anim1);
+        if(sceneMode.value!=="desk") playCharAnim(1, plan.anim2);
+      }
+      const p=sel/sceneDurationMs,sc=scenes[idx];
 
-      // 1. Studio Backdrop
+      // Animate props & update 3D mixers
+      trophyGroup.rotation.y += dt * 1.8;
+      coinGroup.rotation.y += dt * 1.2;
+      neonMat.color.setHex(theme.hex); rimL.color.setHex(theme.hex); propL.color.setHex(theme.hex);
+      grid.material.color.setHex(theme.hex);
+      chars.forEach(c => { if (c.mixer && c.model?.visible !== false) c.mixer.update(dt); });
+
+      // In fight mode, move fighter 1 forward slightly on punch!
+      if(sceneMode.value==="two_fight" && chars[0].model && chars[1].model){
+        const lunge = Math.sin(Math.min(1, p * 2.2) * Math.PI) * 0.48;
+        chars[0].model.position.x = chars[0].model.userData.baseX - 0.95 + lunge;
+      }
+
+      // 1. Backdrop
       const g=ctx.createRadialGradient(canvas.width/2,canvas.height*0.4,20,canvas.width/2,canvas.height/2,canvas.width*0.9);
       g.addColorStop(0,theme.glow);g.addColorStop(1,theme.bg);ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
       const img=aiImages[idx%Math.max(1,aiImages.length)];
       if(img&&img.complete&&img.naturalWidth>0){
         const z=1.04+p*0.12,scI=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*z;
-        ctx.save();ctx.globalAlpha=0.38;
-        ctx.drawImage(img,(canvas.width-img.naturalWidth*scI)/2,(canvas.height-img.naturalHeight*scI)/2,img.naturalWidth*scI,img.naturalHeight*scI);
-        ctx.restore();
+        ctx.save();ctx.globalAlpha=0.32;ctx.drawImage(img,(canvas.width-img.naturalWidth*scI)/2,(canvas.height-img.naturalHeight*scI)/2,img.naturalWidth*scI,img.naturalHeight*scI);ctx.restore();
       }
 
-      // 2. Full-Screen 3D Room (Floor + Desk + Laptop + Character)
-      if(glbSelect.value!=="off"){
-        if(threeMixer) threeMixer.update(dt);
-        const isWalking = /walk|run/i.test(currentClip);
-        deskGroup.visible = deskToggle.value === "on" && !isWalking;
-        trimMat.color.setHex(theme.hex);
-        rimLight.color.setHex(theme.hex);
-        laptopGlow.color.setHex(theme.hex);
-        laptopGlow.intensity = 2.6 + en * 2.5;
-        if(gridHelper.material) gridHelper.material.color.setHex(theme.hex);
+      // 2. Render 3D Room with Smart Camera Director
+      updateDirectorCamera(plan, p, idx);
+      threeRenderer.render(threeScene, threeCam);
+      ctx.drawImage(threeRenderer.domElement, 0, 0, canvas.width, canvas.height);
 
-        update3DCamera(plan.cam, p, plan.dir);
-        threeRenderer.render(threeScene, threeCam);
-        ctx.drawImage(threeRenderer.domElement, 0, 0, canvas.width, canvas.height);
-      }
+      if(sel<170){ctx.fillStyle=theme.accent;ctx.globalAlpha=(1-sel/170)*0.24;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.globalAlpha=1;}
 
-      // Fast whoosh flash on cut
-      if(sel < 180){
-        ctx.fillStyle = theme.accent; ctx.globalAlpha = (1 - sel/180) * 0.25;
-        ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1;
-      }
-
-      // 3. Lower-Third Captions + Non-Overlapping Stat Badge & Emoji
-      const isV=canvas.height>canvas.width,capY=canvas.height*0.76;
+      // 3. Captions, Badge & Emoji
+      const isV=canvas.height>canvas.width,capY=canvas.height*0.77;
       if(sc.stat){
         ctx.save();ctx.direction="ltr";const sw=isV?canvas.width*0.44:260,sx=(canvas.width-sw)/2,sy=capY-132;
         ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=20;ctx.beginPath();ctx.roundRect(sx,sy,sw,46,12);ctx.fill();
         ctx.shadowBlur=0;ctx.fillStyle="#07090e";ctx.font=`900 ${isV?28:32}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(sc.stat,canvas.width/2,sy+23);ctx.restore();
       }
-
       const words=sc.text.split(" ");ctx.font=`900 ${isV?46:52}px -apple-system,sans-serif`;ctx.textBaseline="middle";ctx.lineJoin="round";
       if(sc.rtl){
         ctx.save();ctx.direction="rtl";ctx.textAlign="center";const h=Math.ceil(words.length/2),ch=p<0.5?words.slice(0,h).join(" "):words.slice(h).join(" ");
@@ -471,7 +478,7 @@
         const ct=ac.join(" ").toUpperCase(),fw=ctx.measureText(ct).width,sf=Math.min(1,(canvas.width*0.86)/Math.max(1,fw+32));
         const em=findEmoji(ac[aw]||"");
         if(em){const pe=Math.min(1,lp*5);ctx.save();ctx.font=`${Math.round(58*pe)}px sans-serif`;ctx.textAlign="center";ctx.fillText(em,canvas.width/2,capY-56-(1-pe)*12);ctx.restore();}
-        ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf*(1+en*0.06),sf*(1+en*0.06));
+        ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf,sf);
         let xc=-fw/2;ctx.textAlign="left";
         ac.forEach((rw,wi)=>{
           const w=rw.toUpperCase(),ww=ctx.measureText(w).width;
@@ -481,7 +488,6 @@
         });
         ctx.restore();
       }
-
       const bh=canvas.height*0.035;ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,bh);ctx.fillRect(0,canvas.height-bh,canvas.width,bh);
       animId=requestAnimationFrame(drawFrame);
     }
@@ -492,7 +498,7 @@
       if(sharedActx.state==="suspended")sharedActx.resume();
       if(!analyser){analyser=sharedActx.createAnalyser();analyser.fftSize=64;freqData=new Uint8Array(analyser.frequencyBinCount);}
       if(recStream){sfxDest=sharedActx.createMediaStreamDestination();sfxDest.stream.getAudioTracks().forEach(t=>recStream.addTrack(t));}else sfxDest=null;
-      startBgm(); statusText.textContent=`Playing 3D Room (${currentClip||"3D"} | BGM: ${activeBgm})`;
+      startBgm(); statusText.textContent=`Playing (${sceneMode.value} | BGM: ${activeBgm})`;
       if(audioEl){audioEl.pause();audioEl=null;}
       if(audioBufferUrl){audioEl=new Audio(audioBufferUrl);try{const s=sharedActx.createMediaElementSource(audioEl);s.connect(analyser);analyser.connect(sharedActx.destination);if(sfxDest)s.connect(sfxDest);}catch(e){}audioEl.play().catch(()=>{});}
       animId=requestAnimationFrame(drawFrame);
@@ -508,7 +514,7 @@
       exportBtn.disabled=true;statusText.textContent=`Exporting ${isMp4?"MP4":"WebM"}...`;
       const chunks=[];activeRecorder=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:3500000}:{});
       activeRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
-      activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-room-reel.mp4":"3d-room-reel.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
+      activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-director.mp4":"3d-director.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
       activeRecorder.start(250);
     });
   </script>
