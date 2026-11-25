@@ -3,60 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v12.4 — Talking Character + 3D AI Reels</title>
+  <title>Studio v14 — Working 3D Robot + AI Reels</title>
   <style>
-    :root { --bg:#07090e; --card:#10141f; --input:#0a0e17; --border:#21293b; --gold:#f5c542; --text:#f8fafc; --muted:#94a3b8; --green:#10b981; --red:#ef4444; }
-    * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-    body { background:var(--bg); color:var(--text); padding:16px 14px 50px; }
-    .container { max-width:680px; margin:0 auto; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-    .badge { font-size:11px; font-weight:700; color:var(--gold); border:1px solid rgba(245,197,66,0.4); background:rgba(245,197,66,0.08); padding:5px 11px; border-radius:999px; }
-    .back-link { color:var(--muted); text-decoration:none; font-size:0.85rem; }
-    .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:16px; }
-    .step-title { font-size:0.82rem; font-weight:700; color:var(--gold); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; }
-    input[type="text"], select, textarea { width:100%; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:12px; font-size:0.94rem; margin-bottom:10px; }
-    textarea { min-height:85px; line-height:1.45; resize:vertical; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .btn-ai { width:100%; background:linear-gradient(90deg,#f5c542,#fbbf24); color:#07090e; border:none; border-radius:12px; padding:14px; font-size:0.96rem; font-weight:800; cursor:pointer; }
-    .btn-ai:disabled { opacity:0.6; }
-    .btn-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-    .mic-btn { background:#1f1622; color:#fca5a5; border:1px solid rgba(239,68,68,0.4); border-radius:12px; padding:12px; font-size:0.86rem; font-weight:700; cursor:pointer; }
-    .mic-btn.recording { background:var(--red); color:#fff; border-color:var(--red); }
-    .upload-mini { display:flex; align-items:center; justify-content:center; text-align:center; background:rgba(245,197,66,0.08); color:var(--gold); border:1.5px dashed var(--gold); border-radius:12px; padding:12px; font-size:0.86rem; font-weight:700; cursor:pointer; }
-    input[type="file"] { display:none; }
-    .toggle-row { display:flex; justify-content:space-between; align-items:center; background:var(--input); border:1px solid var(--border); border-radius:12px; padding:11px 14px; margin-bottom:10px; font-size:0.85rem; font-weight:600; }
-    .btn-remix { width:100%; background:#1e293b; color:var(--gold); border:1px solid var(--gold); border-radius:12px; padding:13px; font-size:0.94rem; font-weight:700; cursor:pointer; }
-    canvas { width:100%; aspect-ratio:9/16; max-height:520px; object-fit:contain; background:#000; border-radius:12px; border:1px solid var(--border); display:block; margin:0 auto 12px; }
-    .controls-row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .status { font-size:0.8rem; color:var(--green); flex:1; min-width:180px; }
-    .btn-small { background:#1e293b; color:var(--text); border:1px solid var(--border); padding:9px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; }
-    .btn-export { background:var(--green); color:#052e16; border:none; }
-    .btn-small:disabled { opacity:0.5; }
+    :root{--bg:#07090e;--card:#10141f;--input:#0a0e17;--border:#21293b;--gold:#f5c542;--text:#f8fafc;--muted:#94a3b8;--green:#10b981;--red:#ef4444;}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+    body{background:var(--bg);color:var(--text);padding:16px 14px 50px;}
+    .container{max-width:680px;margin:0 auto;}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .badge{font-size:11px;font-weight:700;color:var(--gold);border:1px solid rgba(245,197,66,0.4);background:rgba(245,197,66,0.08);padding:5px 11px;border-radius:999px;}
+    .back-link{color:var(--muted);text-decoration:none;font-size:0.85rem;}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;}
+    .step-title{font-size:0.8rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:10px;}
+    input[type="text"],select,textarea{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:11px;font-size:0.92rem;margin-bottom:10px;}
+    textarea{min-height:82px;line-height:1.4;resize:vertical;}
+    .grid-2,.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    .grid-2{margin-bottom:0;}
+    .btn-ai{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:12px;padding:13px;font-size:0.95rem;font-weight:800;cursor:pointer;}
+    .btn-ai:disabled,.btn-small:disabled{opacity:0.55;}
+    .mic-btn{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,0.4);border-radius:12px;padding:11px;font-size:0.85rem;font-weight:700;cursor:pointer;}
+    .mic-btn.recording{background:var(--red);color:#fff;border-color:var(--red);}
+    .upload-mini{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(245,197,66,0.08);color:var(--gold);border:1.5px dashed var(--gold);border-radius:12px;padding:11px;font-size:0.85rem;font-weight:700;cursor:pointer;}
+    input[type="file"]{display:none;}
+    .toggle-row{display:flex;justify-content:space-between;align-items:center;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-size:0.84rem;font-weight:600;}
+    .btn-remix{width:100%;background:#1e293b;color:var(--gold);border:1px solid var(--gold);border-radius:12px;padding:12px;font-size:0.92rem;font-weight:700;cursor:pointer;}
+    .btn-story{width:100%;background:#0f2942;color:#7dd3fc;border:1px solid #0284c7;border-radius:10px;padding:10px;font-size:0.84rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+    canvas{width:100%;aspect-ratio:9/16;max-height:500px;object-fit:contain;background:#000;border-radius:12px;border:1px solid var(--border);display:block;margin:0 auto 12px;}
+    .controls-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+    .status{font-size:0.8rem;color:var(--green);flex:1;min-width:170px;}
+    .btn-small{background:#1e293b;color:var(--text);border:1px solid var(--border);padding:9px 14px;border-radius:8px;font-size:0.85rem;font-weight:600;cursor:pointer;}
+    .btn-export{background:var(--green);color:#052e16;border:none;}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">TALKING CHARACTER + 3D v12.4</span>
+      <span class="badge">3D WORKING ROBOT STUDIO v14</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
     <div class="card">
-      <div class="step-title">🎙️ Option A: Your Voice → Talking Character Reel</div>
+      <div class="step-title">🎙️ Option A: Voice or Text Story Script</div>
       <div class="btn-row">
-        <button class="mic-btn" id="micBtn">🎙️ Record & Talk</button>
-        <label class="upload-mini">
-          <input type="file" id="audioUpload" accept="audio/*" />
-          <span id="audioLabel">📁 Upload Audio</span>
-        </label>
+        <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
+        <label class="upload-mini"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Upload Audio</span></label>
       </div>
-      <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, glowing 3D motion wins every phone algorithm. Build a $10,000 brand in 90 days.</textarea>
+      <button class="btn-story" id="loadStoryBtn">💬 Load Sample Fake Text Story (Viral Mode)</button>
+      <textarea id="scriptInput">95% of creators waste 10 hours editing manually on laptops. In 2026, smart AI systems move fast and win. Build a $10,000 money empire in 90 days.</textarea>
     </div>
 
     <div class="card">
-      <div class="step-title">⚡ Option B: Type Anything → AI Script + Photos + Talking Voice</div>
-      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, A sad crying banana, Crypto)" value="Luxury Watch Empire" />
-      <div class="grid-2">
+      <div class="step-title">⚡ Option B: Topic → AI Script + Photos + Voice</div>
+      <input type="text" id="topicInput" placeholder="Topic (e.g. AI Empire, A sad crying banana, Watch)" value="Luxury Watch Empire" />
+      <div class="grid-2" style="margin-bottom:10px;">
         <select id="langSelect">
           <option value="en" selected>🇺🇸 English (AI Voice)</option>
           <option value="es">🇪🇸 Español (AI Voice)</option>
@@ -66,49 +64,62 @@
           <option value="ar">🇸🇦 العربية (Arabic)</option>
         </select>
         <select id="voiceSelect">
-          <option value="random" selected>🎲 Random Voice Each Tap</option>
-          <option value="aura-en:zeus">Zeus (Deep Trailer)</option>
-          <option value="aura-en:orion">Orion (Dark Luxury)</option>
-          <option value="aura-en:odysseus">Odysseus (Documentary)</option>
+          <option value="random" selected>🎲 Random Voice</option>
+          <option value="aura-en:zeus">Zeus (Deep)</option>
+          <option value="aura-en:orion">Orion (Luxury)</option>
+          <option value="aura-en:odysseus">Odysseus (Doc)</option>
           <option value="aura-en:apollo">Apollo (YouTube)</option>
-          <option value="aura-en:thalia">Thalia (TikTok Female)</option>
-          <option value="aura-en:asteria">Asteria (Expressive Female)</option>
-          <option value="aura-es:sirio">Sirio (Spanish Male)</option>
+          <option value="aura-en:thalia">Thalia (TikTok F)</option>
+          <option value="aura-en:asteria">Asteria (Female)</option>
+          <option value="aura-es:sirio">Sirio (Spanish)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Talking Reel</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Robot Movie</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. Talking Character, Format & Beat</div>
-      <div class="grid-2">
-        <select id="modeSelect">
-          <option value="shorts" selected>TikTok / Reels / Shorts (9:16)</option>
-          <option value="landscape">Full YouTube (16:9)</option>
+      <div class="step-title">🎨 Custom AI Image Prompt / Upload Pics</div>
+      <input type="text" id="imgPromptInput" placeholder="e.g. A sad crying banana in rain wearing gold watch, 8k" />
+      <div class="btn-row" style="margin-bottom:0;">
+        <button class="btn-ai" id="genPromptImgBtn" style="padding:11px;">✨ Paint AI Image</button>
+        <label class="upload-mini"><input type="file" id="customImgUpload" accept="image/*" multiple /><span id="customImgLabel">🖼️ Upload Own Pics</span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="step-title">2. 3D Character, Mode & Format</div>
+      <div class="grid-2" style="margin-bottom:10px;">
+        <select id="storyModeSelect">
+          <option value="reel" selected>🎬 3D Captions + Emojis</option>
+          <option value="chat">💬 Fake Text Story</option>
         </select>
         <select id="avatarSelect">
-          <option value="random" selected>🎭 Random Character</option>
+          <option value="worker_bot" selected>🤖 Working 3D Robot</option>
           <option value="boss">🕶️ Luxury Suit Boss</option>
-          <option value="bot">🤖 Cyber AI Bot</option>
           <option value="host">🎧 Podcast Creator</option>
-          <option value="off">❌ No Character (3D Only)</option>
+          <option value="random">🎭 Random Character</option>
+          <option value="off">❌ No Character</option>
         </select>
       </div>
+      <select id="modeSelect">
+        <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
+        <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
+      </select>
       <label class="toggle-row">
-        <span>🎵 Auto-Switch BGM + Scene Transition SFX</span>
+        <span>🎵 Auto BGM + Scene Transition SFX</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <button class="btn-remix" id="remixBtn">🎲 New Character, 3D Mix & BGM</button>
+      <button class="btn-remix" id="remixBtn">🎲 New 3D Mix, Actions & BGM</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live Talking Preview & Export</div>
+      <div class="step-title">3. Live 3D Robot Preview & Direct MP4 Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Tap AI Build Talking Reel above</span>
+        <span class="status" id="statusText">Ready — Robot moves & works to match your words</span>
         <div style="display:flex;gap:8px;">
           <button class="btn-small" id="replayBtn">New Mix</button>
-          <button class="btn-small btn-export" id="exportBtn">Export Video</button>
+          <button class="btn-small btn-export" id="exportBtn">Export MP4</button>
         </div>
       </div>
     </div>
@@ -120,576 +131,433 @@
     const statusText = document.getElementById("statusText"), topicInput = document.getElementById("topicInput");
     const langSelect = document.getElementById("langSelect"), voiceSelect = document.getElementById("voiceSelect");
     const scriptInput = document.getElementById("scriptInput"), modeSelect = document.getElementById("modeSelect");
-    const avatarSelect = document.getElementById("avatarSelect"), beatToggle = document.getElementById("beatToggle");
-    const aiMagicBtn = document.getElementById("aiMagicBtn"), exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
+    const storyModeSelect = document.getElementById("storyModeSelect"), avatarSelect = document.getElementById("avatarSelect");
+    const beatToggle = document.getElementById("beatToggle"), aiMagicBtn = document.getElementById("aiMagicBtn");
+    const exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
 
     let aiImages = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
-    let animId = null, beatInterval = null, scenes = [], scenePlans = [], sceneDurationMs = 3400;
+    let animId = null, beatInterval = null, scenes = [], scenePlans = [], sceneDurationMs = 3300;
     let startTime = null, lastSceneIdx = -1, activeRecorder = null, sharedActx = null, sfxDest = null, analyser = null, freqData = null;
     let micRecorder = null, micChunks = [], isMicRecording = false;
-    let activeThemeKey = "luxury", activeBgm = "Dark Trap", activeAvatar = "boss";
+    let activeThemeKey = "luxury", activeBgm = "Dark Trap", activeAvatar = "worker_bot";
 
     const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:odysseus","aura-en:apollo","aura-en:thalia","aura-en:asteria"];
-    const AVATARS = ["boss","bot","host"];
-    const OBJ_3D = ["watch_3d","phone_3d","cube_3d","globe_3d","coins_3d","card_3d","candles_3d","donut_3d","waveform_3d"];
+    const AVATARS = ["worker_bot","boss","host"];
+    const OBJ_3D = ["watch_3d","phone_3d","cube_3d","globe_3d","coins_3d","card_3d","candles_3d","donut_3d"];
     const CAMERAS_3D = ["orbit_3d","whip_zoom","pullback_3d","pan_parallax","swing_tilt"];
     const SFX_LIST = ["bass","whoosh","ding","shutter","riser"];
     const FX_LIST = ["shockwave","flash","glitch_bars"];
     const BGM_LIST = ["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
     const THEMES = {
-      luxury:  {bg:"#0b0803",accent:"#f5c542",dark:"#8a6608",text:"#ffffff",glow:"rgba(245,197,66,0.42)"},
-      crimson: {bg:"#140507",accent:"#ef4444",dark:"#7f1d1d",text:"#ffffff",glow:"rgba(239,68,68,0.42)"},
-      cyber:   {bg:"#051024",accent:"#38bdf8",dark:"#0369a1",text:"#f8fafc",glow:"rgba(56,189,248,0.42)"},
-      finance: {bg:"#02140d",accent:"#10b981",dark:"#047857",text:"#ecfdf5",glow:"rgba(16,185,129,0.42)"},
-      violet:  {bg:"#110621",accent:"#c084fc",dark:"#6b21a8",text:"#faf5ff",glow:"rgba(192,132,252,0.42)"}
+      luxury:{bg:"#0b0803",accent:"#f5c542",dark:"#8a6608",text:"#ffffff",glow:"rgba(245,197,66,0.42)"},
+      crimson:{bg:"#140507",accent:"#ef4444",dark:"#7f1d1d",text:"#ffffff",glow:"rgba(239,68,68,0.42)"},
+      cyber:{bg:"#051024",accent:"#38bdf8",dark:"#0369a1",text:"#f8fafc",glow:"rgba(56,189,248,0.42)"},
+      finance:{bg:"#02140d",accent:"#10b981",dark:"#047857",text:"#ecfdf5",glow:"rgba(16,185,129,0.42)"},
+      violet:{bg:"#110621",accent:"#c084fc",dark:"#6b21a8",text:"#faf5ff",glow:"rgba(192,132,252,0.42)"}
     };
-    const COINS = Array.from({length:12},(_,i)=>({x:0.1+(i*0.075)%0.8, y:(i*0.17)%1, sp:0.25+(i%4)*0.12, ph:i*0.9}));
-    const CUBE_VERTS = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
-    const CUBE_EDGES = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    const EMOJI_RULES = [
+      [/money|cash|\$|rich|wealth|profit|pay|empire|million/i,"💸"],[/fire|viral|boom|hot|explode|fast/i,"🔥"],
+      [/time|hour|watch|clock|second|day|wait/i,"⏰"],[/win|best|top|95%|100%|grow|rocket|scale/i,"🚀"],
+      [/phone|app|mobile|tiktok|reel|algo|social/i,"📱"],[/secret|shock|crazy|mind|wait|never/i,"🤯"],
+      [/ai|brain|smart|system|code|tech|laptop/i,"🤖"],[/world|global|2026|earth/i,"🌍"],
+      [/banana/i,"🍌"],[/fail|waste|stop|broke|wrong/i,"❌"]
+    ];
+    const COINS = Array.from({length:12},(_,i)=>({x:0.1+(i*0.075)%0.8,y:(i*0.17)%1,sp:0.25+(i%4)*0.12,ph:i*0.9}));
+    const CUBE_V = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+    const CUBE_E = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
-    modeSelect.addEventListener("change", () => {
-      const sh = modeSelect.value === "shorts";
-      canvas.width = sh ? 720 : 1280; canvas.height = sh ? 1280 : 720;
-      canvas.style.aspectRatio = sh ? "9/16" : "16/9";
+    document.getElementById("loadStoryBtn").addEventListener("click",()=>{
+      storyModeSelect.value="chat";
+      scriptInput.value="Bro why are you still paying $30/mo for video editors?\nWait... what do you use instead?\nThis free 3D robot AI engine. Zero watermark and exports MP4.\nNo way! Send me the link right now!";
+      statusText.textContent="Text Story loaded!"; startPlayback(null,false);
+    });
+    modeSelect.addEventListener("change",()=>{
+      const sh=modeSelect.value==="shorts";
+      canvas.width=sh?720:1280; canvas.height=sh?1280:720; canvas.style.aspectRatio=sh?"9/16":"16/9";
+    });
+    const getAudioDurationMs=url=>new Promise(res=>{const a=new Audio(url);a.onloadedmetadata=()=>res(isFinite(a.duration)?a.duration*1000:0);a.onerror=()=>res(0);});
+
+    async function fetchWikiPhotos(q){
+      const r=await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=8&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(q)}`);
+      const d=await r.json();
+      return Object.values(d?.query?.pages||{}).filter(p=>p.thumbnail?.source).map(p=>p.thumbnail.source);
+    }
+    async function loadRealPhotoBackup(topic){
+      try{
+        const cq=topic.replace(/\b(a|an|the|sad|crying|how|to|make|best|empire)\b/gi,"").trim()||topic;
+        let urls=await fetchWikiPhotos(cq);
+        if(!urls.length&&cq.includes(" ")) urls=await fetchWikiPhotos(cq.split(" ").pop());
+        const imgs=urls.slice(0,3).map(u=>{const img=new Image();img.crossOrigin="anonymous";img.src=u;return img;});
+        aiImages=imgs;
+        if(imgs[0]) await new Promise(res=>{const t=setTimeout(res,4000);imgs[0].onload=()=>{clearTimeout(t);res();};imgs[0].onerror=()=>{clearTimeout(t);res();};});
+      }catch(e){}
+    }
+    async function generateOwnAiImages(txt,topicFallback){
+      try{
+        const res=await fetch(`${WORKER_URL}/images`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({script:txt,style:activeThemeKey})});
+        if(res.ok){const d=await res.json();if(d.images&&d.images.length){aiImages=d.images.map(s=>{const i=new Image();i.src=s;return i;});return;}}
+      }catch(e){}
+      statusText.textContent="Loading real photos...";
+      await loadRealPhotoBackup(topicFallback||txt.slice(0,60));
+    }
+
+    document.getElementById("genPromptImgBtn").addEventListener("click",async()=>{
+      const dp=document.getElementById("imgPromptInput").value.trim();
+      if(!dp) return alert("Type an image prompt first!");
+      const btn=document.getElementById("genPromptImgBtn"); btn.disabled=true; statusText.textContent="Painting custom AI image...";
+      try{
+        const res=await fetch(`${WORKER_URL}/images`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({directPrompt:dp,script:dp,style:activeThemeKey})});
+        const d=await res.json();
+        if(d.images&&d.images.length){const i=new Image();i.src=d.images[0];aiImages=[i,...aiImages].slice(0,4);statusText.textContent=`Custom AI image added (${aiImages.length})!`;startPlayback(null,false);}
+        else statusText.textContent="Daily AI limit hit — try Upload Own Pics.";
+      }catch(e){statusText.textContent="Error painting image";}finally{btn.disabled=false;}
+    });
+    document.getElementById("customImgUpload").addEventListener("change",e=>{
+      const fs=Array.from(e.target.files).slice(0,6); if(!fs.length) return;
+      aiImages=fs.map(f=>{const i=new Image();i.src=URL.createObjectURL(f);return i;});
+      document.getElementById("customImgLabel").textContent=`✅ ${fs.length} Pic(s)`; startPlayback(null,false);
     });
 
-    const getAudioDurationMs = url => new Promise(res => {
-      const a = new Audio(url);
-      a.onloadedmetadata = () => res(isFinite(a.duration) ? a.duration * 1000 : 0);
-      a.onerror = () => res(0);
+    async function processUploadedVoice(blob,label){
+      audioBufferUrl=URL.createObjectURL(blob); audioDurationMs=await getAudioDurationMs(audioBufferUrl);
+      document.getElementById("audioLabel").textContent=label; statusText.textContent="1/2 Listening to voice...";
+      try{
+        const res=await fetch(`${WORKER_URL}/transcribe`,{method:"POST",body:blob}); const d=await res.json();
+        if(res.ok&&d.transcript){scriptInput.value=d.transcript;scriptInput.dir=/[\u0600-\u06FF]/.test(d.transcript)?"rtl":"ltr";}
+      }catch(e){}
+      statusText.textContent="2/2 Syncing 3D working robot & visuals...";
+      await generateOwnAiImages(scriptInput.value,topicInput.value); startPlayback(null);
+    }
+    document.getElementById("audioUpload").addEventListener("change",e=>{if(e.target.files[0])processUploadedVoice(e.target.files[0],"✅ "+e.target.files[0].name.slice(0,10));});
+    micBtn.addEventListener("click",async()=>{
+      if(isMicRecording){isMicRecording=false;micBtn.classList.remove("recording");micBtn.textContent="🎙️ Record & Auto-Build";if(micRecorder&&micRecorder.state==="recording")micRecorder.stop();return;}
+      try{
+        const ms=await navigator.mediaDevices.getUserMedia({audio:true}); micChunks=[]; micRecorder=new MediaRecorder(ms);
+        micRecorder.ondataavailable=e=>{if(e.data.size>0)micChunks.push(e.data);};
+        micRecorder.onstop=()=>{ms.getTracks().forEach(t=>t.stop());processUploadedVoice(new Blob(micChunks,{type:"audio/webm"}),"✅ Mic Ready");};
+        micRecorder.start();isMicRecording=true;micBtn.classList.add("recording");micBtn.textContent="⏹️ Stop & Build";statusText.textContent="Recording...";
+      }catch(e){statusText.textContent="Mic blocked";}
     });
 
-    async function fetchWikiPhotos(query) {
-      const r = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=8&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(query)}`);
-      const d = await r.json();
-      return Object.values(d?.query?.pages || {}).filter(p => p.thumbnail?.source).map(p => p.thumbnail.source);
-    }
-
-    async function loadRealPhotoBackup(topic) {
-      try {
-        const cleanQ = topic.replace(/\b(a|an|the|sad|crying|how|to|make|best|empire)\b/gi, "").trim() || topic;
-        let urls = await fetchWikiPhotos(cleanQ);
-        if (urls.length === 0 && cleanQ.includes(" ")) urls = await fetchWikiPhotos(cleanQ.split(" ").pop());
-        const imgs = urls.slice(0, 3).map(u => { const img = new Image(); img.crossOrigin = "anonymous"; img.src = u; return img; });
-        aiImages = imgs;
-        if (imgs[0]) {
-          await new Promise(res => {
-            const t = setTimeout(res, 4000);
-            imgs[0].onload = () => { clearTimeout(t); res(); };
-            imgs[0].onerror = () => { clearTimeout(t); res(); };
-          });
-        }
-      } catch (e) {}
-    }
-
-    async function generateOwnAiImages(txt, topicFallback) {
-      try {
-        const res = await fetch(`${WORKER_URL}/images`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({script:txt, style:activeThemeKey})
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.images && data.images.length > 0) {
-            aiImages = data.images.map(s => { const img = new Image(); img.src = s; return img; });
-            return;
-          }
-        }
-      } catch (e) {}
-      statusText.textContent = "Loading real photos for your topic...";
-      await loadRealPhotoBackup(topicFallback || txt.slice(0, 60));
-    }
-
-    async function processUploadedVoice(blob, label) {
-      audioBufferUrl = URL.createObjectURL(blob);
-      audioDurationMs = await getAudioDurationMs(audioBufferUrl);
-      document.getElementById("audioLabel").textContent = label;
-      statusText.textContent = "1/2 Listening to voice...";
-      try {
-        const res = await fetch(`${WORKER_URL}/transcribe`, {method:"POST", body:blob});
-        const data = await res.json();
-        if (res.ok && data.transcript) {
-          scriptInput.value = data.transcript;
-          scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
-        }
-      } catch (e) {}
-      statusText.textContent = "2/2 Syncing talking character & visuals...";
-      await generateOwnAiImages(scriptInput.value, topicInput.value);
-      startPlayback(null);
-    }
-
-    document.getElementById("audioUpload").addEventListener("change", e => {
-      if (e.target.files[0]) processUploadedVoice(e.target.files[0], "✅ " + e.target.files[0].name.slice(0,10));
-    });
-    micBtn.addEventListener("click", async () => {
-      if (isMicRecording) {
-        isMicRecording = false; micBtn.classList.remove("recording"); micBtn.textContent = "🎙️ Record & Talk";
-        if (micRecorder && micRecorder.state === "recording") micRecorder.stop();
-        return;
-      }
-      try {
-        const ms = await navigator.mediaDevices.getUserMedia({audio:true});
-        micChunks = []; micRecorder = new MediaRecorder(ms);
-        micRecorder.ondataavailable = e => { if (e.data.size > 0) micChunks.push(e.data); };
-        micRecorder.onstop = () => { ms.getTracks().forEach(t=>t.stop()); processUploadedVoice(new Blob(micChunks,{type:"audio/webm"}),"✅ Mic Ready"); };
-        micRecorder.start(); isMicRecording = true; micBtn.classList.add("recording"); micBtn.textContent = "⏹️ Stop & Build";
-        statusText.textContent = "Recording... Speak clearly";
-      } catch (e) { statusText.textContent = "Mic blocked"; }
+    aiMagicBtn.addEventListener("click",async()=>{
+      const topic=topicInput.value.trim()||"Luxury Watch Empire",lang=langSelect.value,tk=Object.keys(THEMES);
+      activeThemeKey=tk[Math.floor(Math.random()*tk.length)];
+      let cv=voiceSelect.value; if(cv==="random")cv=EN_VOICES[Math.floor(Math.random()*EN_VOICES.length)]; if(lang==="es")cv="aura-es:sirio";
+      aiMagicBtn.disabled=true; statusText.textContent="1/3 Writing script...";
+      let ok=false;
+      try{
+        const sr=await fetch(`${WORKER_URL}/script`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,lang,tone:activeThemeKey})});
+        if(sr.ok){const sd=await sr.json();if(sd.script){scriptInput.value=sd.script;scriptInput.dir=(lang==="ur"||lang==="ar")?"rtl":"ltr";ok=true;}}
+      }catch(e){}
+      if(!ok) scriptInput.value=`95% of creators waste 10 hours editing manually on laptops. In 2026, smart AI systems move fast and win. Build a $10,000 ${topic} in 90 days.`;
+      statusText.textContent="2/3 Loading photos & voice...";
+      const jobs=[generateOwnAiImages(scriptInput.value,topic)];
+      if(lang==="en"||lang==="es") jobs.push(fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:scriptInput.value,voice:cv})}).then(r=>r.ok?r.blob():null).catch(()=>null));
+      const res=await Promise.all(jobs);
+      if(res[1]){audioBufferUrl=URL.createObjectURL(res[1]);audioDurationMs=await getAudioDurationMs(audioBufferUrl);document.getElementById("audioLabel").textContent="✅ "+cv.split(":")[1].toUpperCase();}
+      aiMagicBtn.disabled=false; startPlayback(null);
     });
 
-    aiMagicBtn.addEventListener("click", async () => {
-      const topic = topicInput.value.trim() || "Luxury Watch Empire", lang = langSelect.value;
-      const tKeys = Object.keys(THEMES);
-      activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
-      let chosenVoice = voiceSelect.value;
-      if (chosenVoice === "random") chosenVoice = EN_VOICES[Math.floor(Math.random() * EN_VOICES.length)];
-      if (lang === "es") chosenVoice = "aura-es:sirio";
+    const extractStat=t=>{const m=t.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|mins|seconds|x)\b)/i);return m?m[0].toUpperCase():null;};
+    const findEmojiForText=txt=>{for(const[rx,em]of EMOJI_RULES){if(rx.test(txt))return em;}return null;};
+    const pickRobotAction=t=>/edit|work|laptop|code|ai|system|build|hours|create/i.test(t)?"typing":/money|\$|rich|profit|empire|chart|95%|100%|grow/i.test(t)?"trading":/move|fast|speed|walk|run|future|2026|time|days/i.test(t)?"walking":"presenting";
+    const matchObjectToWords=(t,fb)=>/watch|time|hour|second|clock|day/i.test(t)?(Math.random()>0.3?"watch_3d":fb):/money|\$|rich|wealth|pay|profit|luxury|gold/i.test(t)?(Math.random()>0.4?"coins_3d":"card_3d"):/phone|app|mobile|social|viral|algo/i.test(t)?"phone_3d":/world|global|2026|network|earth/i.test(t)?"globe_3d":/growth|chart|trade|stock|%/i.test(t)?(Math.random()>0.5?"candles_3d":"donut_3d"):fb;
 
-      aiMagicBtn.disabled = true; statusText.textContent = "1/3 Writing script...";
-      let scriptOk = false;
-      try {
-        const sRes = await fetch(`${WORKER_URL}/script`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({topic, lang, tone:activeThemeKey})
-        });
-        if (sRes.ok) {
-          const sData = await sRes.json();
-          if (sData.script) { scriptInput.value = sData.script; scriptInput.dir = (lang==="ur"||lang==="ar")?"rtl":"ltr"; scriptOk = true; }
-        }
-      } catch (e) {}
-      if (!scriptOk) scriptInput.value = `Look closely at ${topic} right now. 95% of people scroll past the $10,000 secret. Watch how 2026 changes everything.`;
-
-      statusText.textContent = "2/3 Creating visuals & talking voice...";
-      const jobs = [generateOwnAiImages(scriptInput.value, topic)];
-      if (lang === "en" || lang === "es") {
-        jobs.push(fetch(`${WORKER_URL}/tts`, {
-          method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({text:scriptInput.value, voice:chosenVoice})
-        }).then(r => r.ok ? r.blob() : null).catch(() => null));
-      }
-      const results = await Promise.all(jobs);
-      if (results[1]) {
-        audioBufferUrl = URL.createObjectURL(results[1]);
-        audioDurationMs = await getAudioDurationMs(audioBufferUrl);
-        document.getElementById("audioLabel").textContent = "✅ " + chosenVoice.split(":")[1].toUpperCase();
-      }
-      aiMagicBtn.disabled = false;
-      startPlayback(null);
-    });
-
-    const extractStat = t => {
-      const m = t.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|mins|seconds|x)\b)/i);
-      return m ? m[0].toUpperCase() : null;
-    };
-
-    function matchObjectToWords(text, fallback) {
-      if (/watch|time|hour|second|clock|day/i.test(text)) return Math.random() > 0.3 ? "watch_3d" : fallback;
-      if (/money|\$|rich|wealth|pay|profit|luxury|gold/i.test(text)) return Math.random() > 0.4 ? "coins_3d" : "card_3d";
-      if (/phone|app|mobile|social|viral|algo/i.test(text)) return "phone_3d";
-      if (/world|global|2026|network|earth/i.test(text)) return "globe_3d";
-      if (/growth|chart|trade|stock|%/i.test(text)) return Math.random() > 0.5 ? "candles_3d" : "donut_3d";
-      return fallback;
+    function buildScenes(randTheme=false){
+      if(randTheme){const tk=Object.keys(THEMES);activeThemeKey=tk[Math.floor(Math.random()*tk.length)];}
+      const av=avatarSelect.value; activeAvatar=av==="random"?AVATARS[Math.floor(Math.random()*AVATARS.length)]:av;
+      activeBgm=BGM_LIST[Math.floor(Math.random()*BGM_LIST.length)];
+      const isChat=storyModeSelect.value==="chat";
+      const parts=isChat?scriptInput.value.trim().split(/\n+/).filter(Boolean):scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
+      scenes=(parts.length?parts:["Tap AI Build above."]).map(t=>({text:t,stat:extractStat(t),rtl:/[\u0600-\u06FF]/.test(t)}));
+      sceneDurationMs=audioDurationMs>1000?Math.max(2200,(audioDurationMs+300)/scenes.length):(isChat?2600:3300);
+      const op=[...OBJ_3D].sort(()=>Math.random()-0.5),cp=[...CAMERAS_3D].sort(()=>Math.random()-0.5),sp=[...SFX_LIST].sort(()=>Math.random()-0.5),fp=[...FX_LIST].sort(()=>Math.random()-0.5);
+      scenePlans=scenes.map((sc,i)=>({action:pickRobotAction(sc.text),obj:matchObjectToWords(sc.text,op[i%op.length]),cam:cp[i%cp.length],sfx:isChat?"ding":sp[i%sp.length],fx:fp[i%fp.length]}));
     }
 
-    function buildScenes(randomizeTheme = false) {
-      if (randomizeTheme) {
-        const tKeys = Object.keys(THEMES);
-        activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
-      }
-      const avSel = avatarSelect.value;
-      activeAvatar = avSel === "random" ? AVATARS[Math.floor(Math.random() * AVATARS.length)] : avSel;
-      activeBgm = BGM_LIST[Math.floor(Math.random() * BGM_LIST.length)];
-      const parts = scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Tap AI Build Talking Reel."]).map(t => ({
-        text:t, stat:extractStat(t), rtl:/[\u0600-\u06FF]/.test(t)
-      }));
-      sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
-      const op = [...OBJ_3D].sort(() => Math.random() - 0.5);
-      const cp = [...CAMERAS_3D].sort(() => Math.random() - 0.5);
-      const sp = [...SFX_LIST].sort(() => Math.random() - 0.5);
-      const fp = [...FX_LIST].sort(() => Math.random() - 0.5);
-      scenePlans = scenes.map((sc, i) => ({
-        obj: matchObjectToWords(sc.text, op[i % op.length]),
-        cam: cp[i % cp.length], sfx: sp[i % sp.length], fx: fp[i % fp.length]
-      }));
+    function getEnergy(el){
+      if(analyser&&freqData){analyser.getByteFrequencyData(freqData);let s=0;for(let i=0;i<12;i++)s+=freqData[i];const v=s/(12*255);if(v>0.02)return v;}
+      return 0.25+0.2*Math.abs(Math.sin(el*0.006));
+    }
+    function getMouthOpen(el){
+      if(audioEl&&!audioEl.paused&&analyser&&freqData){analyser.getByteFrequencyData(freqData);let sp=0;for(let i=1;i<10;i++)sp+=freqData[i];return Math.min(1,Math.max(0,(sp/(9*180))-0.08)*1.6);}
+      return Math.max(0,Math.sin(el*0.019)*(0.4+0.6*Math.sin(el*0.007)));
     }
 
-    function getEnergy(el) {
-      if (analyser && freqData) {
-        analyser.getByteFrequencyData(freqData);
-        let s = 0; for (let i = 0; i < 12; i++) s += freqData[i];
-        const v = s / (12 * 255); if (v > 0.02) return v;
-      }
-      return 0.25 + 0.2 * Math.abs(Math.sin(el * 0.006));
-    }
-
-    function getMouthOpen(el) {
-      if (audioEl && !audioEl.paused && analyser && freqData) {
-        analyser.getByteFrequencyData(freqData);
-        let speech = 0; for (let i = 1; i < 10; i++) speech += freqData[i];
-        return Math.min(1, Math.max(0, (speech / (9 * 180)) - 0.08) * 1.6);
-      }
-      return Math.max(0, Math.sin(el * 0.019) * (0.4 + 0.6 * Math.sin(el * 0.007)));
-    }
-
-    function drawTalkingAvatar(type, theme, mouth, en, el) {
-      if (type === "off") return;
-      const W = canvas.width, H = canvas.height, cx = W / 2, cy = H * 0.30;
-      const bob = Math.sin(el * 0.005) * 6 + mouth * -4;
-      const jaw = mouth * 18;
-      const blink = (el % 3600) > 3460;
-
-      ctx.save();
-      ctx.translate(cx, cy + bob);
-
-      // Soft aura behind character
-      const aura = ctx.createRadialGradient(0, -10, 20, 0, 0, 210);
-      aura.addColorStop(0, theme.glow); aura.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = aura; ctx.beginPath(); ctx.arc(0, 0, 210, 0, 6.28); ctx.fill();
-
-      ctx.shadowColor = theme.accent; ctx.shadowBlur = 18 + en * 16;
-
-      if (type === "boss") {
-        // Tailored dark luxury suit shoulders
-        ctx.fillStyle = "#090b10"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(-115, 165); ctx.quadraticCurveTo(-110, 75, -40, 62);
-        ctx.lineTo(40, 62); ctx.quadraticCurveTo(110, 75, 115, 165); ctx.closePath(); ctx.fill(); ctx.stroke();
-        // Shirt V & glowing tie
-        ctx.fillStyle = "#e2e8f0"; ctx.beginPath(); ctx.moveTo(-26, 62); ctx.lineTo(0, 128); ctx.lineTo(26, 62); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.moveTo(-8, 72); ctx.lineTo(8, 72); ctx.lineTo(11, 155); ctx.lineTo(-11, 155); ctx.closePath(); ctx.fill();
-        // Neck & 3D shaded head
-        ctx.fillStyle = "#c68642"; ctx.fillRect(-20, 35, 40, 34);
-        const hg = ctx.createRadialGradient(-16, -24, 10, 0, 0, 78);
-        hg.addColorStop(0, "#f1c27d"); hg.addColorStop(1, "#a66a38");
-        ctx.fillStyle = hg; ctx.beginPath(); ctx.roundRect(-52, -62, 104, 116 + jaw * 0.25, 46); ctx.fill();
-        // Hair
-        ctx.fillStyle = "#111318"; ctx.beginPath(); ctx.arc(0, -36, 55, Math.PI, 0); ctx.fill();
-        // Luxury Sunglasses
-        ctx.fillStyle = "#05070a"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.roundRect(-45, -24, 40, 22, 6); ctx.roundRect(5, -24, 40, 22, 6); ctx.fill(); ctx.stroke();
-        ctx.fillRect(-5, -17, 10, 4);
-        // Talking Mouth
-        ctx.fillStyle = "#2b0909"; ctx.strokeStyle = "#8c3b3b"; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.ellipse(0, 24 + jaw * 0.25, 16 + mouth * 5, 3 + jaw * 0.7, 0, 0, 6.28); ctx.fill(); ctx.stroke();
-        if (mouth > 0.25) { ctx.fillStyle = "#fff"; ctx.fillRect(-10, 22, 20, 4); }
-      } else if (type === "bot") {
-        // Cyber AI Robot Body
-        ctx.fillStyle = "#111827"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.roundRect(-85, 70, 170, 95, 32); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.arc(0, 118, 16 + en * 8, 0, 6.28); ctx.fill();
-        // Antenna
-        ctx.beginPath(); ctx.moveTo(0, -70); ctx.lineTo(0, -104); ctx.stroke();
-        ctx.beginPath(); ctx.arc(0, -110, 9, 0, 6.28); ctx.fill();
-        // 3D Helmet Head
-        const bg = ctx.createLinearGradient(-65, -70, 65, 65);
-        bg.addColorStop(0, "#1e293b"); bg.addColorStop(1, "#090d16");
-        ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(-66, -70, 132, 126, 36); ctx.fill(); ctx.stroke();
-        // Visor Screen
-        ctx.fillStyle = "#030712"; ctx.beginPath(); ctx.roundRect(-50, -45, 100, 44, 14); ctx.fill();
-        ctx.fillStyle = theme.accent;
-        if (blink) { ctx.fillRect(-35, -24, 22, 4); ctx.fillRect(13, -24, 22, 4); }
-        else { ctx.beginPath(); ctx.arc(-24, -23, 10, 0, 6.28); ctx.arc(24, -23, 10, 0, 6.28); ctx.fill(); }
-        // LED Equalizer Mouth
-        for (let b = -3; b <= 3; b++) {
-          const bh = 4 + (1 - Math.abs(b) * 0.2) * (mouth * 26);
-          ctx.fillRect(b * 11 - 4, 26 - bh / 2, 7, bh);
-        }
-      } else if (type === "host") {
-        // Podcast Creator
-        ctx.fillStyle = "#171717"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.roundRect(-95, 68, 190, 98, 40); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = "#d49a6a"; ctx.fillRect(-18, 36, 36, 36);
-        ctx.beginPath(); ctx.roundRect(-50, -58, 100, 112 + jaw * 0.2, 46); ctx.fill();
-        // Headphones
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 8;
-        ctx.beginPath(); ctx.arc(0, -10, 60, Math.PI, 0); ctx.stroke();
-        ctx.fillStyle = "#0f172a"; ctx.fillRect(-66, -24, 18, 46); ctx.fillRect(48, -24, 18, 46);
-        // Eyes
-        ctx.fillStyle = "#090b10";
-        if (blink) { ctx.fillRect(-26, -16, 14, 3); ctx.fillRect(12, -16, 14, 3); }
-        else { ctx.beginPath(); ctx.arc(-19, -15, 6, 0, 6.28); ctx.arc(19, -15, 6, 0, 6.28); ctx.fill(); }
-        // Mouth + Studio Mic in front
-        ctx.fillStyle = "#2b0909"; ctx.beginPath(); ctx.ellipse(0, 22 + jaw * 0.2, 14 + mouth * 5, 3 + jaw * 0.7, 0, 0, 6.28); ctx.fill();
-        ctx.fillStyle = "#1e293b"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.roundRect(-16, 52, 32, 48, 16); ctx.fill(); ctx.stroke();
-        ctx.fillRect(-3, 100, 6, 65);
-      }
-
+    function drawWorkingRobot(action,theme,mouth,en,el,p){
+      const W=canvas.width,H=canvas.height,cx=W/2,baseY=H*0.33;
+      const wc=action==="walking"?el*0.008:el*0.003;
+      const sy=action==="walking"?Math.abs(Math.cos(wc))*12:Math.sin(el*0.005)*5;
+      const wx=action==="walking"?Math.sin(p*3.14)*36:0,blink=(el%3600)>3460;
+      ctx.save(); ctx.translate(cx+wx,baseY-sy); ctx.shadowColor=theme.accent; ctx.shadowBlur=20+en*18;
+      const mt=ctx.createLinearGradient(-50,-80,50,120); mt.addColorStop(0,"#334155"); mt.addColorStop(0.5,"#1e293b"); mt.addColorStop(1,"#090d16");
+      ctx.save(); ctx.shadowBlur=0; ctx.fillStyle="rgba(0,0,0,0.45)"; ctx.beginPath(); ctx.ellipse(0,152+sy,70-sy,14,0,0,6.28); ctx.fill(); ctx.restore();
+      const lA=action==="walking"?Math.sin(wc)*0.42:0.06, lB=action==="walking"?-Math.sin(wc)*0.42:-0.06;
+      [[-22,lA],[22,lB]].forEach(([lx,a])=>{ctx.save();ctx.translate(lx,60);ctx.rotate(a);ctx.fillStyle=mt;ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(-12,0,24,76,10);ctx.fill();ctx.stroke();ctx.fillStyle=theme.accent;ctx.beginPath();ctx.roundRect(-15,70,32,16,8);ctx.fill();ctx.restore();});
+      ctx.fillStyle=mt; ctx.strokeStyle=theme.accent; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.roundRect(-48,-28,96,96,22); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=theme.accent; ctx.beginPath(); ctx.arc(0,18,14+en*7,0,6.28); ctx.fill();
+      ctx.save(); ctx.translate(0,-76+(action==="typing"?6:0)); ctx.rotate(action==="trading"?-0.08:Math.sin(el*0.004)*0.05);
+      ctx.fillStyle=mt; ctx.beginPath(); ctx.roundRect(-44,-44,88,82,24); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,-44); ctx.lineTo(0,-64); ctx.stroke();
+      ctx.fillStyle=theme.accent; ctx.beginPath(); ctx.arc(0,-68,7,0,6.28); ctx.fill();
+      ctx.fillStyle="#030712"; ctx.beginPath(); ctx.roundRect(-34,-26,68,30,10); ctx.fill();
+      ctx.fillStyle=theme.accent;
+      if(blink){ctx.fillRect(-24,-12,16,3);ctx.fillRect(8,-12,16,3);}
+      else{ctx.beginPath();ctx.arc(-16,-11,7,0,6.28);ctx.arc(16,-11,7,0,6.28);ctx.fill();}
+      for(let b=-2;b<=2;b++){const bh=3+(1-Math.abs(b)*0.25)*(mouth*20);ctx.fillRect(b*9-3,20-bh/2,6,bh);}
       ctx.restore();
-    }
-
-    function project3D(x, y, z, rx, ry, cx, cy, scale) {
-      let x1 = x * Math.cos(ry) - z * Math.sin(ry), z1 = x * Math.sin(ry) + z * Math.cos(ry);
-      let y2 = y * Math.cos(rx) - z1 * Math.sin(rx), z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
-      const fov = scale / (4.2 + z2);
-      return [cx + x1 * fov, cy + y2 * fov];
-    }
-
-    function draw3DObject(obj, theme, p, e, el, hasAvatar) {
-      const W = canvas.width, H = canvas.height;
-      const cx = hasAvatar ? W * 0.80 : W * 0.5, cy = hasAvatar ? H * 0.16 : H * 0.27;
-      const scFactor = hasAvatar ? 0.52 : 1.0;
-      ctx.save();
-      ctx.translate(cx, cy); ctx.scale(scFactor, scFactor); ctx.translate(-cx, -cy);
-      ctx.shadowColor = theme.accent; ctx.shadowBlur = 22 + e * 18;
-
-      if (obj === "watch_3d") {
-        ctx.translate(cx, cy); const r = 88; ctx.fillStyle = theme.dark; ctx.fillRect(-32, -145, 64, 290);
-        ctx.fillStyle = "#090b10"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 8;
-        ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.28); ctx.fill(); ctx.stroke();
-        const sa = el * 0.006, ma = el * 0.001;
-        ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ma)*52, Math.sin(ma)*52); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(sa)*68, Math.sin(sa)*68); ctx.stroke();
-      } else if (obj === "cube_3d") {
-        const pts = CUBE_VERTS.map(v => project3D(v[0], v[1], v[2], el*0.0013, el*0.002, cx, cy, Math.min(W, H)*(0.45+e*0.12)));
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
-        CUBE_EDGES.forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); ctx.stroke(); });
-      } else if (obj === "globe_3d") {
-        const ry = el * 0.0016, r = 1.25, sc = Math.min(W, H) * 0.36; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
-        for (let lat = -1; lat <= 1; lat += 0.5) {
-          const rad = Math.sqrt(Math.max(0.05, r*r - lat*lat)); ctx.beginPath();
-          for (let a = 0; a <= 24; a++) { const ang = (a/24)*6.28, [px,py]=project3D(Math.cos(ang)*rad,lat,Math.sin(ang)*rad,0.35,ry,cx,cy,sc); a===0?ctx.moveTo(px,py):ctx.lineTo(px,py); }
-          ctx.stroke();
-        }
-      } else if (obj === "phone_3d") {
-        ctx.translate(cx, cy); ctx.transform(1, -0.06, 0.08, 0.94, 0, 0);
-        ctx.fillStyle = "#0b1120"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.roundRect(-95, -155, 190, 310, 26); ctx.fill(); ctx.stroke();
-        ctx.shadowBlur = 0; ctx.fillStyle = theme.accent; ctx.font = "900 26px -apple-system,sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("+$10,420", 0, -75);
-      } else if (obj === "coins_3d") {
-        ctx.restore(); ctx.save();
-        COINS.forEach(c => {
-          const y = ((c.y + p * c.sp * 1.4) % 1) * H, x = c.x * W;
-          const w = Math.max(0.12, Math.abs(Math.cos(el * 0.005 + c.ph))) * 22;
-          ctx.save(); ctx.translate(x, y);
-          ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.ellipse(0, 0, w, 22, 0, 0, 6.28); ctx.fill();
-          if (w > 9) { ctx.fillStyle = "#07090e"; ctx.font = `900 ${Math.round(w)}px sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("$",0,1); }
-          ctx.restore();
-        });
-      } else if (obj === "card_3d") {
-        ctx.translate(cx, cy); ctx.scale(Math.max(0.18, Math.abs(Math.cos(el * 0.003))), 1);
-        ctx.fillStyle = "#0f172a"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.roundRect(-140, -85, 280, 170, 18); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = theme.accent; ctx.fillRect(-105, -25, 42, 32);
-      } else if (obj === "candles_3d") {
-        for (let i = 0; i < 6; i++) {
-          const bh = (50 + i * 28) * Math.min(1, p * 1.4), bx = cx - 120 + i * 44, by = cy + 60 - bh;
-          ctx.fillStyle = theme.accent; ctx.fillRect(bx, by, 26, bh);
-        }
-      } else if (obj === "donut_3d") {
-        ctx.lineWidth = 16; ctx.strokeStyle = theme.dark; ctx.beginPath(); ctx.arc(cx, cy, 68, 0, 6.28); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, 68, -1.57, -1.57 + 6.28 * Math.min(0.95, p*1.3)); ctx.stroke();
-        ctx.shadowBlur = 0; ctx.fillStyle="#fff"; ctx.font="900 28px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(Math.round(Math.min(95,p*120))+"%", cx, cy);
-      } else if (obj === "waveform_3d") {
-        ctx.restore(); ctx.save();
-        for (let i = 0; i < 22; i++) {
-          const h = (20 + Math.abs(Math.sin(el*0.012+i*0.6))*95)*(0.6+e);
-          ctx.fillStyle = theme.accent; ctx.fillRect((W - 22*26)/2 + i*26, H*0.85 - h/2, 16, h);
-        }
+      const aL=action==="walking"?-Math.sin(wc)*0.45:action==="typing"?-0.9+Math.sin(el*0.025)*0.16:action==="trading"?0.35:-0.45-en*0.4;
+      const aR=action==="walking"?Math.sin(wc)*0.45:action==="typing"?0.9+Math.cos(el*0.025)*0.16:action==="trading"?-1.9+Math.sin(el*0.006)*0.15:0.45+en*0.4;
+      [[-54,aL],[54,aR]].forEach(([ax,a])=>{ctx.save();ctx.translate(ax,-14);ctx.rotate(a);ctx.fillStyle=mt;ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(-10,0,20,66,10);ctx.fill();ctx.stroke();ctx.fillStyle=theme.accent;ctx.beginPath();ctx.arc(0,68,9,0,6.28);ctx.fill();ctx.restore();});
+      if(action==="typing"){
+        ctx.save();ctx.translate(0,48);ctx.fillStyle="rgba(15,23,42,0.85)";ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;
+        ctx.beginPath();ctx.roundRect(-64,-38,128,64,10);ctx.fill();ctx.stroke();
+        ctx.fillStyle=theme.accent;ctx.font="800 16px monospace";ctx.textAlign="center";ctx.fillText("AI_EDIT.EXE",0,-10);
+        for(let k=0;k<4;k++)ctx.fillRect(-42+k*24,6+Math.sin(el*0.02+k)*4,14,6);ctx.restore();
+      }
+      if(action==="trading"){
+        ctx.save();ctx.translate(125,-45);ctx.fillStyle="rgba(10,18,28,0.85)";ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;
+        ctx.beginPath();ctx.roundRect(-62,-48,124,96,12);ctx.fill();ctx.stroke();ctx.beginPath();
+        [24,10,16,-8,-26].forEach((yy,i)=>i===0?ctx.moveTo(-44+i*22,yy):ctx.lineTo(-44+i*22,yy));ctx.stroke();
+        ctx.fillStyle=theme.accent;ctx.font="900 18px sans-serif";ctx.textAlign="center";ctx.fillText("+95% 🚀",0,-28);ctx.restore();
       }
       ctx.restore();
     }
 
-    function drawSceneTransition(sel, theme, fxType) {
-      if (sel > 280) return;
-      const t = 1 - sel / 280; ctx.save();
-      if (fxType === "shockwave") {
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 14 * t; ctx.globalAlpha = t * 0.85;
-        ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, (1-t)*canvas.width*0.8, 0, 6.28); ctx.stroke();
-      } else if (fxType === "flash") {
-        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.35; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      } else {
-        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.6;
-        for (let i = 0; i < 4; i++) ctx.fillRect(Math.sin(sel+i)*40, ((i*240+sel)%canvas.height), canvas.width, 10);
+    function drawChatStoryOverlay(idx,p,theme){
+      const W=canvas.width,H=canvas.height,cw=W*0.86,cx=(W-cw)/2,topY=H*0.14;
+      ctx.save();ctx.fillStyle="rgba(18,22,32,0.92)";ctx.strokeStyle="rgba(255,255,255,0.12)";ctx.lineWidth=2;
+      ctx.beginPath();ctx.roundRect(cx,topY,cw,74,18);ctx.fill();ctx.stroke();
+      ctx.fillStyle=theme.accent;ctx.beginPath();ctx.arc(cx+42,topY+37,22,0,6.28);ctx.fill();
+      ctx.fillStyle="#07090e";ctx.font="900 22px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("A",cx+42,topY+38);
+      ctx.fillStyle="#fff";ctx.font="800 24px sans-serif";ctx.textAlign="left";ctx.fillText("Alex • iMessage",cx+78,topY+30);
+      ctx.fillStyle="#10b981";ctx.font="600 16px sans-serif";ctx.fillText("● Online now",cx+78,topY+54);ctx.restore();
+      let curY=topY+96;
+      for(let i=Math.max(0,idx-3);i<=idx;i++){
+        const msg=scenes[i].text,isMe=i%2===0,isNew=i===idx,ps=isNew?Math.min(1,p*5):1;
+        ctx.save();ctx.font="700 26px -apple-system,sans-serif";
+        const words=msg.split(" "),lines=[];let ln="";
+        for(const w of words){const t=ln+w+" ";if(ctx.measureText(t).width>cw*0.72&&ln!==""){lines.push(ln.trim());ln=w+" ";}else ln=t;}
+        lines.push(ln.trim());
+        const bh=lines.length*34+28,bw=Math.min(cw*0.82,Math.max(...lines.map(l=>ctx.measureText(l).width))+36),bx=isMe?(cx+cw-bw):cx;
+        ctx.translate(bx+bw/2,curY+bh/2);ctx.scale(ps,ps);ctx.translate(-(bx+bw/2),-(curY+bh/2));
+        ctx.fillStyle=isMe?"#0a84ff":"#262629";ctx.beginPath();ctx.roundRect(bx,curY,bw,bh,20);ctx.fill();
+        ctx.fillStyle="#fff";ctx.textAlign="left";ctx.textBaseline="top";
+        lines.forEach((l,li)=>ctx.fillText(l,bx+18,curY+14+li*34));
+        if(isNew){const em=findEmojiForText(msg);if(em){ctx.font="40px sans-serif";ctx.fillText(em,isMe?bx-22:bx+bw-10,curY-14);}}
+        ctx.restore();curY+=bh+18;
+      }
+    }
+
+    function drawTalkingAvatar(type,action,theme,mouth,en,el,p){
+      if(type==="off")return;
+      if(type==="worker_bot"){drawWorkingRobot(action,theme,mouth,en,el,p);return;}
+      const W=canvas.width,H=canvas.height,cx=W/2,cy=H*0.29,bob=Math.sin(el*0.005)*6+mouth*-4,jaw=mouth*18,blink=(el%3600)>3460;
+      ctx.save();ctx.translate(cx,cy+bob);ctx.shadowColor=theme.accent;ctx.shadowBlur=18+en*16;
+      if(type==="boss"){
+        ctx.fillStyle="#090b10";ctx.strokeStyle=theme.accent;ctx.lineWidth=3;
+        ctx.beginPath();ctx.moveTo(-110,160);ctx.quadraticCurveTo(-105,72,-38,60);ctx.lineTo(38,60);ctx.quadraticCurveTo(105,72,110,160);ctx.closePath();ctx.fill();ctx.stroke();
+        ctx.fillStyle="#e2e8f0";ctx.beginPath();ctx.moveTo(-25,60);ctx.lineTo(0,125);ctx.lineTo(25,60);ctx.closePath();ctx.fill();
+        ctx.fillStyle=theme.accent;ctx.beginPath();ctx.moveTo(-8,70);ctx.lineTo(8,70);ctx.lineTo(10,150);ctx.lineTo(-10,150);ctx.closePath();ctx.fill();
+        ctx.fillStyle="#c68642";ctx.fillRect(-18,35,36,32);ctx.fillStyle="#e0ac69";ctx.beginPath();ctx.roundRect(-50,-60,100,112+jaw*0.25,44);ctx.fill();
+        ctx.fillStyle="#111318";ctx.beginPath();ctx.arc(0,-35,53,Math.PI,0);ctx.fill();
+        ctx.fillStyle="#05070a";ctx.strokeStyle=theme.accent;ctx.beginPath();ctx.roundRect(-44,-22,38,21,6);ctx.roundRect(6,-22,38,21,6);ctx.fill();ctx.stroke();
+        ctx.fillStyle="#2b0909";ctx.beginPath();ctx.ellipse(0,24+jaw*0.25,16+mouth*5,3+jaw*0.7,0,0,6.28);ctx.fill();
+      }else{
+        ctx.fillStyle="#171717";ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(-92,66,184,94,38);ctx.fill();ctx.stroke();
+        ctx.fillStyle="#d49a6a";ctx.fillRect(-18,35,36,35);ctx.beginPath();ctx.roundRect(-48,-56,96,108+jaw*0.2,44);ctx.fill();
+        ctx.strokeStyle=theme.accent;ctx.lineWidth=8;ctx.beginPath();ctx.arc(0,-10,58,Math.PI,0);ctx.stroke();
+        ctx.fillStyle="#090b10";if(blink){ctx.fillRect(-25,-16,14,3);ctx.fillRect(11,-16,14,3);}else{ctx.beginPath();ctx.arc(-18,-15,6,0,6.28);ctx.arc(18,-15,6,0,6.28);ctx.fill();}
+        ctx.fillStyle="#2b0909";ctx.beginPath();ctx.ellipse(0,22+jaw*0.2,14+mouth*5,3+jaw*0.7,0,0,6.28);ctx.fill();
+        ctx.fillStyle="#1e293b";ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.roundRect(-15,50,30,46,15);ctx.fill();ctx.stroke();ctx.fillRect(-3,96,6,60);
       }
       ctx.restore();
     }
 
-    function playSceneSfx(type) {
-      if (!sharedActx || !beatToggle.checked) return;
-      try {
-        const now = sharedActx.currentTime;
-        if (type === "ding") {
-          [1760, 2637].forEach((freq, i) => {
-            const o = sharedActx.createOscillator(), g = sharedActx.createGain();
-            o.type = "sine"; o.frequency.setValueAtTime(freq, now+i*0.06);
-            g.gain.setValueAtTime(0.15, now+i*0.06); g.gain.exponentialRampToValueAtTime(0.001, now+0.38);
-            o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-            o.start(now+i*0.06); o.stop(now+0.4);
-          });
-        } else if (type === "whoosh" || type === "shutter") {
-          const dur = type==="shutter"?0.07:0.24, sz = Math.floor(sharedActx.sampleRate*dur), buf = sharedActx.createBuffer(1,sz,sharedActx.sampleRate), d = buf.getChannelData(0);
-          for (let i=0;i<sz;i++) d[i]=(Math.random()*2-1)*(1-i/sz);
-          const src = sharedActx.createBufferSource(); src.buffer = buf;
-          const f = sharedActx.createBiquadFilter(); f.type = "bandpass"; f.frequency.setValueAtTime(type==="shutter"?3200:400, now);
-          if (type==="whoosh") f.frequency.exponentialRampToValueAtTime(2200, now+dur);
-          const g = sharedActx.createGain(); g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now+dur);
-          src.connect(f); f.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); src.start(now);
-        } else {
-          const o = sharedActx.createOscillator(), g = sharedActx.createGain();
-          o.type = type==="riser"?"sawtooth":"sine"; o.frequency.setValueAtTime(type==="riser"?90:125, now);
-          o.frequency.exponentialRampToValueAtTime(type==="riser"?440:35, now+0.26);
-          g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.28);
-          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); o.start(now); o.stop(now+0.3);
-        }
-      } catch (e) {}
+    function project3D(x,y,z,rx,ry,cx,cy,sc){
+      let x1=x*Math.cos(ry)-z*Math.sin(ry),z1=x*Math.sin(ry)+z*Math.cos(ry),y2=y*Math.cos(rx)-z1*Math.sin(rx),z2=y*Math.sin(rx)+z1*Math.cos(rx);
+      return[cx+x1*(sc/(4.2+z2)),cy+y2*(sc/(4.2+z2))];
+    }
+    function draw3DObject(obj,theme,p,e,el,hasAv){
+      const W=canvas.width,H=canvas.height,cx=hasAv?W*0.18:W*0.5,cy=hasAv?H*0.16:H*0.27;
+      ctx.save();ctx.translate(cx,cy);ctx.scale(hasAv?0.48:1,hasAv?0.48:1);ctx.translate(-cx,-cy);
+      ctx.shadowColor=theme.accent;ctx.shadowBlur=22+e*18;
+      if(obj==="watch_3d"){
+        ctx.translate(cx,cy);ctx.fillStyle=theme.dark;ctx.fillRect(-32,-145,64,290);
+        ctx.fillStyle="#090b10";ctx.strokeStyle=theme.accent;ctx.lineWidth=8;ctx.beginPath();ctx.arc(0,0,88,0,6.28);ctx.fill();ctx.stroke();
+        ctx.strokeStyle="#fff";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(el*0.001)*52,Math.sin(el*0.001)*52);ctx.stroke();
+        ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(el*0.006)*68,Math.sin(el*0.006)*68);ctx.stroke();
+      }else if(obj==="cube_3d"){
+        const pts=CUBE_V.map(v=>project3D(v[0],v[1],v[2],el*0.0013,el*0.002,cx,cy,Math.min(W,H)*(0.45+e*0.12)));
+        ctx.strokeStyle=theme.accent;ctx.lineWidth=4;CUBE_E.forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(pts[a][0],pts[a][1]);ctx.lineTo(pts[b][0],pts[b][1]);ctx.stroke();});
+      }else if(obj==="globe_3d"){
+        const ry=el*0.0016,r=1.25,sc=Math.min(W,H)*0.36;ctx.strokeStyle=theme.accent;ctx.lineWidth=2.5;
+        for(let lat=-1;lat<=1;lat+=0.5){const rad=Math.sqrt(Math.max(0.05,r*r-lat*lat));ctx.beginPath();for(let a=0;a<=24;a++){const ang=(a/24)*6.28,[px,py]=project3D(Math.cos(ang)*rad,lat,Math.sin(ang)*rad,0.35,ry,cx,cy,sc);a===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}ctx.stroke();}
+      }else if(obj==="phone_3d"){
+        ctx.translate(cx,cy);ctx.transform(1,-0.06,0.08,0.94,0,0);ctx.fillStyle="#0b1120";ctx.strokeStyle=theme.accent;ctx.lineWidth=4;ctx.beginPath();ctx.roundRect(-95,-155,190,310,26);ctx.fill();ctx.stroke();
+        ctx.shadowBlur=0;ctx.fillStyle=theme.accent;ctx.font="900 26px sans-serif";ctx.textAlign="center";ctx.fillText("+$10,420",0,-75);
+      }else if(obj==="coins_3d"){
+        ctx.restore();ctx.save();
+        COINS.forEach(c=>{const y=((c.y+p*c.sp*1.4)%1)*H,x=c.x*W,w=Math.max(0.12,Math.abs(Math.cos(el*0.005+c.ph)))*22;ctx.save();ctx.translate(x,y);ctx.fillStyle=theme.accent;ctx.beginPath();ctx.ellipse(0,0,w,22,0,0,6.28);ctx.fill();if(w>9){ctx.fillStyle="#07090e";ctx.font=`900 ${Math.round(w)}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("$",0,1);}ctx.restore();});
+      }else if(obj==="card_3d"){
+        ctx.translate(cx,cy);ctx.scale(Math.max(0.18,Math.abs(Math.cos(el*0.003))),1);ctx.fillStyle="#0f172a";ctx.strokeStyle=theme.accent;ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(-140,-85,280,170,18);ctx.fill();ctx.stroke();ctx.fillStyle=theme.accent;ctx.fillRect(-105,-25,42,32);
+      }else if(obj==="candles_3d"){
+        for(let i=0;i<6;i++){const bh=(50+i*28)*Math.min(1,p*1.4);ctx.fillStyle=theme.accent;ctx.fillRect(cx-120+i*44,cy+60-bh,26,bh);}
+      }else if(obj==="donut_3d"){
+        ctx.lineWidth=16;ctx.strokeStyle=theme.dark;ctx.beginPath();ctx.arc(cx,cy,68,0,6.28);ctx.stroke();
+        ctx.strokeStyle=theme.accent;ctx.beginPath();ctx.arc(cx,cy,68,-1.57,-1.57+6.28*Math.min(0.95,p*1.3));ctx.stroke();
+        ctx.shadowBlur=0;ctx.fillStyle="#fff";ctx.font="900 28px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(Math.round(Math.min(95,p*120))+"%",cx,cy);
+      }
+      ctx.restore();
     }
 
-    function startBgm() {
-      clearInterval(beatInterval); if (!beatToggle.checked || !sharedActx) return;
-      let step = 0; const ms = activeBgm==="Doc Heartbeat"?650:activeBgm==="Cyber Synth"?260:440;
-      const tick = () => {
-        if (!sharedActx) return;
-        try {
-          const now = sharedActx.currentTime, o = sharedActx.createOscillator(), g = sharedActx.createGain();
-          if (activeBgm==="Cyber Synth") { o.type="sawtooth"; o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now); g.gain.setValueAtTime(0.05,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.22); }
-          else if (activeBgm==="Tech Ambient") { o.type="sine"; o.frequency.setValueAtTime([220,277.2,329.6][step%3],now); g.gain.setValueAtTime(0.06,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.42); }
-          else if (activeBgm==="Doc Heartbeat") { o.type="sine"; o.frequency.setValueAtTime(step%2===0?62:48,now); g.gain.setValueAtTime(0.14,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.2); }
-          else { o.type="triangle"; o.frequency.setValueAtTime(step%4===0?55:49,now); g.gain.setValueAtTime(0.09,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.35); }
-          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); o.start(now); o.stop(now+0.43); step++;
-        } catch (e) {}
+    function drawSceneTransition(sel,theme,fx){
+      if(sel>260)return;const t=1-sel/260;ctx.save();
+      if(fx==="shockwave"){ctx.strokeStyle=theme.accent;ctx.lineWidth=14*t;ctx.globalAlpha=t*0.85;ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,(1-t)*canvas.width*0.8,0,6.28);ctx.stroke();}
+      else if(fx==="flash"){ctx.fillStyle=theme.accent;ctx.globalAlpha=t*0.32;ctx.fillRect(0,0,canvas.width,canvas.height);}
+      else{ctx.fillStyle=theme.accent;ctx.globalAlpha=t*0.55;for(let i=0;i<4;i++)ctx.fillRect(Math.sin(sel+i)*40,((i*240+sel)%canvas.height),canvas.width,10);}
+      ctx.restore();
+    }
+
+    function playSceneSfx(type){
+      if(!sharedActx||!beatToggle.checked)return;
+      try{
+        const now=sharedActx.currentTime;
+        if(type==="ding"){
+          [1760,2637].forEach((f,i)=>{const o=sharedActx.createOscillator(),g=sharedActx.createGain();o.type="sine";o.frequency.setValueAtTime(f,now+i*0.06);g.gain.setValueAtTime(0.15,now+i*0.06);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now+i*0.06);o.stop(now+0.38);});
+        }else if(type==="whoosh"||type==="shutter"){
+          const dur=type==="shutter"?0.07:0.24,sz=Math.floor(sharedActx.sampleRate*dur),buf=sharedActx.createBuffer(1,sz,sharedActx.sampleRate),d=buf.getChannelData(0);
+          for(let i=0;i<sz;i++)d[i]=(Math.random()*2-1)*(1-i/sz);
+          const src=sharedActx.createBufferSource();src.buffer=buf;const f=sharedActx.createBiquadFilter();f.type="bandpass";f.frequency.setValueAtTime(type==="shutter"?3200:400,now);if(type==="whoosh")f.frequency.exponentialRampToValueAtTime(2200,now+dur);
+          const g=sharedActx.createGain();g.gain.setValueAtTime(0.2,now);g.gain.exponentialRampToValueAtTime(0.001,now+dur);src.connect(f);f.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);src.start(now);
+        }else{
+          const o=sharedActx.createOscillator(),g=sharedActx.createGain();o.type=type==="riser"?"sawtooth":"sine";o.frequency.setValueAtTime(type==="riser"?90:125,now);o.frequency.exponentialRampToValueAtTime(type==="riser"?440:35,now+0.26);g.gain.setValueAtTime(0.25,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.28);o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.3);
+        }
+      }catch(e){}
+    }
+
+    function startBgm(){
+      clearInterval(beatInterval);if(!beatToggle.checked||!sharedActx)return;
+      let step=0;const ms=activeBgm==="Doc Heartbeat"?650:activeBgm==="Cyber Synth"?260:440;
+      const tick=()=>{
+        if(!sharedActx)return;
+        try{
+          const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();
+          if(activeBgm==="Cyber Synth"){o.type="sawtooth";o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now);g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);}
+          else if(activeBgm==="Tech Ambient"){o.type="sine";o.frequency.setValueAtTime([220,277.2,329.6][step%3],now);g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.42);}
+          else if(activeBgm==="Doc Heartbeat"){o.type="sine";o.frequency.setValueAtTime(step%2===0?62:48,now);g.gain.setValueAtTime(0.14,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.2);}
+          else{o.type="triangle";o.frequency.setValueAtTime(step%4===0?55:49,now);g.gain.setValueAtTime(0.09,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);}
+          o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.43);step++;
+        }catch(e){}
       };
-      tick(); beatInterval = setInterval(tick, ms);
+      tick();beatInterval=setInterval(tick,ms);
     }
 
-    function getCameraOffset(cam, p, depth) {
-      const ease = 1 - Math.pow(1 - p, 3);
-      if (cam === "orbit_3d") return { x: Math.sin(p*6.28)*24*depth, y: Math.cos(p*6.28)*16*depth, z: 1.07+Math.sin(p*3.14)*0.07*depth, rot: Math.sin(p*6.28)*0.035 };
-      if (cam === "whip_zoom") return { x: 0, y: 0, z: 1+ease*0.2*depth, rot: (1-ease)*0.07 };
-      if (cam === "pullback_3d") return { x: 0, y: (1-ease)*-18*depth, z: 1.28-ease*0.22*depth, rot: (1-ease)*-0.05 };
-      if (cam === "pan_parallax") return { x: (p-0.5)*-70*depth, y: 0, z: 1.1, rot: 0 };
-      return { x: Math.sin(p*3.14)*18*depth, y: 0, z: 1.08, rot: Math.sin(p*6.28)*0.055 };
+    function getCameraOffset(cam,p,depth){
+      const e=1-Math.pow(1-p,3);
+      if(cam==="orbit_3d")return{x:Math.sin(p*6.28)*24*depth,y:Math.cos(p*6.28)*16*depth,z:1.07+Math.sin(p*3.14)*0.07*depth,rot:Math.sin(p*6.28)*0.035};
+      if(cam==="whip_zoom")return{x:0,y:0,z:1+e*0.2*depth,rot:(1-e)*0.07};
+      if(cam==="pullback_3d")return{x:0,y:(1-e)*-18*depth,z:1.28-e*0.22*depth,rot:(1-e)*-0.05};
+      if(cam==="pan_parallax")return{x:(p-0.5)*-70*depth,y:0,z:1.1,rot:0};
+      return{x:Math.sin(p*3.14)*18*depth,y:0,z:1.08,rot:Math.sin(p*6.28)*0.055};
     }
+    function withCam(co,fn){ctx.save();ctx.translate(canvas.width/2+co.x,canvas.height/2+co.y);ctx.rotate(co.rot);ctx.scale(co.z,co.z);ctx.translate(-canvas.width/2,-canvas.height/2);fn();ctx.restore();}
 
-    function withCam(camOff, fn) {
-      ctx.save(); ctx.translate(canvas.width/2 + camOff.x, canvas.height/2 + camOff.y);
-      ctx.rotate(camOff.rot); ctx.scale(camOff.z, camOff.z); ctx.translate(-canvas.width/2, -canvas.height/2);
-      fn(); ctx.restore();
-    }
+    function drawFrame(now){
+      if(startTime===null)startTime=now;
+      const el=Math.max(0,now-startTime),tot=scenes.length*sceneDurationMs;
+      if(el>=tot){clearInterval(beatInterval);if(audioEl)audioEl.pause();if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();else statusText.textContent=`Done | Action: ${scenePlans[scenes.length-1]?.action} | BGM: ${activeBgm}`;return;}
+      const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx];
+      if(idx!==lastSceneIdx){lastSceneIdx=idx;playSceneSfx(plan.sfx);}
+      const p=sel/sceneDurationMs,sc=scenes[idx],theme=THEMES[activeThemeKey],en=getEnergy(el),mouth=getMouthOpen(el);
 
-    function drawFrame(now) {
-      if (startTime === null) startTime = now;
-      const el = Math.max(0, now - startTime), tot = scenes.length * sceneDurationMs;
-      if (el >= tot) {
-        clearInterval(beatInterval); if (audioEl) audioEl.pause();
-        if (activeRecorder && activeRecorder.state === "recording") activeRecorder.stop();
-        else statusText.textContent = `Done | Character: ${activeAvatar} | BGM: ${activeBgm}`;
-        return;
-      }
-
-      const idx = Math.min(scenes.length - 1, Math.floor(el / sceneDurationMs)), sel = el % sceneDurationMs;
-      const plan = scenePlans[idx];
-      if (idx !== lastSceneIdx) { lastSceneIdx = idx; playSceneSfx(plan.sfx); }
-      const p = sel / sceneDurationMs, sc = scenes[idx], theme = THEMES[activeThemeKey], en = getEnergy(el), mouth = getMouthOpen(el);
-
-      withCam(getCameraOffset(plan.cam, p, 1.0), () => {
-        const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
-        g.addColorStop(0, theme.glow); g.addColorStop(1, theme.bg);
-        ctx.fillStyle = g; ctx.fillRect(-100, -100, canvas.width + 200, canvas.height + 200);
-        const img = aiImages[idx % Math.max(1, aiImages.length)];
-        if (img && img.complete && img.naturalWidth > 0) {
-          const scImg = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.08;
-          ctx.drawImage(img, (canvas.width - img.naturalWidth * scImg) / 2, (canvas.height - img.naturalHeight * scImg) / 2, img.naturalWidth * scImg, img.naturalHeight * scImg);
-          const vig = ctx.createLinearGradient(0, 0, 0, canvas.height);
-          vig.addColorStop(0, "rgba(0,0,0,0.38)"); vig.addColorStop(0.6, "rgba(0,0,0,0.62)"); vig.addColorStop(1, "rgba(0,0,0,0.88)");
-          ctx.fillStyle = vig; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      withCam(getCameraOffset(plan.cam,p,1.0),()=>{
+        const g=ctx.createRadialGradient(canvas.width/2,canvas.height*0.45,20,canvas.width/2,canvas.height/2,canvas.width*0.9);
+        g.addColorStop(0,theme.glow);g.addColorStop(1,theme.bg);ctx.fillStyle=g;ctx.fillRect(-100,-100,canvas.width+200,canvas.height+200);
+        const img=aiImages[idx%Math.max(1,aiImages.length)];
+        if(img&&img.complete&&img.naturalWidth>0){
+          const scI=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*1.08;
+          ctx.drawImage(img,(canvas.width-img.naturalWidth*scI)/2,(canvas.height-img.naturalHeight*scI)/2,img.naturalWidth*scI,img.naturalHeight*scI);
+          const v=ctx.createLinearGradient(0,0,0,canvas.height);v.addColorStop(0,"rgba(0,0,0,0.42)");v.addColorStop(0.6,"rgba(0,0,0,0.65)");v.addColorStop(1,"rgba(0,0,0,0.88)");
+          ctx.fillStyle=v;ctx.fillRect(0,0,canvas.width,canvas.height);
         }
       });
 
-      withCam(getCameraOffset(plan.cam, p, 1.5), () => {
-        draw3DObject(plan.obj, theme, p, en, el, activeAvatar !== "off");
-        drawTalkingAvatar(activeAvatar, theme, mouth, en, el);
-      });
-
-      drawSceneTransition(sel, theme, plan.fx);
-
-      const isV = canvas.height > canvas.width, capY = canvas.height * 0.66;
-      if (sc.stat) {
-        ctx.save(); ctx.direction = "ltr";
-        const sw = isV ? canvas.width * 0.48 : 280, sx = (canvas.width - sw) / 2, sy = capY - 105;
-        ctx.fillStyle = theme.accent; ctx.shadowColor = theme.accent; ctx.shadowBlur = 24;
-        ctx.beginPath(); ctx.roundRect(sx, sy, sw, 54, 14); ctx.fill();
-        ctx.shadowBlur = 0; ctx.fillStyle = "#07090e"; ctx.font = `900 ${isV?30:34}px -apple-system,sans-serif`;
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(sc.stat, canvas.width / 2, sy + 27); ctx.restore();
-      }
-
-      const words = sc.text.split(" ");
-      ctx.font = `900 ${isV ? 48 : 54}px -apple-system,sans-serif`; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-      if (sc.rtl) {
-        ctx.save(); ctx.direction = "rtl"; ctx.textAlign = "center";
-        const h = Math.ceil(words.length / 2), ch = p < 0.5 ? words.slice(0, h).join(" ") : words.slice(h).join(" ");
-        ctx.lineWidth = 12; ctx.strokeStyle = "#000"; ctx.strokeText(ch, canvas.width / 2, capY, canvas.width * 0.86);
-        ctx.fillStyle = theme.text; ctx.fillText(ch, canvas.width / 2, capY, canvas.width * 0.86); ctx.restore();
-      } else {
-        const chunks = []; for (let i = 0; i < words.length; i += 3) chunks.push(words.slice(i, i + 3));
-        const cIdx = Math.min(chunks.length - 1, Math.floor(p * chunks.length)), ac = chunks[cIdx] || words;
-        const aw = Math.min(ac.length - 1, Math.floor(((p * chunks.length) % 1) * ac.length));
-        const ct = ac.join(" ").toUpperCase(), fullW = ctx.measureText(ct).width;
-        const sf = Math.min(1, (canvas.width * 0.86) / Math.max(1, fullW + 32));
-        ctx.save(); ctx.translate(canvas.width / 2, capY); ctx.scale(sf * (1 + en * 0.08), sf * (1 + en * 0.08));
-        let xc = -fullW / 2; ctx.textAlign = "left";
-        ac.forEach((rw, wi) => {
-          const w = rw.toUpperCase(), ww = ctx.measureText(w).width;
-          if (wi === aw) {
-            ctx.save(); ctx.fillStyle = theme.accent; ctx.shadowColor = theme.accent; ctx.shadowBlur = 20;
-            ctx.beginPath(); ctx.roundRect(xc - 8, -32, ww + 16, 64, 12); ctx.fill(); ctx.restore();
-            ctx.fillStyle = "#07090e"; ctx.fillText(w, xc, 0);
-          } else {
-            ctx.lineWidth = 10; ctx.strokeStyle = "#000"; ctx.strokeText(w, xc, 0);
-            ctx.fillStyle = theme.text; ctx.fillText(w, xc, 0);
-          }
-          xc += ctx.measureText(w + " ").width;
+      if(storyModeSelect.value==="chat"){
+        drawChatStoryOverlay(idx,p,theme);
+      }else{
+        withCam(getCameraOffset(plan.cam,p,1.5),()=>{
+          draw3DObject(plan.obj,theme,p,en,el,activeAvatar!=="off");
+          drawTalkingAvatar(activeAvatar,plan.action,theme,mouth,en,el,p);
         });
-        ctx.restore();
-      }
+        drawSceneTransition(sel,theme,plan.fx);
 
-      const bh = canvas.height * 0.04; ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, canvas.width, bh); ctx.fillRect(0, canvas.height - bh, canvas.width, bh);
-      animId = requestAnimationFrame(drawFrame);
+        const isV=canvas.height>canvas.width,capY=canvas.height*0.66;
+        if(sc.stat){
+          ctx.save();ctx.direction="ltr";const sw=isV?canvas.width*0.48:280,sx=(canvas.width-sw)/2,sy=capY-105;
+          ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=24;ctx.beginPath();ctx.roundRect(sx,sy,sw,54,14);ctx.fill();
+          ctx.shadowBlur=0;ctx.fillStyle="#07090e";ctx.font=`900 ${isV?30:34}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(sc.stat,canvas.width/2,sy+27);ctx.restore();
+        }
+        const words=sc.text.split(" ");ctx.font=`900 ${isV?48:54}px -apple-system,sans-serif`;ctx.textBaseline="middle";ctx.lineJoin="round";
+        if(sc.rtl){
+          ctx.save();ctx.direction="rtl";ctx.textAlign="center";const h=Math.ceil(words.length/2),ch=p<0.5?words.slice(0,h).join(" "):words.slice(h).join(" ");
+          ctx.lineWidth=12;ctx.strokeStyle="#000";ctx.strokeText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.fillStyle=theme.text;ctx.fillText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.restore();
+        }else{
+          const chunks=[];for(let i=0;i<words.length;i+=3)chunks.push(words.slice(i,i+3));
+          const cIdx=Math.min(chunks.length-1,Math.floor(p*chunks.length)),ac=chunks[cIdx]||words,lp=(p*chunks.length)%1,aw=Math.min(ac.length-1,Math.floor(lp*ac.length));
+          const ct=ac.join(" ").toUpperCase(),fw=ctx.measureText(ct).width,sf=Math.min(1,(canvas.width*0.86)/Math.max(1,fw+32));
+          const em=findEmojiForText(ac[aw]||"");
+          if(em){const pe=Math.min(1,lp*5);ctx.save();ctx.font=`${Math.round(74*pe)}px sans-serif`;ctx.textAlign="center";ctx.fillText(em,canvas.width/2,capY-82-(1-pe)*18);ctx.restore();}
+          ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf*(1+en*0.08),sf*(1+en*0.08));
+          let xc=-fw/2;ctx.textAlign="left";
+          ac.forEach((rw,wi)=>{
+            const w=rw.toUpperCase(),ww=ctx.measureText(w).width;
+            if(wi===aw){ctx.save();ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=20;ctx.beginPath();ctx.roundRect(xc-8,-32,ww+16,64,12);ctx.fill();ctx.restore();ctx.fillStyle="#07090e";ctx.fillText(w,xc,0);}
+            else{ctx.lineWidth=10;ctx.strokeStyle="#000";ctx.strokeText(w,xc,0);ctx.fillStyle=theme.text;ctx.fillText(w,xc,0);}
+            xc+=ctx.measureText(w+" ").width;
+          });
+          ctx.restore();
+        }
+      }
+      const bh=canvas.height*0.04;ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,bh);ctx.fillRect(0,canvas.height-bh,canvas.width,bh);
+      animId=requestAnimationFrame(drawFrame);
     }
 
-    function startPlayback(recStream = null, randomizeTheme = false) {
-      cancelAnimationFrame(animId); clearInterval(beatInterval); buildScenes(randomizeTheme); startTime = null; lastSceneIdx = -1;
-      if (!sharedActx) sharedActx = new (window.AudioContext || window.webkitAudioContext)();
-      if (sharedActx.state === "suspended") sharedActx.resume();
-      if (!analyser) { analyser = sharedActx.createAnalyser(); analyser.fftSize = 64; freqData = new Uint8Array(analyser.frequencyBinCount); }
-      if (recStream) { sfxDest = sharedActx.createMediaStreamDestination(); sfxDest.stream.getAudioTracks().forEach(t => recStream.addTrack(t)); }
-      else sfxDest = null;
-
+    function startPlayback(recStream=null,randTheme=false){
+      cancelAnimationFrame(animId);clearInterval(beatInterval);buildScenes(randTheme);startTime=null;lastSceneIdx=-1;
+      if(!sharedActx)sharedActx=new(window.AudioContext||window.webkitAudioContext)();
+      if(sharedActx.state==="suspended")sharedActx.resume();
+      if(!analyser){analyser=sharedActx.createAnalyser();analyser.fftSize=64;freqData=new Uint8Array(analyser.frequencyBinCount);}
+      if(recStream){sfxDest=sharedActx.createMediaStreamDestination();sfxDest.stream.getAudioTracks().forEach(t=>recStream.addTrack(t));}else sfxDest=null;
       startBgm();
-      const loaded = aiImages.filter(i => i.complete && i.naturalWidth > 0).length;
-      statusText.textContent = `Playing (${activeAvatar} | ${loaded} pics | BGM: ${activeBgm})`;
-      if (audioEl) { audioEl.pause(); audioEl = null; }
-      if (audioBufferUrl) {
-        audioEl = new Audio(audioBufferUrl);
-        try {
-          const src = sharedActx.createMediaElementSource(audioEl);
-          src.connect(analyser); analyser.connect(sharedActx.destination);
-          if (sfxDest) src.connect(sfxDest);
-        } catch (e) {}
-        audioEl.play().catch(() => {});
+      const loaded=aiImages.filter(i=>i.complete&&i.naturalWidth>0).length;
+      statusText.textContent=`Playing (${activeAvatar} | ${loaded} pics | BGM: ${activeBgm})`;
+      if(audioEl){audioEl.pause();audioEl=null;}
+      if(audioBufferUrl){
+        audioEl=new Audio(audioBufferUrl);
+        try{const src=sharedActx.createMediaElementSource(audioEl);src.connect(analyser);analyser.connect(sharedActx.destination);if(sfxDest)src.connect(sfxDest);}catch(e){}
+        audioEl.play().catch(()=>{});
       }
-      animId = requestAnimationFrame(drawFrame);
+      animId=requestAnimationFrame(drawFrame);
     }
 
-    document.getElementById("remixBtn").addEventListener("click", () => startPlayback(null, true));
-    document.getElementById("replayBtn").addEventListener("click", () => startPlayback(null, true));
+    document.getElementById("remixBtn").addEventListener("click",()=>startPlayback(null,true));
+    document.getElementById("replayBtn").addEventListener("click",()=>startPlayback(null,true));
 
-    exportBtn.addEventListener("click", () => {
-      if (activeRecorder && activeRecorder.state === "recording") return;
-      const stream = canvas.captureStream(30); startPlayback(stream, false);
-      const mt = ["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm","video/mp4"].find(m => MediaRecorder.isTypeSupported(m)) || "";
-      exportBtn.disabled = true; statusText.textContent = "Exporting talking Reel...";
-      const chunks = []; activeRecorder = new MediaRecorder(stream, mt ? {mimeType:mt, videoBitsPerSecond:3500000} : {});
-      activeRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
-      activeRecorder.onstop = () => {
-        clearInterval(beatInterval); const blob = new Blob(chunks, {type:mt || "video/webm"});
-        const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-        a.download = mt.includes("mp4") ? "talking-ai-reel.mp4" : "talking-ai-reel.webm"; a.click();
-        exportBtn.disabled = false; activeRecorder = null;
-        statusText.textContent = `Exported (${(blob.size/1024).toFixed(0)} KB)!`;
+    exportBtn.addEventListener("click",()=>{
+      if(activeRecorder&&activeRecorder.state==="recording")return;
+      const stream=canvas.captureStream(30);startPlayback(stream,false);
+      const mp4=['video/mp4;codecs="avc1,opus"','video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4'],webm=["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm"];
+      const mt=[...mp4,...webm].find(m=>MediaRecorder.isTypeSupported(m))||"",isMp4=mt.includes("mp4");
+      exportBtn.disabled=true;statusText.textContent=`Exporting ${isMp4?"MP4":"WebM"}...`;
+      const chunks=[];activeRecorder=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:3500000}:{});
+      activeRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
+      activeRecorder.onstop=()=>{
+        clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");
+        a.href=URL.createObjectURL(blob);a.download=isMp4?"robot-ai-reel.mp4":"robot-ai-reel.webm";a.click();
+        exportBtn.disabled=false;activeRecorder=null;
+        statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;
       };
       activeRecorder.start(250);
     });
