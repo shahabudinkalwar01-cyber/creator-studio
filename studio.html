@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v15 — Blender 3D GLB + AI Reels</title>
+  <title>Studio v15.1 — Full 3D Blender Room + AI Reels</title>
   <script type="importmap">
     {
       "imports": {
@@ -43,7 +43,7 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">BLENDER 3D (.GLB) STUDIO v15</span>
+      <span class="badge">3D ROOM + TABLE + LAPTOP v15.1</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
@@ -77,41 +77,41 @@
           <option value="aura-es:sirio">Sirio (Spanish)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Blender 3D Movie</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build 3D Room Movie</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. Blender 3D Model (.GLB) & Format</div>
+      <div class="step-title">2. 3D Character, Desk Scene & Format</div>
       <div class="grid-2">
         <select id="glbSelect">
-          <option value="robot" selected>🤖 Blender 3D Robot</option>
-          <option value="soldier">🪖 Blender 3D Soldier</option>
-          <option value="off">❌ No 3D Model</option>
+          <option value="robot" selected>🤖 3D Robot at Desk</option>
+          <option value="soldier">🪖 3D Soldier at Desk</option>
+          <option value="off">❌ No 3D Scene</option>
         </select>
         <label class="upload-mini"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload .GLB</span></label>
       </div>
       <div class="grid-2">
-        <select id="storyModeSelect">
-          <option value="reel" selected>🎬 3D Scene + Emojis</option>
-          <option value="chat">💬 Fake Text Story</option>
+        <select id="deskToggle">
+          <option value="on" selected>💻 3D Floor + Table + Laptop</option>
+          <option value="floor">🏁 3D Floor Only</option>
         </select>
         <select id="modeSelect">
-          <option value="shorts" selected>9:16 Reels/Shorts</option>
+          <option value="shorts" selected>9:16 Reels / Shorts</option>
           <option value="landscape">16:9 YouTube</option>
         </select>
       </div>
       <label class="toggle-row">
-        <span>🎵 Auto BGM + Scene SFX</span>
+        <span>🎵 Auto BGM + Fast Whoosh SFX</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <button class="btn-remix" id="remixBtn">🎲 New 3D Camera Angle, Colors & BGM</button>
+      <button class="btn-remix" id="remixBtn">🎲 New 3D Camera Angles, Colors & BGM</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live Blender 3D Preview & MP4 Export</div>
+      <div class="step-title">3. Live 3D Room Preview & MP4 Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Loading Blender 3D model...</span>
+        <span class="status" id="statusText">Loading 3D room & character...</span>
         <div style="display:flex;gap:8px;">
           <button class="btn-small" id="replayBtn">New Mix</button>
           <button class="btn-small btn-export" id="exportBtn">Export MP4</button>
@@ -129,84 +129,119 @@
     const statusText = document.getElementById("statusText"), topicInput = document.getElementById("topicInput");
     const langSelect = document.getElementById("langSelect"), voiceSelect = document.getElementById("voiceSelect");
     const scriptInput = document.getElementById("scriptInput"), modeSelect = document.getElementById("modeSelect");
-    const storyModeSelect = document.getElementById("storyModeSelect"), glbSelect = document.getElementById("glbSelect");
+    const glbSelect = document.getElementById("glbSelect"), deskToggle = document.getElementById("deskToggle");
     const beatToggle = document.getElementById("beatToggle"), aiMagicBtn = document.getElementById("aiMagicBtn");
     const exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
 
-    // --- THREE.JS BLENDER 3D ENGINE (OFFSCREEN WEBGL) ---
+    // --- THREE.JS 3D STUDIO STAGE (FLOOR + TABLE + LAPTOP + CHARACTER) ---
     const threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
-    threeRenderer.setSize(580, 580);
+    threeRenderer.setSize(540, 960);
     threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
     const threeScene = new THREE.Scene();
-    const threeCam = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    threeCam.position.set(0, 1.5, 4.2);
+    const threeCam = new THREE.PerspectiveCamera(45, 540 / 960, 0.1, 100);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222233, 1.6);
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.4); keyLight.position.set(3, 5, 4);
-    const rimLight = new THREE.DirectionalLight(0xf5c542, 2.2); rimLight.position.set(-4, 3, -3);
-    threeScene.add(hemiLight, keyLight, rimLight);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x111827, 1.5);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.3); keyLight.position.set(3, 6, 4);
+    const rimLight = new THREE.DirectionalLight(0xf5c542, 2.4); rimLight.position.set(-4, 4, -3);
+    const laptopGlow = new THREE.PointLight(0xf5c542, 3.2, 5); laptopGlow.position.set(0, 0.25, 0.72);
+    threeScene.add(hemiLight, keyLight, rimLight, laptopGlow);
+
+    // 3D Glossy Floor + Neon Grid
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x06080f, roughness: 0.25, metalness: 0.65, transparent: true, opacity: 0.85 });
+    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(22, 22), floorMat);
+    floorMesh.rotation.x = -Math.PI / 2; floorMesh.position.y = -1.0;
+    let gridHelper = new THREE.GridHelper(20, 24, 0xf5c542, 0x1e293b);
+    gridHelper.position.y = -0.99;
+    threeScene.add(floorMesh, gridHelper);
+
+    // 3D Desk / Table + 3D Glowing Laptop
+    const deskGroup = new THREE.Group();
+    const darkMetal = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.8 });
+    const trimMat = new THREE.MeshBasicMaterial({ color: 0xf5c542 });
+    const topSlab = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.08, 0.95), darkMetal);
+    topSlab.position.set(0, -0.18, 0.82);
+    const frontTrim = new THREE.Mesh(new THREE.BoxGeometry(2.12, 0.025, 0.97), trimMat);
+    frontTrim.position.set(0, -0.18, 0.82);
+    deskGroup.add(topSlab, frontTrim);
+
+    [[-0.95, 0.42], [0.95, 0.42], [-0.95, 1.22], [0.95, 1.22]].forEach(([lx, lz]) => {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.82, 0.07), darkMetal);
+      leg.position.set(lx, -0.59, lz); deskGroup.add(leg);
+    });
+
+    // 3D Laptop on top of Table
+    const lapBase = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.03, 0.46), darkMetal);
+    lapBase.position.set(0, -0.125, 0.82);
+    const lapLidGroup = new THREE.Group();
+    lapLidGroup.position.set(0, -0.11, 1.03);
+    lapLidGroup.rotation.x = -0.32;
+    const lapLid = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.44, 0.025), darkMetal);
+    lapLid.position.set(0, 0.22, 0);
+    const lapScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.38), trimMat);
+    lapScreen.position.set(0, 0.22, -0.015); lapScreen.rotation.y = Math.PI;
+    lapLidGroup.add(lapLid, lapScreen);
+    deskGroup.add(lapBase, lapLidGroup);
+    threeScene.add(deskGroup);
 
     const loader = new GLTFLoader();
     let threeModel = null, threeMixer = null, threeActions = {}, currentClip = "", threeReady = false, prevThreeTime = 0;
-
     const GLB_URLS = {
       robot: "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb",
       soldier: "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Soldier.glb"
     };
 
-    function loadGlbModel(url, label = "Blender 3D Ready!") {
+    function loadGlbModel(url, isSoldier = false, label = "3D Room Ready!") {
       threeReady = false;
       if (threeModel) { threeScene.remove(threeModel); threeModel = null; }
       threeActions = {}; currentClip = "";
-      statusText.textContent = "Loading Blender 3D model...";
+      statusText.textContent = "Loading 3D scene & model...";
       loader.load(url, (gltf) => {
         threeModel = gltf.scene;
+        if (isSoldier) threeModel.rotation.y = Math.PI; // Face forward toward desk/camera!
         const box = new THREE.Box3().setFromObject(threeModel);
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) || 1;
-        const sc = 2.1 / maxDim;
-        threeModel.scale.setScalar(sc);
+        const maxDim = Math.max(...box.getSize(new THREE.Vector3()).toArray()) || 1;
+        threeModel.scale.setScalar(2.05 / maxDim);
         box.setFromObject(threeModel);
         const center = box.getCenter(new THREE.Vector3());
-        threeModel.position.set(-center.x, -box.min.y - 0.95, -center.z);
+        threeModel.position.set(-center.x, -box.min.y - 1.0, -center.z - 0.12);
         threeScene.add(threeModel);
 
         threeMixer = new THREE.AnimationMixer(threeModel);
-        gltf.animations.forEach(clip => { threeActions[clip.name] = threeMixer.clipAction(clip); });
+        gltf.animations.forEach(c => { threeActions[c.name] = threeMixer.clipAction(c); });
         threeReady = true;
         playGlbAnim(Object.keys(threeActions)[0] || "");
-        statusText.textContent = `${label} (${Object.keys(threeActions).length} animations)`;
+        statusText.textContent = `${label} (${Object.keys(threeActions).length} anims)`;
       }, undefined, () => { statusText.textContent = "3D load failed — check internet"; });
     }
 
     function playGlbAnim(name) {
       if (!threeReady || !threeActions[name] || currentClip === name) return;
-      if (currentClip && threeActions[currentClip]) threeActions[currentClip].fadeOut(0.25);
-      threeActions[name].reset().fadeIn(0.25).play();
+      if (currentClip && threeActions[currentClip]) threeActions[currentClip].fadeOut(0.22);
+      threeActions[name].reset().fadeIn(0.22).play();
       currentClip = name;
     }
 
     function matchGlbAnim(text) {
       const keys = Object.keys(threeActions);
       if (!keys.length) return "";
-      const find = pat => keys.find(k => pat.test(k));
-      if (/fast|speed|run|hurry/i.test(text)) return find(/run/i) || find(/walk/i) || keys[0];
-      if (/walk|move|step|2026|future/i.test(text)) return find(/walk/i) || keys[0];
-      if (/edit|work|sit|hours|waste/i.test(text)) return find(/sit/i) || find(/idle/i) || keys[0];
-      if (/win|celebrate|\$|empire|95%|100%|boom/i.test(text)) return find(/dance|thumbs/i) || find(/jump/i) || keys[0];
-      if (/watch|hi|hello|look|secret/i.test(text)) return find(/wave|jump/i) || keys[0];
-      return find(/idle|stand/i) || keys[0];
+      const f = pat => keys.find(k => pat.test(k));
+      if (/fast|speed|run|hurry/i.test(text)) return f(/run/i) || f(/walk/i) || keys[0];
+      if (/walk|move|step|2026|future/i.test(text)) return f(/walk/i) || keys[0];
+      if (/edit|work|sit|hours|waste/i.test(text)) return f(/sit/i) || f(/idle/i) || keys[0];
+      if (/win|celebrate|\$|empire|95%|100%/i.test(text)) return f(/dance|thumbs/i) || f(/jump/i) || keys[0];
+      if (/watch|hi|hello|look|secret/i.test(text)) return f(/wave|jump/i) || keys[0];
+      return f(/idle|stand/i) || keys[0];
     }
 
-    loadGlbModel(GLB_URLS.robot, "Blender 3D Robot Ready!");
+    loadGlbModel(GLB_URLS.robot, false, "3D Robot + Desk Ready!");
     glbSelect.addEventListener("change", () => {
       if (glbSelect.value === "off") threeReady = false;
-      else loadGlbModel(GLB_URLS[glbSelect.value], "Blender 3D Ready!");
+      else loadGlbModel(GLB_URLS[glbSelect.value], glbSelect.value === "soldier", "3D Scene Ready!");
     });
     document.getElementById("glbUpload").addEventListener("change", (e) => {
       const f = e.target.files[0]; if (!f) return;
       document.getElementById("glbLabel").textContent = "✅ " + f.name.slice(0, 10);
-      loadGlbModel(URL.createObjectURL(f), "Custom Blender .GLB Ready!");
+      loadGlbModel(URL.createObjectURL(f), false, "Custom .GLB Ready!");
     });
 
     // --- MAIN STUDIO STATE ---
@@ -217,14 +252,13 @@
     let activeThemeKey = "luxury", activeBgm = "Dark Trap";
 
     const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:apollo","aura-en:thalia"];
-    const CAMERAS = ["orbit","zoom_in","pullback","pan"];
-    const SFX_LIST = ["bass","whoosh","ding","shutter","riser"];
+    const CAMERAS = ["orbit_desk","low_hero","over_laptop","whip_zoom"];
     const BGM_LIST = ["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
     const THEMES = {
-      luxury:{bg:"#0b0803",accent:"#f5c542",hex:0xf5c542,text:"#ffffff",glow:"rgba(245,197,66,0.42)"},
-      crimson:{bg:"#140507",accent:"#ef4444",hex:0xef4444,text:"#ffffff",glow:"rgba(239,68,68,0.42)"},
-      cyber:{bg:"#051024",accent:"#38bdf8",hex:0x38bdf8,text:"#f8fafc",glow:"rgba(56,189,248,0.42)"},
-      finance:{bg:"#02140d",accent:"#10b981",hex:0x10b981,text:"#ecfdf5",glow:"rgba(16,185,129,0.42)"}
+      luxury:{bg:"#0b0803",accent:"#f5c542",hex:0xf5c542,text:"#ffffff",glow:"rgba(245,197,66,0.38)"},
+      crimson:{bg:"#140507",accent:"#ef4444",hex:0xef4444,text:"#ffffff",glow:"rgba(239,68,68,0.38)"},
+      cyber:{bg:"#051024",accent:"#38bdf8",hex:0x38bdf8,text:"#f8fafc",glow:"rgba(56,189,248,0.38)"},
+      finance:{bg:"#02140d",accent:"#10b981",hex:0x10b981,text:"#ecfdf5",glow:"rgba(16,185,129,0.38)"}
     };
     const EMOJI_RULES = [
       [/money|cash|\$|rich|wealth|empire/i,"💸"],[/fire|viral|boom|fast/i,"🔥"],
@@ -235,7 +269,11 @@
     modeSelect.addEventListener("change",()=>{
       const sh=modeSelect.value==="shorts";
       canvas.width=sh?720:1280; canvas.height=sh?1280:720; canvas.style.aspectRatio=sh?"9/16":"16/9";
+      threeRenderer.setSize(sh?540:960, sh?960:540);
+      threeCam.aspect = sh ? (540/960) : (960/540);
+      threeCam.updateProjectionMatrix();
     });
+
     const getAudioDurationMs=u=>new Promise(r=>{const a=new Audio(u);a.onloadedmetadata=()=>r(isFinite(a.duration)?a.duration*1000:0);a.onerror=()=>r(0);});
 
     async function loadPhotos(txt, topicFallback) {
@@ -283,7 +321,7 @@
         if(sr.ok){const sd=await sr.json();if(sd.script){scriptInput.value=sd.script;scriptInput.dir=(lang==="ur"||lang==="ar")?"rtl":"ltr";ok=true;}}
       }catch(e){}
       if(!ok) scriptInput.value=`Watch 95% of creators waste 10 hours editing slowly. In 2026, fast AI systems win big. Build a $10,000 ${topic} and celebrate!`;
-      statusText.textContent="2/3 Loading photos & AI voice...";
+      statusText.textContent="2/3 Loading 3D backdrop & AI voice...";
       const jobs=[loadPhotos(scriptInput.value,topic)];
       if(lang==="en"||lang==="es") jobs.push(fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:scriptInput.value,voice:cv})}).then(r=>r.ok?r.blob():null).catch(()=>null));
       const res=await Promise.all(jobs);
@@ -297,12 +335,11 @@
     function buildScenes(rand=false){
       if(rand){const tk=Object.keys(THEMES);activeThemeKey=tk[Math.floor(Math.random()*tk.length)];}
       activeBgm=BGM_LIST[Math.floor(Math.random()*BGM_LIST.length)];
-      const isChat=storyModeSelect.value==="chat";
-      const parts=isChat?scriptInput.value.trim().split(/\n+/).filter(Boolean):scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
+      const parts=scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
       scenes=(parts.length?parts:["Tap AI Build above."]).map(t=>({text:t,stat:extractStat(t),rtl:/[\u0600-\u06FF]/.test(t)}));
       sceneDurationMs=audioDurationMs>1000?Math.max(2200,(audioDurationMs+300)/scenes.length):3200;
-      const cp=[...CAMERAS].sort(()=>Math.random()-0.5),sp=[...SFX_LIST].sort(()=>Math.random()-0.5);
-      scenePlans=scenes.map((sc,i)=>({anim:matchGlbAnim(sc.text),cam:cp[i%cp.length],sfx:isChat?"ding":sp[i%sp.length],rotDir:(i%2===0?1:-1)}));
+      const cp=[...CAMERAS].sort(()=>Math.random()-0.5);
+      scenePlans=scenes.map((sc,i)=>({anim:matchGlbAnim(sc.text),cam:cp[i%cp.length],dir:(i%2===0?1:-1)}));
     }
 
     function getEnergy(el){
@@ -310,15 +347,25 @@
       return 0.25+0.2*Math.abs(Math.sin(el*0.006));
     }
 
-    function playSfx(type){
+    // Fast Whoosh + Punchy Sub-Bass on every camera cut!
+    function playFastWhoosh(){
       if(!sharedActx||!beatToggle.checked)return;
       try{
-        const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();
-        o.type=type==="ding"?"sine":type==="riser"?"sawtooth":"sine";
-        o.frequency.setValueAtTime(type==="ding"?1760:type==="riser"?90:120,now);
-        o.frequency.exponentialRampToValueAtTime(type==="ding"?2637:type==="riser"?440:36,now+0.26);
-        g.gain.setValueAtTime(0.22,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.28);
-        o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.3);
+        const now=sharedActx.currentTime, dur=0.24, sz=Math.floor(sharedActx.sampleRate*dur);
+        const buf=sharedActx.createBuffer(1,sz,sharedActx.sampleRate), d=buf.getChannelData(0);
+        for(let i=0;i<sz;i++) d[i]=(Math.random()*2-1)*Math.sin((i/sz)*Math.PI);
+        const src=sharedActx.createBufferSource(); src.buffer=buf;
+        const f=sharedActx.createBiquadFilter(); f.type="bandpass"; f.Q.value=1.8;
+        f.frequency.setValueAtTime(280,now); f.frequency.exponentialRampToValueAtTime(3200,now+0.11); f.frequency.exponentialRampToValueAtTime(500,now+dur);
+        const g=sharedActx.createGain(); g.gain.setValueAtTime(0.35,now); g.gain.exponentialRampToValueAtTime(0.01,now+dur);
+        src.connect(f); f.connect(g); g.connect(sharedActx.destination); if(sfxDest)g.connect(sfxDest);
+        src.start(now);
+
+        const o=sharedActx.createOscillator(), og=sharedActx.createGain();
+        o.type="sine"; o.frequency.setValueAtTime(125,now); o.frequency.exponentialRampToValueAtTime(36,now+0.22);
+        og.gain.setValueAtTime(0.28,now); og.gain.exponentialRampToValueAtTime(0.001,now+0.24);
+        o.connect(og); og.connect(sharedActx.destination); if(sfxDest)og.connect(sfxDest);
+        o.start(now); o.stop(now+0.25);
       }catch(e){}
     }
 
@@ -338,6 +385,26 @@
       tick();beatInterval=setInterval(tick,ms);
     }
 
+    function update3DCamera(cam, p, dir) {
+      const ease = 1 - Math.pow(1 - p, 3);
+      if (cam === "low_hero") {
+        const ang = (-0.65 + ease * 1.1) * dir;
+        threeCam.position.set(Math.sin(ang) * 3.1, -0.35 + p * 0.85, Math.cos(ang) * 3.3);
+        threeCam.lookAt(0, 0.15, 0.35);
+      } else if (cam === "over_laptop") {
+        threeCam.position.set((1.6 - p * 2.2) * dir, 0.75 + Math.sin(p * 3.14) * 0.25, 2.75 + p * 0.9);
+        threeCam.lookAt(0, 0.05, 0.2);
+      } else if (cam === "whip_zoom") {
+        const dist = 5.4 - ease * 2.4;
+        threeCam.position.set(Math.sin(p * 1.5) * 0.9 * dir, 0.85 - ease * 0.2, dist);
+        threeCam.lookAt(0, 0.0, 0.3);
+      } else {
+        const ang = (-0.8 + p * 1.6) * dir;
+        threeCam.position.set(Math.sin(ang) * 3.8, 1.05 + Math.sin(p * 3.14) * 0.45, Math.cos(ang) * 3.8);
+        threeCam.lookAt(0, -0.05, 0.3);
+      }
+    }
+
     function drawFrame(now){
       if(startTime===null){startTime=now;prevThreeTime=now;}
       const dt=Math.min(0.05,(now-prevThreeTime)/1000); prevThreeTime=now;
@@ -350,42 +417,51 @@
       }
 
       const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx],theme=THEMES[activeThemeKey];
-      if(idx!==lastSceneIdx){lastSceneIdx=idx;playSfx(plan.sfx);if(plan.anim)playGlbAnim(plan.anim);}
+      if(idx!==lastSceneIdx){lastSceneIdx=idx;playFastWhoosh();if(plan.anim)playGlbAnim(plan.anim);}
       const p=sel/sceneDurationMs,sc=scenes[idx],en=getEnergy(el);
 
-      // Background + AI/Wiki photo with zoom
+      // 1. Studio Backdrop
       const g=ctx.createRadialGradient(canvas.width/2,canvas.height*0.4,20,canvas.width/2,canvas.height/2,canvas.width*0.9);
       g.addColorStop(0,theme.glow);g.addColorStop(1,theme.bg);ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
       const img=aiImages[idx%Math.max(1,aiImages.length)];
       if(img&&img.complete&&img.naturalWidth>0){
-        const z=1.04+p*0.14,scI=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*z;
+        const z=1.04+p*0.12,scI=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*z;
+        ctx.save();ctx.globalAlpha=0.38;
         ctx.drawImage(img,(canvas.width-img.naturalWidth*scI)/2,(canvas.height-img.naturalHeight*scI)/2,img.naturalWidth*scI,img.naturalHeight*scI);
-        const v=ctx.createLinearGradient(0,0,0,canvas.height);v.addColorStop(0,"rgba(0,0,0,0.35)");v.addColorStop(0.6,"rgba(0,0,0,0.62)");v.addColorStop(1,"rgba(0,0,0,0.88)");
-        ctx.fillStyle=v;ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.restore();
       }
 
-      // Render Real Blender 3D Model (.GLB) & Composite
-      if(threeReady && glbSelect.value!=="off" && storyModeSelect.value!=="chat"){
+      // 2. Full-Screen 3D Room (Floor + Desk + Laptop + Character)
+      if(glbSelect.value!=="off"){
         if(threeMixer) threeMixer.update(dt);
+        const isWalking = /walk|run/i.test(currentClip);
+        deskGroup.visible = deskToggle.value === "on" && !isWalking;
+        trimMat.color.setHex(theme.hex);
         rimLight.color.setHex(theme.hex);
-        const ang = (p - 0.5) * 0.9 * plan.rotDir;
-        const dist = plan.cam==="zoom_in" ? 4.4-p*0.9 : plan.cam==="pullback" ? 3.2+p*1.1 : 3.9;
-        threeCam.position.set(Math.sin(ang)*dist, 1.35 + Math.sin(p*3.14)*0.35, Math.cos(ang)*dist);
-        threeCam.lookAt(0, 0.1, 0);
+        laptopGlow.color.setHex(theme.hex);
+        laptopGlow.intensity = 2.6 + en * 2.5;
+        if(gridHelper.material) gridHelper.material.color.setHex(theme.hex);
+
+        update3DCamera(plan.cam, p, plan.dir);
         threeRenderer.render(threeScene, threeCam);
-        const sz = Math.min(canvas.width, canvas.height) * 0.85;
-        ctx.drawImage(threeRenderer.domElement, (canvas.width - sz) / 2, canvas.height * 0.04, sz, sz);
+        ctx.drawImage(threeRenderer.domElement, 0, 0, canvas.width, canvas.height);
       }
 
-      // Captions & Stat Badge
-      const isV=canvas.height>canvas.width,capY=canvas.height*0.68;
+      // Fast whoosh flash on cut
+      if(sel < 180){
+        ctx.fillStyle = theme.accent; ctx.globalAlpha = (1 - sel/180) * 0.25;
+        ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.globalAlpha = 1;
+      }
+
+      // 3. Lower-Third Captions + Non-Overlapping Stat Badge & Emoji
+      const isV=canvas.height>canvas.width,capY=canvas.height*0.76;
       if(sc.stat){
-        ctx.save();ctx.direction="ltr";const sw=isV?canvas.width*0.48:280,sx=(canvas.width-sw)/2,sy=capY-102;
-        ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=22;ctx.beginPath();ctx.roundRect(sx,sy,sw,52,14);ctx.fill();
-        ctx.shadowBlur=0;ctx.fillStyle="#07090e";ctx.font=`900 ${isV?30:34}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(sc.stat,canvas.width/2,sy+26);ctx.restore();
+        ctx.save();ctx.direction="ltr";const sw=isV?canvas.width*0.44:260,sx=(canvas.width-sw)/2,sy=capY-132;
+        ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=20;ctx.beginPath();ctx.roundRect(sx,sy,sw,46,12);ctx.fill();
+        ctx.shadowBlur=0;ctx.fillStyle="#07090e";ctx.font=`900 ${isV?28:32}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(sc.stat,canvas.width/2,sy+23);ctx.restore();
       }
 
-      const words=sc.text.split(" ");ctx.font=`900 ${isV?48:54}px -apple-system,sans-serif`;ctx.textBaseline="middle";ctx.lineJoin="round";
+      const words=sc.text.split(" ");ctx.font=`900 ${isV?46:52}px -apple-system,sans-serif`;ctx.textBaseline="middle";ctx.lineJoin="round";
       if(sc.rtl){
         ctx.save();ctx.direction="rtl";ctx.textAlign="center";const h=Math.ceil(words.length/2),ch=p<0.5?words.slice(0,h).join(" "):words.slice(h).join(" ");
         ctx.lineWidth=12;ctx.strokeStyle="#000";ctx.strokeText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.fillStyle=theme.text;ctx.fillText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.restore();
@@ -394,19 +470,19 @@
         const cIdx=Math.min(chunks.length-1,Math.floor(p*chunks.length)),ac=chunks[cIdx]||words,lp=(p*chunks.length)%1,aw=Math.min(ac.length-1,Math.floor(lp*ac.length));
         const ct=ac.join(" ").toUpperCase(),fw=ctx.measureText(ct).width,sf=Math.min(1,(canvas.width*0.86)/Math.max(1,fw+32));
         const em=findEmoji(ac[aw]||"");
-        if(em){const pe=Math.min(1,lp*5);ctx.save();ctx.font=`${Math.round(72*pe)}px sans-serif`;ctx.textAlign="center";ctx.fillText(em,canvas.width/2,capY-80-(1-pe)*18);ctx.restore();}
-        ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf*(1+en*0.07),sf*(1+en*0.07));
+        if(em){const pe=Math.min(1,lp*5);ctx.save();ctx.font=`${Math.round(58*pe)}px sans-serif`;ctx.textAlign="center";ctx.fillText(em,canvas.width/2,capY-56-(1-pe)*12);ctx.restore();}
+        ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf*(1+en*0.06),sf*(1+en*0.06));
         let xc=-fw/2;ctx.textAlign="left";
         ac.forEach((rw,wi)=>{
           const w=rw.toUpperCase(),ww=ctx.measureText(w).width;
-          if(wi===aw){ctx.save();ctx.fillStyle=theme.accent;ctx.beginPath();ctx.roundRect(xc-8,-32,ww+16,64,12);ctx.fill();ctx.restore();ctx.fillStyle="#07090e";ctx.fillText(w,xc,0);}
+          if(wi===aw){ctx.save();ctx.fillStyle=theme.accent;ctx.beginPath();ctx.roundRect(xc-8,-30,ww+16,60,12);ctx.fill();ctx.restore();ctx.fillStyle="#07090e";ctx.fillText(w,xc,0);}
           else{ctx.lineWidth=10;ctx.strokeStyle="#000";ctx.strokeText(w,xc,0);ctx.fillStyle=theme.text;ctx.fillText(w,xc,0);}
           xc+=ctx.measureText(w+" ").width;
         });
         ctx.restore();
       }
 
-      const bh=canvas.height*0.04;ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,bh);ctx.fillRect(0,canvas.height-bh,canvas.width,bh);
+      const bh=canvas.height*0.035;ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,bh);ctx.fillRect(0,canvas.height-bh,canvas.width,bh);
       animId=requestAnimationFrame(drawFrame);
     }
 
@@ -416,7 +492,7 @@
       if(sharedActx.state==="suspended")sharedActx.resume();
       if(!analyser){analyser=sharedActx.createAnalyser();analyser.fftSize=64;freqData=new Uint8Array(analyser.frequencyBinCount);}
       if(recStream){sfxDest=sharedActx.createMediaStreamDestination();sfxDest.stream.getAudioTracks().forEach(t=>recStream.addTrack(t));}else sfxDest=null;
-      startBgm(); statusText.textContent=`Playing Blender 3D (${currentClip||"Loading"} | BGM: ${activeBgm})`;
+      startBgm(); statusText.textContent=`Playing 3D Room (${currentClip||"3D"} | BGM: ${activeBgm})`;
       if(audioEl){audioEl.pause();audioEl=null;}
       if(audioBufferUrl){audioEl=new Audio(audioBufferUrl);try{const s=sharedActx.createMediaElementSource(audioEl);s.connect(analyser);analyser.connect(sharedActx.destination);if(sfxDest)s.connect(sfxDest);}catch(e){}audioEl.play().catch(()=>{});}
       animId=requestAnimationFrame(drawFrame);
@@ -432,7 +508,7 @@
       exportBtn.disabled=true;statusText.textContent=`Exporting ${isMp4?"MP4":"WebM"}...`;
       const chunks=[];activeRecorder=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:3500000}:{});
       activeRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
-      activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"blender-3d-reel.mp4":"blender-3d-reel.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
+      activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-room-reel.mp4":"3d-room-reel.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
       activeRecorder.start(250);
     });
   </script>
