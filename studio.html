@@ -517,6 +517,69 @@
       activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-director.mp4":"3d-director.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
       activeRecorder.start(250);
     });
+    // === SMART WORD-TO-SCENE AUTO-DIRECTOR ===
+const WORD_SCENE_MAP = [
+  { words: ["fight", "hit", "punch", "attack", "beat", "airport", "angry"], mode: "two_fight" },
+  { words: ["talk", "meet", "people", "friend", "ask", "tell", "say", "karachi"], mode: "two_talk" },
+  { words: ["desk", "work", "study", "office", "watch", "explain", "street"], mode: "desk" }
+];
+
+let smartCues = [];
+
+function buildWordCuesFromScript() {
+  const scriptEl = document.getElementById("scriptInput");
+  if (!scriptEl) return;
+
+  // Splits your exact script into phrases without changing a single word
+  const phrases = scriptEl.value
+    .split(/(?<=[,.!?])|\b(?=and\b|then\b|on\b|to\b)/i)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  let timeCursor = 0;
+  smartCues = phrases.map(phrase => {
+    const wordCount = phrase.split(/\s+/).length;
+    const duration = Math.max(1.2, wordCount * 0.42);
+    const lower = phrase.toLowerCase();
+
+    let chosenMode = "desk";
+    for (const rule of WORD_SCENE_MAP) {
+      if (rule.words.some(w => lower.includes(w))) {
+        chosenMode = rule.mode;
+        break;
+      }
+    }
+
+    const cue = { text: phrase, start: timeCursor, end: timeCursor + duration, mode: chosenMode };
+    timeCursor += duration;
+    return cue;
+  });
+}
+
+// Automatically hooks into your existing startPlayback() function
+const originalStartPlayback = startPlayback;
+startPlayback = function(recStream = null) {
+  buildWordCuesFromScript();
+  originalStartPlayback(recStream);
+
+  const sceneSelect = document.getElementById("sceneMode");
+  const startTime = performance.now();
+
+  const cueWatcher = setInterval(() => {
+    const elapsed = (performance.now() - startTime) / 1000;
+    const activeCue = smartCues.find(c => elapsed >= c.start && elapsed < c.end);
+
+    if (activeCue && sceneSelect && sceneSelect.value !== activeCue.mode) {
+      sceneSelect.value = activeCue.mode;
+      // Triggers your existing scene change listener automatically
+      sceneSelect.dispatchEvent(new Event("change"));
+    }
+
+    if (smartCues.length > 0 && elapsed > smartCues[smartCues.length - 1].end) {
+      clearInterval(cueWatcher);
+    }
+  }, 150);
+};
   </script>
 </body>
 </html>
