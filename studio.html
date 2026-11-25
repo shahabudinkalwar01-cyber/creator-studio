@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v10.2 — Infinite AI Video Director</title>
+  <title>Studio v11 — Dynamic Camera, SFX, BGM & Objects</title>
   <style>
     :root { --bg:#07090e; --card:#10141f; --input:#0a0e17; --border:#21293b; --gold:#f5c542; --text:#f8fafc; --muted:#94a3b8; --green:#10b981; --red:#ef4444; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
@@ -15,7 +15,7 @@
     .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:16px; }
     .step-title { font-size:0.82rem; font-weight:700; color:var(--gold); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:10px; }
     input[type="text"], select, textarea { width:100%; background:var(--input); color:var(--text); border:1px solid var(--border); border-radius:12px; padding:12px; font-size:0.94rem; margin-bottom:10px; }
-    textarea { min-height:90px; line-height:1.45; resize:vertical; }
+    textarea { min-height:85px; line-height:1.45; resize:vertical; }
     .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .btn-ai { width:100%; background:linear-gradient(90deg,#f5c542,#fbbf24); color:#07090e; border:none; border-radius:12px; padding:14px; font-size:0.96rem; font-weight:800; cursor:pointer; }
     .btn-ai:disabled { opacity:0.6; }
@@ -25,15 +25,10 @@
     .upload-mini { display:flex; align-items:center; justify-content:center; text-align:center; background:rgba(245,197,66,0.08); color:var(--gold); border:1.5px dashed var(--gold); border-radius:12px; padding:12px; font-size:0.86rem; font-weight:700; cursor:pointer; }
     input[type="file"] { display:none; }
     .toggle-row { display:flex; justify-content:space-between; align-items:center; background:var(--input); border:1px solid var(--border); border-radius:12px; padding:11px 14px; margin-bottom:10px; font-size:0.85rem; font-weight:600; }
-    .style-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:14px 0; }
-    .style-card { background:var(--input); border:1.5px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; }
-    .style-card.active { border-color:var(--gold); background:rgba(245,197,66,0.06); }
-    .style-card h4 { font-size:0.88rem; margin-bottom:4px; }
-    .style-card p { font-size:0.75rem; color:var(--muted); }
     .btn-remix { width:100%; background:#1e293b; color:var(--gold); border:1px solid var(--gold); border-radius:12px; padding:13px; font-size:0.94rem; font-weight:700; cursor:pointer; }
     canvas { width:100%; aspect-ratio:9/16; max-height:520px; object-fit:contain; background:#000; border-radius:12px; border:1px solid var(--border); display:block; margin:0 auto 12px; }
     .controls-row { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .status { font-size:0.82rem; color:var(--green); flex:1; min-width:180px; }
+    .status { font-size:0.8rem; color:var(--green); flex:1; min-width:180px; }
     .btn-small { background:#1e293b; color:var(--text); border:1px solid var(--border); padding:9px 14px; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; }
     .btn-export { background:var(--green); color:#052e16; border:none; }
     .btn-small:disabled { opacity:0.5; }
@@ -42,24 +37,24 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">AI DIRECTOR ENGINE v10.2</span>
+      <span class="badge">AI DIRECTOR v11 • FULL RANDOMIZER</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
     <div class="card">
-      <div class="step-title">🎙️ Option A: Voice → New Unique Video Every Tap</div>
+      <div class="step-title">🎙️ Option A: Voice → New Camera, SFX, BGM & Objects</div>
       <div class="btn-row">
         <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
         <label class="upload-mini">
           <input type="file" id="audioUpload" accept="audio/*" />
-          <span id="audioLabel">📁 Upload Audio (MP3/M4A)</span>
+          <span id="audioLabel">📁 Upload Audio</span>
         </label>
       </div>
       <textarea id="scriptInput">95% of creators waste 10 hours editing manually. In 2026, automated motion graphics win every algorithm. Turn any voice into a $10,000 agency edit in seconds.</textarea>
     </div>
 
     <div class="card">
-      <div class="step-title">⚡ Option B: Topic → AI Script + Unique AI Art + Voice</div>
+      <div class="step-title">⚡ Option B: Topic → AI Script + Art + Voice + Random Look</div>
       <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watches, Cyberpunk AI, Crypto)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
@@ -71,43 +66,39 @@
           <option value="ar">🇸🇦 العربية (Arabic)</option>
         </select>
         <select id="voiceSelect">
-          <option value="aura-en:zeus" selected>Zeus (Deep Trailer)</option>
+          <option value="random" selected>🎲 Random Voice Each Tap</option>
+          <option value="aura-en:zeus">Zeus (Deep Trailer)</option>
           <option value="aura-en:orion">Orion (Dark Luxury)</option>
           <option value="aura-en:odysseus">Odysseus (Documentary)</option>
           <option value="aura-en:apollo">Apollo (YouTube)</option>
           <option value="aura-en:thalia">Thalia (TikTok Female)</option>
+          <option value="aura-en:asteria">Asteria (Expressive Female)</option>
           <option value="aura-es:sirio">Sirio (Spanish Male)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Brand-New Video</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Completely New Video</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. Format, Beat & Director Style</div>
+      <div class="step-title">2. Format & Audio Engine</div>
       <select id="modeSelect">
         <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
         <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
       </select>
       <label class="toggle-row">
-        <span>🎵 Dark Luxury Beat + Bass Impacts</span>
+        <span>🎵 Auto-Switch BGM + Random SFX Each Video</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <div class="style-grid">
-        <div class="style-card active" data-style="luxury"><h4>Dark Luxury</h4><p>Gold + random layouts & widgets.</p></div>
-        <div class="style-card" data-style="doc"><h4>Documentary</h4><p>Crimson + radar, HUD & film zoom.</p></div>
-        <div class="style-card" data-style="apple"><h4>Clean Apple Tech</h4><p>Cyan + split frames & gauges.</p></div>
-        <div class="style-card" data-style="finance"><h4>Dark Neon Finance</h4><p>Emerald + candlesticks & dials.</p></div>
-      </div>
-      <button class="btn-remix" id="remixBtn">🎲 Invent New Random Video Look</button>
+      <button class="btn-remix" id="remixBtn">🎲 Switch Camera, BGM, SFX, Objects & Color</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live Director Preview & Export</div>
+      <div class="step-title">3. Live Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Every tap invents a new look</span>
+        <span class="status" id="statusText">Ready — Every tap changes BGM, SFX, Camera & Objects</span>
         <div style="display:flex;gap:8px;">
-          <button class="btn-small" id="replayBtn">New Look</button>
+          <button class="btn-small" id="replayBtn">New Mix</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
         </div>
       </div>
@@ -123,26 +114,27 @@
     const beatToggle = document.getElementById("beatToggle"), aiMagicBtn = document.getElementById("aiMagicBtn");
     const exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
 
-    let selectedStyle = "luxury", aiImages = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
+    let aiImages = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
     let animId = null, beatInterval = null, scenes = [], scenePlans = [], sceneDurationMs = 3400;
     let startTime = null, lastSceneIdx = -1, activeRecorder = null, sharedActx = null, sfxDest = null, analyser = null, freqData = null;
     let micRecorder = null, micChunks = [], isMicRecording = false;
+    let activeThemeKey = "luxury", activeBgm = "Dark Trap";
 
-    const MODULES = ["candlesticks","radar","donut","waveform","notification","speedometer","split","counter","grid3d","starfield"];
+    const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:odysseus","aura-en:apollo","aura-en:thalia","aura-en:asteria"];
+    const MODULES = ["candlesticks","radar","donut","waveform","notification","speedometer","counter","grid3d","coins","ticker","rings","bars"];
     const LAYOUTS = ["fullbleed","splitscreen","polaroid","hud","poster"];
-    const TRANS = ["whip","zoom","glitch"];
-    const STARS = Array.from({length:48},()=>({x:Math.random(),y:Math.random(),z:0.2+Math.random()*0.8}));
+    const CAMERAS = ["dutch_l","dutch_r","zoom_in","zoom_out","pan_x","elevator"];
+    const SFX_LIST = ["bass","whoosh","ding","shutter","riser"];
+    const BGM_LIST = ["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
     const THEMES = {
-      luxury:{bg:"#090704",accent:"#f5c542",text:"#ffffff",glow:"rgba(245,197,66,0.28)"},
-      doc:{bg:"#120909",accent:"#ef4444",text:"#ffffff",glow:"rgba(239,68,68,0.28)"},
-      apple:{bg:"#081221",accent:"#38bdf8",text:"#f8fafc",glow:"rgba(56,189,248,0.28)"},
-      finance:{bg:"#03120c",accent:"#10b981",text:"#ecfdf5",glow:"rgba(16,185,129,0.28)"}
+      luxury:  {bg:"#0b0803",accent:"#f5c542",text:"#ffffff",glow:"rgba(245,197,66,0.32)"},
+      crimson: {bg:"#140507",accent:"#ef4444",text:"#ffffff",glow:"rgba(239,68,68,0.32)"},
+      cyber:   {bg:"#051024",accent:"#38bdf8",text:"#f8fafc",glow:"rgba(56,189,248,0.32)"},
+      finance: {bg:"#02140d",accent:"#10b981",text:"#ecfdf5",glow:"rgba(16,185,129,0.32)"},
+      violet:  {bg:"#110621",accent:"#c084fc",text:"#faf5ff",glow:"rgba(192,132,252,0.32)"}
     };
+    const COINS = Array.from({length:16},(_,i)=>({x:(i*0.07)%1,y:Math.random(),sp:0.2+Math.random()*0.4}));
 
-    document.querySelectorAll(".style-card").forEach(c => c.addEventListener("click", () => {
-      document.querySelectorAll(".style-card").forEach(x => x.classList.remove("active"));
-      c.classList.add("active"); selectedStyle = c.dataset.style;
-    }));
     modeSelect.addEventListener("change", () => {
       const sh = modeSelect.value === "shorts";
       canvas.width = sh ? 720 : 1280; canvas.height = sh ? 1280 : 720;
@@ -158,7 +150,7 @@
     async function generateOwnAiImages(txt) {
       const res = await fetch(`${WORKER_URL}/images`, {
         method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({script:txt, style:selectedStyle})
+        body:JSON.stringify({script:txt, style:activeThemeKey})
       });
       if (!res.ok) throw new Error("Image error " + res.status);
       const data = await res.json();
@@ -176,15 +168,14 @@
         if (!res.ok) throw new Error(data.error || "Transcribe failed");
         scriptInput.value = data.transcript;
         scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
-        statusText.textContent = "2/2 Painting AI art & inventing animations...";
+        statusText.textContent = "2/2 Painting AI art & randomizing everything...";
         await generateOwnAiImages(data.transcript);
-        statusText.textContent = `Ready (${aiImages.length} AI visuals)!`;
         startPlayback(null);
       } catch (e) { statusText.textContent = e.message; startPlayback(null); }
     }
 
     document.getElementById("audioUpload").addEventListener("change", e => {
-      if (e.target.files[0]) processUploadedVoice(e.target.files[0], "✅ " + e.target.files[0].name.slice(0,12));
+      if (e.target.files[0]) processUploadedVoice(e.target.files[0], "✅ " + e.target.files[0].name.slice(0,10));
     });
     micBtn.addEventListener("click", async () => {
       if (isMicRecording) {
@@ -204,31 +195,36 @@
 
     aiMagicBtn.addEventListener("click", async () => {
       const topic = topicInput.value.trim() || "Luxury Watch Empire", lang = langSelect.value;
+      const tKeys = Object.keys(THEMES);
+      activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
+      let chosenVoice = voiceSelect.value;
+      if (chosenVoice === "random") chosenVoice = EN_VOICES[Math.floor(Math.random() * EN_VOICES.length)];
+      if (lang === "es") chosenVoice = "aura-es:sirio";
+
       aiMagicBtn.disabled = true; statusText.textContent = "1/3 Writing AI script...";
       try {
         const sRes = await fetch(`${WORKER_URL}/script`, {
           method:"POST", headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({topic, lang, tone:selectedStyle})
+          body:JSON.stringify({topic, lang, tone:activeThemeKey})
         });
         if (!sRes.ok) throw new Error("Worker " + sRes.status);
         const sData = await sRes.json();
         if (sData.script) { scriptInput.value = sData.script; scriptInput.dir = (lang==="ur"||lang==="ar")?"rtl":"ltr"; }
 
-        statusText.textContent = "2/3 Creating unique AI art & voice...";
+        statusText.textContent = "2/3 Painting AI pictures & voice...";
         const jobs = [generateOwnAiImages(scriptInput.value)];
         if (lang === "en" || lang === "es") {
           jobs.push(fetch(`${WORKER_URL}/tts`, {
             method:"POST", headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({text:scriptInput.value, voice:voiceSelect.value})
+            body:JSON.stringify({text:scriptInput.value, voice:chosenVoice})
           }).then(r => r.ok ? r.blob() : null));
         }
         const results = await Promise.all(jobs);
         if (results[1]) {
           audioBufferUrl = URL.createObjectURL(results[1]);
           audioDurationMs = await getAudioDurationMs(audioBufferUrl);
-          document.getElementById("audioLabel").textContent = "✅ AI Voice Ready";
+          document.getElementById("audioLabel").textContent = "✅ " + chosenVoice.split(":")[1].toUpperCase();
         }
-        statusText.textContent = `3/3 Ready (${aiImages.length} AI visuals)! Playing...`;
         startPlayback(null);
       } catch (e) { statusText.textContent = "Error: " + e.message; }
       finally { aiMagicBtn.disabled = false; }
@@ -239,7 +235,12 @@
       return m ? m[0].toUpperCase() : null;
     };
 
-    function buildScenes() {
+    function buildScenes(randomizeTheme = false) {
+      if (randomizeTheme) {
+        const tKeys = Object.keys(THEMES);
+        activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
+      }
+      activeBgm = BGM_LIST[Math.floor(Math.random() * BGM_LIST.length)];
       const parts = scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
       scenes = (parts.length ? parts : ["Tap AI Build above."]).map(t => ({
         text:t, stat:extractStat(t), rtl:/[\u0600-\u06FF]/.test(t)
@@ -247,9 +248,11 @@
       sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
       const mp = [...MODULES].sort(() => Math.random() - 0.5);
       const lp = [...LAYOUTS].sort(() => Math.random() - 0.5);
-      const tp = [...TRANS].sort(() => Math.random() - 0.5);
+      const cp = [...CAMERAS].sort(() => Math.random() - 0.5);
+      const sp = [...SFX_LIST].sort(() => Math.random() - 0.5);
       scenePlans = scenes.map((_, i) => ({
-        mod: mp[i % mp.length], layout: lp[i % lp.length], trans: tp[i % tp.length], tilt: (Math.random() - 0.5) * 0.14
+        mod: mp[i % mp.length], layout: lp[i % lp.length],
+        cam: cp[i % cp.length], sfx: sp[i % sp.length]
       }));
     }
 
@@ -262,30 +265,29 @@
       return 0.25 + 0.2 * Math.abs(Math.sin(el * 0.006));
     }
 
-    function drawModule(mod, theme, p, e, el) {
+    function drawObject(mod, theme, p, e, el) {
       const W = canvas.width, H = canvas.height; ctx.save();
       if (mod === "candlesticks") {
         const bw = W / 16;
         for (let i = 0; i < 12; i++) {
-          const bh = (80 + ((i * 53) % 210)) * Math.min(1, p * 1.5) * (0.9 + e * 0.35);
-          const x = (i + 2) * bw, y = H * 0.88 - bh - i * 18;
+          const bh = (70 + ((i * 53) % 190)) * Math.min(1, p * 1.5) * (0.9 + e * 0.35);
           ctx.fillStyle = i % 3 === 0 ? "rgba(255,255,255,0.28)" : theme.accent; ctx.globalAlpha = 0.55;
-          ctx.fillRect(x, y, bw * 0.55, bh); ctx.fillRect(x + bw * 0.22, y - 18, 3, bh + 36);
+          ctx.fillRect((i + 2) * bw, H * 0.88 - bh - i * 16, bw * 0.55, bh);
         }
       } else if (mod === "radar") {
         const cx = W / 2, cy = H * 0.22, r = Math.min(W, H) * 0.15;
-        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.5; ctx.lineWidth = 2;
-        [0.4, 0.7, 1].forEach(k => { ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, Math.PI * 2); ctx.stroke(); });
-        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, el * 0.004, el * 0.004 + 0.75); ctx.closePath();
+        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.55; ctx.lineWidth = 2;
+        [0.4, 0.7, 1].forEach(k => { ctx.beginPath(); ctx.arc(cx, cy, r * k, 0, 6.28); ctx.stroke(); });
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, el * 0.005, el * 0.005 + 0.8); ctx.closePath();
         ctx.fillStyle = theme.glow; ctx.fill();
       } else if (mod === "donut") {
         const cx = W / 2, cy = H * 0.2, r = 64; ctx.lineWidth = 14;
-        ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = "rgba(255,255,255,0.14)"; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 6.28); ctx.stroke();
         ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, r, -1.57, -1.57 + 6.28 * Math.min(0.95, p * 1.3)); ctx.stroke();
         ctx.fillStyle = "#fff"; ctx.font = "900 28px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
       } else if (mod === "waveform") {
-        const bw = W / 39; ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.8;
+        const bw = W / 39; ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.85;
         for (let i = 0; i < 28; i++) {
           const h = (20 + Math.abs(Math.sin(el * 0.012 + i * 0.6)) * 100) * (0.6 + e * 1.1);
           ctx.fillRect((W - 28 * bw * 1.4) / 2 + i * bw * 1.4, H * 0.84 - h / 2, bw, h);
@@ -293,43 +295,54 @@
       } else if (mod === "notification") {
         const ny = H * 0.08 + (1 - Math.pow(1 - Math.min(1, p * 4), 3)) * -120, nw = W * 0.8;
         ctx.fillStyle = "rgba(15,23,42,0.92)"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.roundRect((W - nw) / 2, ny, nw, 70, 18); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = theme.accent; ctx.font = "800 24px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText("💰 +$10,000 Payout Verified", W / 2, ny + 35);
+        ctx.beginPath(); ctx.roundRect((W - nw) / 2, ny, nw, 68, 18); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.font = "800 22px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("💰 +$10,000 Payout Received", W / 2, ny + 34);
       } else if (mod === "speedometer") {
         const cx = W / 2, cy = H * 0.24, r = 82, pr = Math.min(1, p * 1.3);
         ctx.lineWidth = 12; ctx.strokeStyle = "rgba(255,255,255,0.16)"; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.stroke();
         ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, Math.PI + Math.PI * pr); ctx.stroke();
-      } else if (mod === "split") {
-        ctx.font = "800 22px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillStyle = "rgba(239,68,68,0.9)"; ctx.fillRect(W * 0.1, H * 0.12, W * 0.38, 48);
-        ctx.fillStyle = theme.accent; ctx.fillRect(W * 0.52, H * 0.12, W * 0.38, 48);
-        ctx.fillStyle = "#fff"; ctx.fillText("OLD WAY ❌", W * 0.29, H * 0.12 + 24);
-        ctx.fillStyle = "#07090e"; ctx.fillText("AI SYSTEM ✅", W * 0.71, H * 0.12 + 24);
       } else if (mod === "counter") {
         ctx.fillStyle = theme.accent; ctx.font = "900 54px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText("$" + Math.floor(Math.min(1, p * 1.2) * 10000).toLocaleString(), W / 2, H * 0.18);
       } else if (mod === "grid3d") {
-        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.32; ctx.lineWidth = 1.5; const hz = H * 0.56;
+        ctx.strokeStyle = theme.accent; ctx.globalAlpha = 0.35; ctx.lineWidth = 1.5; const hz = H * 0.56;
         for (let i = -8; i <= 8; i++) { ctx.beginPath(); ctx.moveTo(W / 2 + i * 24, hz); ctx.lineTo(W / 2 + i * 170, H); ctx.stroke(); }
         for (let j = 0; j < 7; j++) { const y = hz + Math.pow((j / 7 + p * 0.8) % 1, 2) * (H - hz); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
-      } else if (mod === "starfield") {
-        ctx.fillStyle = theme.accent;
-        STARS.forEach(st => {
-          ctx.globalAlpha = 0.7; ctx.beginPath();
-          ctx.arc((st.x - 0.5) * (1 + p * st.z * 1.5) * W + W / 2, (st.y - 0.5) * (1 + p * st.z * 1.5) * H + H / 2, 2 + st.z * 3 * e, 0, 6.28);
-          ctx.fill();
+      } else if (mod === "coins") {
+        ctx.font = "800 26px -apple-system,sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        COINS.forEach(c => {
+          const cy = ((c.y + p * c.sp * 1.8) % 1) * H;
+          ctx.fillStyle = theme.accent; ctx.globalAlpha = 0.75;
+          ctx.beginPath(); ctx.arc(c.x * W, cy, 20, 0, 6.28); ctx.fill();
+          ctx.fillStyle = "#000"; ctx.fillText("$", c.x * W, cy + 1);
         });
+      } else if (mod === "ticker") {
+        ctx.fillStyle = "rgba(0,0,0,0.75)"; ctx.fillRect(0, H * 0.87, W, 46);
+        ctx.fillStyle = theme.accent; ctx.font = "800 22px monospace"; ctx.textBaseline = "middle";
+        const tx = W - ((el * 0.25) % (W * 2));
+        ctx.fillText("▲ AI +340%   ▲ REV $10,000   ▲ RETENTION 95%   ▲ BTC +18%", tx, H * 0.87 + 23);
+      } else if (mod === "rings") {
+        const cx = W / 2, cy = H * 0.24; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3; ctx.globalAlpha = 0.6;
+        for (let r = 0; r < 3; r++) {
+          ctx.beginPath(); ctx.ellipse(cx, cy, 90 + r * 26, 32 + r * 12, el * 0.002 * (r + 1), 0, 6.28); ctx.stroke();
+        }
+      } else if (mod === "bars") {
+        for (let i = 0; i < 5; i++) {
+          const bh = (50 + i * 42) * Math.min(1, p * 1.4), bx = W * 0.16 + i * (W * 0.14);
+          ctx.fillStyle = i === 4 ? theme.accent : "rgba(255,255,255,0.25)";
+          ctx.fillRect(bx, H * 0.34 - bh, W * 0.09, bh);
+        }
       }
       ctx.restore();
     }
 
-    function drawVisualLayout(img, layout, theme, p, tilt) {
+    function drawVisualLayout(img, layout, theme, p) {
       const W = canvas.width, H = canvas.height, hasImg = img && img.complete && img.naturalWidth > 0;
-      const drawImgInBox = (bx, by, bw, bh, zoomBoost = 0) => {
+      const drawImgInBox = (bx, by, bw, bh) => {
         if (!hasImg) return;
         ctx.save(); ctx.beginPath(); ctx.rect(bx, by, bw, bh); ctx.clip();
-        const z = 1.04 + p * 0.14 + zoomBoost, sc = Math.max(bw / img.naturalWidth, bh / img.naturalHeight) * z;
+        const z = 1.05 + p * 0.14, sc = Math.max(bw / img.naturalWidth, bh / img.naturalHeight) * z;
         ctx.drawImage(img, bx + (bw - img.naturalWidth * sc) / 2, by + (bh - img.naturalHeight * sc) / 2, img.naturalWidth * sc, img.naturalHeight * sc);
         ctx.restore();
       };
@@ -337,52 +350,94 @@
         drawImgInBox(0, H * 0.04, W, H * 0.45);
         ctx.fillStyle = theme.accent; ctx.fillRect(0, H * 0.49, W, 5);
       } else if (layout === "polaroid") {
-        ctx.save(); ctx.translate(W / 2, H * 0.28); ctx.rotate(tilt);
-        const cw = W * 0.68, ch = H * 0.34;
+        const cw = W * 0.72, ch = H * 0.36;
         ctx.fillStyle = "#111"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
-        ctx.fillRect(-cw / 2, -ch / 2, cw, ch); ctx.strokeRect(-cw / 2, -ch / 2, cw, ch);
-        drawImgInBox(-cw / 2 + 8, -ch / 2 + 8, cw - 16, ch - 16);
-        ctx.restore();
+        ctx.fillRect((W - cw) / 2, H * 0.1, cw, ch); ctx.strokeRect((W - cw) / 2, H * 0.1, cw, ch);
+        drawImgInBox((W - cw) / 2 + 6, H * 0.1 + 6, cw - 12, ch - 12);
       } else if (layout === "hud") {
-        drawImgInBox(W * 0.08, H * 0.12, W * 0.84, H * 0.34);
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.strokeRect(W * 0.08, H * 0.12, W * 0.84, H * 0.34);
+        drawImgInBox(W * 0.08, H * 0.11, W * 0.84, H * 0.35);
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.strokeRect(W * 0.08, H * 0.11, W * 0.84, H * 0.35);
       } else {
-        drawImgInBox(0, 0, W, H, layout === "poster" ? 0.1 : 0);
+        drawImgInBox(0, 0, W, H);
         const vig = ctx.createLinearGradient(0, 0, 0, H);
-        vig.addColorStop(0, "rgba(0,0,0,0.4)"); vig.addColorStop(0.55, "rgba(0,0,0,0.62)"); vig.addColorStop(1, "rgba(0,0,0,0.88)");
+        vig.addColorStop(0, "rgba(0,0,0,0.35)"); vig.addColorStop(0.55, "rgba(0,0,0,0.58)"); vig.addColorStop(1, "rgba(0,0,0,0.86)");
         ctx.fillStyle = vig; ctx.fillRect(0, 0, W, H);
       }
     }
 
-    function playBassHit() {
+    function playSceneSfx(type) {
       if (!sharedActx || !beatToggle.checked) return;
       try {
-        const now = sharedActx.currentTime, o = sharedActx.createOscillator(), g = sharedActx.createGain();
-        o.type = "sine"; o.frequency.setValueAtTime(118, now); o.frequency.exponentialRampToValueAtTime(36, now + 0.25);
-        g.gain.setValueAtTime(0.32, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-        o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-        o.start(now); o.stop(now + 0.3);
+        const now = sharedActx.currentTime;
+        if (type === "ding") {
+          [1760, 2637].forEach((freq, i) => {
+            const o = sharedActx.createOscillator(), g = sharedActx.createGain();
+            o.type = "sine"; o.frequency.setValueAtTime(freq, now + i * 0.06);
+            g.gain.setValueAtTime(0.16, now + i * 0.06); g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
+            o.start(now + i * 0.06); o.stop(now + 0.42);
+          });
+        } else if (type === "whoosh" || type === "shutter") {
+          const dur = type === "shutter" ? 0.07 : 0.25, sz = Math.floor(sharedActx.sampleRate * dur);
+          const buf = sharedActx.createBuffer(1, sz, sharedActx.sampleRate), d = buf.getChannelData(0);
+          for (let i = 0; i < sz; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / sz);
+          const src = sharedActx.createBufferSource(); src.buffer = buf;
+          const f = sharedActx.createBiquadFilter(); f.type = "bandpass";
+          f.frequency.setValueAtTime(type === "shutter" ? 3200 : 400, now);
+          if (type === "whoosh") f.frequency.exponentialRampToValueAtTime(2200, now + dur);
+          const g = sharedActx.createGain(); g.gain.setValueAtTime(0.22, now); g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+          src.connect(f); f.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
+          src.start(now);
+        } else {
+          const o = sharedActx.createOscillator(), g = sharedActx.createGain();
+          o.type = type === "riser" ? "sawtooth" : "sine";
+          o.frequency.setValueAtTime(type === "riser" ? 90 : 125, now);
+          o.frequency.exponentialRampToValueAtTime(type === "riser" ? 440 : 35, now + 0.26);
+          g.gain.setValueAtTime(0.28, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
+          o.start(now); o.stop(now + 0.3);
+        }
       } catch (e) {}
     }
 
-    function startBackgroundBeat() {
+    function startBgm() {
       clearInterval(beatInterval); if (!beatToggle.checked || !sharedActx) return;
       let step = 0;
+      const intervalMs = activeBgm === "Doc Heartbeat" ? 650 : activeBgm === "Cyber Synth" ? 260 : 440;
       const tick = () => {
         if (!sharedActx) return;
         try {
-          const now = sharedActx.currentTime;
-          if (step % 2 === 0) {
-            const o = sharedActx.createOscillator(), g = sharedActx.createGain();
+          const now = sharedActx.currentTime, o = sharedActx.createOscillator(), g = sharedActx.createGain();
+          if (activeBgm === "Cyber Synth") {
+            const notes = [110, 130.8, 164.8, 146.8]; o.type = "sawtooth"; o.frequency.setValueAtTime(notes[step % 4], now);
+            g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          } else if (activeBgm === "Tech Ambient") {
+            const notes = [220, 277.2, 329.6]; o.type = "sine"; o.frequency.setValueAtTime(notes[step % 3], now);
+            g.gain.setValueAtTime(0.06, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+          } else if (activeBgm === "Doc Heartbeat") {
+            o.type = "sine"; o.frequency.setValueAtTime(step % 2 === 0 ? 62 : 48, now);
+            g.gain.setValueAtTime(0.14, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          } else {
             o.type = "triangle"; o.frequency.setValueAtTime(step % 4 === 0 ? 55 : 49, now);
             g.gain.setValueAtTime(0.09, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-            o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-            o.start(now); o.stop(now + 0.38);
           }
-          step++;
+          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
+          o.start(now); o.stop(now + 0.43); step++;
         } catch (e) {}
       };
-      tick(); beatInterval = setInterval(tick, 480);
+      tick(); beatInterval = setInterval(tick, intervalMs);
+    }
+
+    function applyCamera(cam, p) {
+      const W = canvas.width, H = canvas.height;
+      ctx.translate(W / 2, H / 2);
+      if (cam === "dutch_l") { ctx.rotate(-0.07 + p * 0.04); ctx.scale(1.12, 1.12); }
+      else if (cam === "dutch_r") { ctx.rotate(0.07 - p * 0.04); ctx.scale(1.12, 1.12); }
+      else if (cam === "zoom_in") { const z = 1 + p * 0.18; ctx.scale(z, z); }
+      else if (cam === "zoom_out") { const z = 1.22 - p * 0.18; ctx.scale(z, z); }
+      else if (cam === "pan_x") { ctx.scale(1.12, 1.12); ctx.translate((p - 0.5) * -50, 0); }
+      else if (cam === "elevator") { ctx.scale(1.1, 1.1); ctx.translate(0, (p - 0.5) * 45); }
+      ctx.translate(-W / 2, -H / 2);
     }
 
     function drawFrame(now) {
@@ -391,26 +446,26 @@
       if (el >= tot) {
         clearInterval(beatInterval); if (audioEl) audioEl.pause();
         if (activeRecorder && activeRecorder.state === "recording") activeRecorder.stop();
-        else statusText.textContent = "Done — Tap New Look or Export";
+        else statusText.textContent = `Done (${aiImages.length} AI pics | BGM: ${activeBgm})`;
         return;
       }
 
       const idx = Math.min(scenes.length - 1, Math.floor(el / sceneDurationMs)), sel = el % sceneDurationMs;
-      if (idx !== lastSceneIdx) { lastSceneIdx = idx; playBassHit(); }
-      const p = sel / sceneDurationMs, sc = scenes[idx], plan = scenePlans[idx], theme = THEMES[selectedStyle], en = getEnergy(el);
+      const plan = scenePlans[idx];
+      if (idx !== lastSceneIdx) { lastSceneIdx = idx; playSceneSfx(plan.sfx); }
+
+      const p = sel / sceneDurationMs, sc = scenes[idx], theme = THEMES[activeThemeKey], en = getEnergy(el);
 
       ctx.save();
-      const tp = Math.max(0, 1 - sel / 220);
-      if (plan.trans === "whip") ctx.translate(tp * canvas.width * 0.4, 0);
-      else if (plan.trans === "zoom") { const z = 1 + tp * 0.18; ctx.translate(canvas.width*(1-z)/2, canvas.height*(1-z)/2); ctx.scale(z, z); }
-      else ctx.translate(Math.sin(el * 0.3) * tp * 14, Math.cos(el * 0.35) * tp * 10);
+      applyCamera(plan.cam, p);
 
       const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
       g.addColorStop(0, theme.glow); g.addColorStop(1, theme.bg);
       ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      drawVisualLayout(aiImages[idx % Math.max(1, aiImages.length)], plan.layout, theme, p, plan.tilt);
-      drawModule(plan.mod, theme, p, en, el);
+      drawVisualLayout(aiImages[idx % Math.max(1, aiImages.length)], plan.layout, theme, p);
+      drawObject(plan.mod, theme, p, en, el);
+      ctx.restore();
 
       const isV = canvas.height > canvas.width, capY = plan.layout === "splitscreen" ? canvas.height * 0.66 : canvas.height * 0.58;
       if (sc.stat) {
@@ -424,15 +479,12 @@
       }
 
       const words = sc.text.split(" ");
-      ctx.font = `900 ${isV ? 52 : 56}px -apple-system,sans-serif`;
-      ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-
+      ctx.font = `900 ${isV ? 52 : 56}px -apple-system,sans-serif`; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
       if (sc.rtl) {
         ctx.save(); ctx.direction = "rtl"; ctx.textAlign = "center";
         const h = Math.ceil(words.length / 2), ch = p < 0.5 ? words.slice(0, h).join(" ") : words.slice(h).join(" ");
         ctx.lineWidth = 12; ctx.strokeStyle = "#000"; ctx.strokeText(ch, canvas.width / 2, capY, canvas.width * 0.86);
-        ctx.fillStyle = theme.text; ctx.fillText(ch, canvas.width / 2, capY, canvas.width * 0.86);
-        ctx.restore();
+        ctx.fillStyle = theme.text; ctx.fillText(ch, canvas.width / 2, capY, canvas.width * 0.86); ctx.restore();
       } else {
         const chunks = []; for (let i = 0; i < words.length; i += 3) chunks.push(words.slice(i, i + 3));
         const cIdx = Math.min(chunks.length - 1, Math.floor(p * chunks.length)), ac = chunks[cIdx] || words;
@@ -449,21 +501,21 @@
         ctx.restore();
       }
 
-      ctx.restore();
       const bh = canvas.height * 0.04; ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, bh); ctx.fillRect(0, canvas.height - bh, canvas.width, bh);
       animId = requestAnimationFrame(drawFrame);
     }
 
-    function startPlayback(recStream = null) {
-      cancelAnimationFrame(animId); clearInterval(beatInterval); buildScenes(); startTime = null; lastSceneIdx = -1;
+    function startPlayback(recStream = null, randomizeTheme = false) {
+      cancelAnimationFrame(animId); clearInterval(beatInterval); buildScenes(randomizeTheme); startTime = null; lastSceneIdx = -1;
       if (!sharedActx) sharedActx = new (window.AudioContext || window.webkitAudioContext)();
       if (sharedActx.state === "suspended") sharedActx.resume();
       if (!analyser) { analyser = sharedActx.createAnalyser(); analyser.fftSize = 64; freqData = new Uint8Array(analyser.frequencyBinCount); }
       if (recStream) { sfxDest = sharedActx.createMediaStreamDestination(); sfxDest.stream.getAudioTracks().forEach(t => recStream.addTrack(t)); }
       else sfxDest = null;
 
-      startBackgroundBeat();
+      startBgm();
+      statusText.textContent = `${aiImages.length} AI pics | BGM: ${activeBgm} | Color: ${activeThemeKey}`;
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
         audioEl = new Audio(audioBufferUrl);
@@ -477,12 +529,12 @@
       animId = requestAnimationFrame(drawFrame);
     }
 
-    document.getElementById("remixBtn").addEventListener("click", () => { statusText.textContent = "Invented new look!"; startPlayback(null); });
-    document.getElementById("replayBtn").addEventListener("click", () => { statusText.textContent = "Invented new look!"; startPlayback(null); });
+    document.getElementById("remixBtn").addEventListener("click", () => startPlayback(null, true));
+    document.getElementById("replayBtn").addEventListener("click", () => startPlayback(null, true));
 
     exportBtn.addEventListener("click", () => {
       if (activeRecorder && activeRecorder.state === "recording") return;
-      buildScenes(); const stream = canvas.captureStream(30); startPlayback(stream);
+      const stream = canvas.captureStream(30); startPlayback(stream, false);
       const mt = ["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm","video/mp4"].find(m => MediaRecorder.isTypeSupported(m)) || "";
       exportBtn.disabled = true; statusText.textContent = "Exporting unique AI video...";
       const chunks = []; activeRecorder = new MediaRecorder(stream, mt ? {mimeType:mt, videoBitsPerSecond:3500000} : {});
@@ -490,7 +542,7 @@
       activeRecorder.onstop = () => {
         clearInterval(beatInterval); const blob = new Blob(chunks, {type:mt || "video/webm"});
         const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-        a.download = mt.includes("mp4") ? "ai-director.mp4" : "ai-director.webm"; a.click();
+        a.download = mt.includes("mp4") ? "ai-director-v11.mp4" : "ai-director-v11.webm"; a.click();
         exportBtn.disabled = false; activeRecorder = null;
         statusText.textContent = `Exported (${(blob.size/1024).toFixed(0)} KB)!`;
       };
