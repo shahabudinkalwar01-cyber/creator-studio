@@ -518,256 +518,241 @@
       activeRecorder.start(250);
     });
     // =========================================================================
-// v17.0 FULL AUTO-DIRECTOR: REAL 3D PLACES, EMOTION, SFX, OBJECTS & DELETE
+// v17.1 SAFE AUTO-DIRECTOR: REAL 3D PLACES, STUDIO BASS & SCENE EDITOR
 // =========================================================================
+(function () {
+  let studioBassEnabled = true;
+  let studioBassLevel = 6;
+  let editableScenes = [];
+  let active3DEnvironmentGroup = null;
 
-let studioBassEnabled = true;
-let studioBassLevel = 6;
-let editableScenes = [];
-let active3DEnvironmentGroup = null;
-
-function getThreeScene() {
-  if (typeof scene !== "undefined") return scene;
-  if (window.scene) return window.scene;
-  return null;
-}
-
-// 1. REAL 3D PLACE BUILDER (Builds 3D Hospital, Street, Airport, or Studio)
-function buildReal3DPlace(placeType) {
-  const s = getThreeScene();
-  if (!s || typeof THREE === "undefined") return;
-
-  if (active3DEnvironmentGroup) {
-    s.remove(active3DEnvironmentGroup);
+  function getThreeScene() {
+    try {
+      if (typeof scene !== "undefined" && scene) return scene;
+      if (window.scene) return window.scene;
+    } catch (e) {}
+    return null;
   }
 
-  active3DEnvironmentGroup = new THREE.Group();
-  active3DEnvironmentGroup.name = "Real3DPlace";
+  function buildReal3DPlace(placeType) {
+    const s = getThreeScene();
+    if (!s || typeof THREE === "undefined") return;
 
-  if (placeType === "hospital") {
-    s.background = new THREE.Color("#0f293a");
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(16, 16),
-      new THREE.MeshStandardMaterial({ color: "#cbd5e1", roughness: 0.3 })
-    );
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -1.2;
-    active3DEnvironmentGroup.add(floor);
-
-    const bed = new THREE.Mesh(
-      new THREE.BoxGeometry(1.6, 0.5, 2.6),
-      new THREE.MeshStandardMaterial({ color: "#ffffff" })
-    );
-    bed.position.set(-2.1, -0.95, -0.5);
-    active3DEnvironmentGroup.add(bed);
-
-    const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-    const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-    crossV.position.set(0, 1.8, -3.5);
-    crossH.position.set(0, 1.8, -3.5);
-    active3DEnvironmentGroup.add(crossV, crossH);
-
-  } else if (placeType === "street") {
-    s.background = new THREE.Color("#09111e");
-    const road = new THREE.Mesh(
-      new THREE.PlaneGeometry(14, 20),
-      new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.8 })
-    );
-    road.rotation.x = -Math.PI / 2;
-    road.position.y = -1.2;
-    active3DEnvironmentGroup.add(road);
-
-    for (let z = -6; z <= 4; z += 2.5) {
-      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 1.1), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
-      stripe.position.set(0, -1.18, z);
-      active3DEnvironmentGroup.add(stripe);
+    if (active3DEnvironmentGroup) {
+      s.remove(active3DEnvironmentGroup);
     }
 
-    const b1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 6, 3), new THREE.MeshStandardMaterial({ color: "#334155" }));
-    b1.position.set(-3.8, 1.8, -3);
-    const b2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 7, 3), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
-    b2.position.set(3.8, 2.3, -3.5);
-    active3DEnvironmentGroup.add(b1, b2);
+    active3DEnvironmentGroup = new THREE.Group();
+    active3DEnvironmentGroup.name = "Real3DPlace";
 
-  } else if (placeType === "airport") {
-    s.background = new THREE.Color("#172554");
-    const terminalFloor = new THREE.Mesh(
-      new THREE.PlaneGeometry(16, 16),
-      new THREE.MeshStandardMaterial({ color: "#475569", metalness: 0.4, roughness: 0.2 })
-    );
-    terminalFloor.rotation.x = -Math.PI / 2;
-    terminalFloor.position.y = -1.2;
-    active3DEnvironmentGroup.add(terminalFloor);
+    if (placeType === "hospital") {
+      s.background = new THREE.Color("#0f293a");
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(16, 16),
+        new THREE.MeshStandardMaterial({ color: "#cbd5e1", roughness: 0.3 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -1.2;
+      active3DEnvironmentGroup.add(floor);
 
-    const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 3.2, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
-    planeBody.rotation.z = Math.PI / 2;
-    planeBody.position.set(0, 1.1, -4.2);
-    const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 3.4), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
-    planeWings.position.set(0, 1.1, -4.2);
-    active3DEnvironmentGroup.add(planeBody, planeWings);
-  } else {
-    s.background = new THREE.Color("#0d111d");
-  }
+      const bed = new THREE.Mesh(
+        new THREE.BoxGeometry(1.6, 0.5, 2.6),
+        new THREE.MeshStandardMaterial({ color: "#ffffff" })
+      );
+      bed.position.set(-2.1, -0.95, -0.5);
+      active3DEnvironmentGroup.add(bed);
 
-  s.add(active3DEnvironmentGroup);
-}
+      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      crossV.position.set(0, 1.8, -3.5);
+      crossH.position.set(0, 1.8, -3.5);
+      active3DEnvironmentGroup.add(crossV, crossH);
 
-// 2. SMART WORD DICTIONARY (Place + Mode + Emotion + Move + Camera + Object + SFX)
-const SMART_WORD_ENGINE = [
-  {
-    keywords: ["hospital", "hopital", "doctor", "sick", "patient", "clinic", "emergency"],
-    place: "hospital",
-    mode: "two_talk",
-    emotion: "😟 Worried",
-    move: "🏥 Medical Check / Talk",
-    camera: "📷 Medium Close-Up",
-    object: "🛏️ 3D Hospital Bed & Cross",
-    sfx: "pulse"
-  },
-  {
-    keywords: ["airport", "flight", "plane", "terminal", "travel"],
-    place: "airport",
-    mode: "two_talk",
-    emotion: "😰 Stressed",
-    move: "🚶 Walk in Terminal",
-    camera: "🎥 Wide Airport Shot",
-    object: "✈️ 3D Airplane",
-    sfx: "whoosh"
-  },
-  {
-    keywords: ["fight", "hit", "punch", "attack", "beat", "rival", "angry", "war"],
-    place: "keep",
-    mode: "two_fight",
-    emotion: "😠 Angry",
-    move: "🥊 Fight Combo",
-    camera: "⚡ Action Shake Zoom",
-    object: "🔥 Combat Impact",
-    sfx: "punch"
-  },
-  {
-    keywords: ["street", "road", "karachi", "city", "outside", "market", "bazaar"],
-    place: "street",
-    mode: "two_talk",
-    emotion: "🗣️ Expressive",
-    move: "🚶 Walk on Street",
-    camera: "🎬 Side Pan Shot",
-    object: "🏙️ 3D Road & Buildings",
-    sfx: "whoosh"
-  },
-  {
-    keywords: ["money", "rich", "dollar", "$", "win", "trophy", "success", "luxury", "watch", "gold"],
-    place: "studio",
-    mode: "desk",
-    emotion: "😎 Confident",
-    move: "🙌 Celebrate / Point",
-    camera: "🎥 Hero Low Zoom",
-    object: "🏆 Gold Trophy",
-    sfx: "ding"
-  }
-];
+    } else if (placeType === "street") {
+      s.background = new THREE.Color("#09111e");
+      const road = new THREE.Mesh(
+        new THREE.PlaneGeometry(14, 20),
+        new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.8 })
+      );
+      road.rotation.x = -Math.PI / 2;
+      road.position.y = -1.2;
+      active3DEnvironmentGroup.add(road);
 
-const CHARACTER_OUTFIT_PALETTE = [
-  { name: "Cyber Gold", hex: "#f5b942" },
-  { name: "Royal Blue", hex: "#3b82f6" },
-  { name: "Crimson Red", hex: "#ef4444" },
-  { name: "Emerald Pro", hex: "#10b981" },
-  { name: "Neon Purple", hex: "#a855f7" },
-  { name: "Silver Titanium", hex: "#e5e7eb" }
-];
-
-// 3. BUILT-IN SOUND EFFECTS GENERATOR
-function triggerDirectorSFX(type) {
-  try {
-    const ctx = (typeof sharedActx !== "undefined" ? sharedActx : window.sharedActx) || new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === "suspended") ctx.resume();
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    if (type === "punch") {
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(150, now);
-      osc.frequency.exponentialRampToValueAtTime(35, now + 0.18);
-      gain.gain.setValueAtTime(0.6, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-    } else if (type === "ding") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, now);
-      osc.frequency.setValueAtTime(1320, now + 0.08);
-      gain.gain.setValueAtTime(0.25, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-    } else if (type === "whoosh") {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(220, now);
-      osc.frequency.exponentialRampToValueAtTime(60, now + 0.22);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.24);
-    } else {
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(110, now);
-      gain.gain.setValueAtTime(0.12, now);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-    }
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.36);
-  } catch (e) {}
-}
-
-// 4. RANDOMIZE FRESH CHARACTER STYLE FOR EVERY NEW USER/SCRIPT
-function randomizeFreshCast() {
-  const randomOutfit = CHARACTER_OUTFIT_PALETTE[Math.floor(Math.random() * CHARACTER_OUTFIT_PALETTE.length)];
-  const s = getThreeScene();
-  if (s && typeof THREE !== "undefined") {
-    s.traverse(obj => {
-      if (obj.isMesh && obj.material && obj.material.color && obj.name.toLowerCase().includes("body")) {
-        obj.material.color.set(randomOutfit.hex);
+      for (let z = -6; z <= 4; z += 2.5) {
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 1.1), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
+        stripe.position.set(0, -1.18, z);
+        active3DEnvironmentGroup.add(stripe);
       }
-    });
-  }
-  return randomOutfit.name;
-}
 
-// 5. INJECT STUDIO BASS & FULL SCENE EDITOR UI
-function injectStudioUpgradeUI() {
-  const scriptBox = document.getElementById("scriptInput");
-  if (scriptBox && !document.getElementById("studioBassBar")) {
-    const bassBar = document.createElement("div");
-    bassBar.id = "studioBassBar";
-    bassBar.style.cssText = "margin-top:10px; padding:10px; background:#141824; border:1px solid #f5b942; border-radius:10px; display:flex; flex-direction:column; gap:8px;";
-    bassBar.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="color:#f5b942; font-weight:700; font-size:13px;">🎙️ PC Studio Bass (Remove Thin Voice)</span>
-        <button id="toggleBassBtn" type="button" style="background:#10b981; color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">ON (Studio Pro)</button>
-      </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="color:#9ca3af; font-size:11px;">Deep Bass:</span>
-        <input id="bassGainSlider" type="range" min="0" max="12" value="6" step="1" style="flex:1; accent-color:#f5b942;">
-        <span id="bassGainLabel" style="color:#fff; font-size:11px; width:36px;">+6 dB</span>
-      </div>
-    `;
-    scriptBox.parentNode.appendChild(bassBar);
+      const b1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 6, 3), new THREE.MeshStandardMaterial({ color: "#334155" }));
+      b1.position.set(-3.8, 1.8, -3);
+      const b2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 7, 3), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
+      b2.position.set(3.8, 2.3, -3.5);
+      active3DEnvironmentGroup.add(b1, b2);
 
-    document.getElementById("toggleBassBtn").onclick = function () {
-      studioBassEnabled = !studioBassEnabled;
-      this.textContent = studioBassEnabled ? "ON (Studio Pro)" : "OFF (Original)";
-      this.style.background = studioBassEnabled ? "#10b981" : "#374151";
-      this.style.color = studioBassEnabled ? "#000" : "#fff";
-    };
+    } else if (placeType === "airport") {
+      s.background = new THREE.Color("#172554");
+      const terminalFloor = new THREE.Mesh(
+        new THREE.PlaneGeometry(16, 16),
+        new THREE.MeshStandardMaterial({ color: "#475569", metalness: 0.4, roughness: 0.2 })
+      );
+      terminalFloor.rotation.x = -Math.PI / 2;
+      terminalFloor.position.y = -1.2;
+      active3DEnvironmentGroup.add(terminalFloor);
 
-    document.getElementById("bassGainSlider").oninput = function () {
-      studioBassLevel = Number(this.value);
-      document.getElementById("bassGainLabel").textContent = `+${studioBassLevel} dB`;
-    };
+      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 3.2, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
+      planeBody.rotation.z = Math.PI / 2;
+      planeBody.position.set(0, 1.1, -4.2);
+      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 3.4), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
+      planeWings.position.set(0, 1.1, -4.2);
+      active3DEnvironmentGroup.add(planeBody, planeWings);
+    } else {
+      s.background = new THREE.Color("#0d111d");
+    }
+
+    s.add(active3DEnvironmentGroup);
   }
 
-  const exportBtn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Export MP4"));
-  if (exportBtn && !document.getElementById("sceneEditorPanel")) {
-    const editorPanel = document.createElement("div");
-    editorPanel.id = "sceneEditorPanel";
-    editorPanel.style.cssText = "margin:12px 0; padding:10px; background:#111520; border:1px solid #2a3142; border-radius:10px;";
+  const SMART_WORD_ENGINE = [
+    {
+      keywords: ["hospital", "hopital", "doctor", "sick", "patient", "clinic", "emergency"],
+      place: "hospital",
+      mode: "two_talk",
+      emotion: "😟 Worried",
+      move: "🏥 Medical Check",
+      camera: "📷 Medium Close-Up",
+      object: "🛏️ 3D Bed & Red Cross",
+      sfx: "pulse"
+    },
+    {
+      keywords: ["airport", "flight", "plane", "terminal", "travel"],
+      place: "airport",
+      mode: "two_talk",
+      emotion: "😰 Stressed",
+      move: "🚶 Walk Terminal",
+      camera: "🎥 Wide Airport Shot",
+      object: "✈️ 3D Airplane",
+      sfx: "whoosh"
+    },
+    {
+      keywords: ["fight", "hit", "punch", "attack", "beat", "rival", "angry", "war"],
+      place: "keep",
+      mode: "two_fight",
+      emotion: "😠 Angry",
+      move: "🥊 Fight Combo",
+      camera: "⚡ Action Shake Zoom",
+      object: "🔥 Combat Impact",
+      sfx: "punch"
+    },
+    {
+      keywords: ["street", "road", "karachi", "city", "outside", "market", "bazaar"],
+      place: "street",
+      mode: "two_talk",
+      emotion: "🗣️ Expressive",
+      move: "🚶 Walk Street",
+      camera: "🎬 Side Pan Shot",
+      object: "🏙️ 3D Road & Buildings",
+      sfx: "whoosh"
+    },
+    {
+      keywords: ["money", "rich", "dollar", "win", "trophy", "success", "luxury", "watch", "gold"],
+      place: "studio",
+      mode: "desk",
+      emotion: "😎 Confident",
+      move: "🙌 Celebrate",
+      camera: "🎥 Hero Low Zoom",
+      object: "🏆 Gold Trophy",
+      sfx: "ding"
+    }
+  ];
+
+  function triggerDirectorSFX(type) {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      const ctx = (typeof sharedActx !== "undefined" && sharedActx) ? sharedActx : new Ctx();
+      if (ctx.state === "suspended") ctx.resume();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      if (type === "punch") {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.18);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+      } else if (type === "ding") {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(1320, now + 0.08);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      } else {
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.exponentialRampToValueAtTime(60, now + 0.2);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+      }
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.36);
+    } catch (e) {}
+  }
+
+  function injectStudioUpgradeUI() {
+    const scriptBox = document.getElementById("scriptInput");
+    if (scriptBox && !document.getElementById("studioBassBar")) {
+      const bassBar = document.createElement("div");
+      bassBar.id = "studioBassBar";
+      bassBar.style.cssText = "margin-top:10px; padding:10px; background:#141824; border:1px solid #f5b942; border-radius:10px; display:flex; flex-direction:column; gap:8px;";
+      bassBar.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#f5b942; font-weight:700; font-size:13px;">🎙️ PC Studio Bass (Remove Thin Voice)</span>
+          <button id="toggleBassBtn" type="button" style="background:#10b981; color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">ON (Studio Pro)</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="color:#9ca3af; font-size:11px;">Deep Bass:</span>
+          <input id="bassGainSlider" type="range" min="0" max="12" value="6" step="1" style="flex:1; accent-color:#f5b942;">
+          <span id="bassGainLabel" style="color:#fff; font-size:11px; width:36px;">+6 dB</span>
+        </div>
+      `;
+      scriptBox.parentNode.appendChild(bassBar);
+
+      document.getElementById("toggleBassBtn").onclick = function () {
+        studioBassEnabled = !studioBassEnabled;
+        this.textContent = studioBassEnabled ? "ON (Studio Pro)" : "OFF (Original)";
+        this.style.background = studioBassEnabled ? "#10b981" : "#374151";
+        this.style.color = studioBassEnabled ? "#000" : "#fff";
+      };
+
+      document.getElementById("bassGainSlider").oninput = function () {
+        studioBassLevel = Number(this.value);
+        document.getElementById("bassGainLabel").textContent = "+" + studioBassLevel + " dB";
+      };
+    }
+
+    const exportBtn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Export MP4"));
+    if (exportBtn && !document.getElementById("sceneEditorPanel")) {
+      const editorPanel = document.createElement("div");
+      editorPanel.id = "sceneEditorPanel";
+      editorPanel.style.cssText = "margin:12px 0; padding:10px; background:#111520; border:1px solid #2a3142; border-radius:10px;";
+      editorPanel.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="color:#f5b942; font-weight:700; font-size:13px;">🎬 Edit or Remove Scenes Before Export</span>
+          <button id="refreshCardsBtn" type="button" style="background:#2563eb; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Sync Script</button>
+        </div>
+        <div id="castMoodBadge" style="color:#10b981; font-size:11px; margin-bottom:8px;"></div>
+        <div id="sceneCardsContainer" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto;"></div>
+      `;
+      exportBtn.parentNode.parentNode.insertBefore(editorPanel, exportBtn.parentNode);
+      document.getElementById("refreshCardsBtn").onclick = generateEditableSceneCards;
+    }
+  }
+
+  function generateEditableSceneCards() {
   </script>
 </body>
 </html>
