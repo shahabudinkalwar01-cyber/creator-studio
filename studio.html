@@ -536,7 +536,7 @@
     return null;
   }
 
-    function buildReal3DPlace(placeType) {
+      function buildReal3DPlace(placeType) {
     const s = getThreeScene();
     if (!s || typeof THREE === "undefined") return;
 
@@ -549,65 +549,58 @@
 
     if (placeType === "hospital") {
       s.background = new THREE.Color("#0e2a38");
-      // 3D Hospital Bed + Blue Pillow sitting right on floor (y = 0)
+      // 3D Hospital Bed + Pillow visible right behind character inside 9:16 frame
       const bedFrame = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.45, 2.0),
+        new THREE.BoxGeometry(0.85, 0.42, 1.5),
         new THREE.MeshStandardMaterial({ color: "#ffffff" })
       );
-      bedFrame.position.set(-1.35, 0.22, -0.4);
+      bedFrame.position.set(-0.62, 0.22, -0.9);
       const pillow = new THREE.Mesh(
-        new THREE.BoxGeometry(0.75, 0.16, 0.4),
+        new THREE.BoxGeometry(0.6, 0.16, 0.35),
         new THREE.MeshStandardMaterial({ color: "#38bdf8" })
       );
-      pillow.position.set(-1.35, 0.5, -1.1);
+      pillow.position.set(-0.62, 0.48, -1.4);
       active3DEnvironmentGroup.add(bedFrame, pillow);
 
-      // Glowing Red Cross Sign on Back Wall behind character
-      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.95, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.25, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      crossV.position.set(1.1, 1.5, -1.8);
-      crossH.position.set(1.1, 1.5, -1.8);
+      // Glowing Red Cross right above shoulder inside 9:16 frame
+      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.85, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.22, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      crossV.position.set(0.55, 1.45, -1.3);
+      crossH.position.set(0.55, 1.45, -1.3);
       active3DEnvironmentGroup.add(crossV, crossH);
 
     } else if (placeType === "street") {
       s.background = new THREE.Color("#09111e");
-      // Yellow Road Stripes on top of your floor (y = 0.02)
-      for (let z = -4; z <= 3; z += 1.8) {
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.03, 0.9), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
-        stripe.position.set(0, 0.02, z);
+      // Yellow Road Stripes down the center
+      for (let z = -3; z <= 2; z += 1.4) {
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.04, 0.75), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
+        stripe.position.set(0, 0.03, z);
         active3DEnvironmentGroup.add(stripe);
       }
 
-      // 3D City Buildings & Glowing Streetlight right beside character
-      const leftBldg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4.2, 2.2), new THREE.MeshStandardMaterial({ color: "#334155" }));
-      leftBldg.position.set(-2.2, 2.1, -2.0);
-      const rightBldg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4.8, 2.2), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
-      rightBldg.position.set(2.2, 2.4, -2.2);
-      const lampPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6), new THREE.MeshStandardMaterial({ color: "#94a3b8" }));
-      lampPole.position.set(1.25, 1.3, -1.0);
+      // 3D City Buildings & Glowing Streetlight inside 9:16 view
+      const leftBldg = new THREE.Mesh(new THREE.BoxGeometry(1.1, 3.6, 1.4), new THREE.MeshStandardMaterial({ color: "#334155" }));
+      leftBldg.position.set(-0.95, 1.8, -1.8);
+      const rightBldg = new THREE.Mesh(new THREE.BoxGeometry(1.1, 4.0, 1.4), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
+      rightBldg.position.set(0.95, 2.0, -1.8);
       const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.16), new THREE.MeshBasicMaterial({ color: "#fde047" }));
-      lampBulb.position.set(1.25, 2.6, -1.0);
-      active3DEnvironmentGroup.add(leftBldg, rightBldg, lampPole, lampBulb);
+      lampBulb.position.set(0.55, 1.95, -1.1);
+      active3DEnvironmentGroup.add(leftBldg, rightBldg, lampBulb);
 
     } else if (placeType === "airport") {
       s.background = new THREE.Color("#172554");
-      // 3D Airplane flying/parked behind character
-      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.6, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
+      // 3D Airplane centered right behind character
+      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1.8, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
       planeBody.rotation.z = Math.PI / 2;
-      planeBody.position.set(0, 1.5, -2.2);
-      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.07, 2.8), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
-      planeWings.position.set(0, 1.5, -2.2);
+      planeBody.position.set(0, 1.55, -1.5);
+      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 2.0), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
+      planeWings.position.set(0, 1.55, -1.5);
       active3DEnvironmentGroup.add(planeBody, planeWings);
     } else {
       s.background = new THREE.Color("#0d111d");
     }
 
-          s.add(active3DEnvironmentGroup);
-    s.traverse(function (o) {
-      if (o.name === "desk") {
-        o.visible = (placeType === "studio");
-      }
-    });
+    s.add(active3DEnvironmentGroup);
   }
   
   const SMART_WORD_ENGINE = [
@@ -946,7 +939,14 @@
     window.addEventListener("DOMContentLoaded", initSafeUpgrade);
   } else {
     initSafeUpgrade();
-  }
+  }  let lastAutoDetectedText = "";
+  setInterval(function () {
+    const el = document.getElementById("scriptInput");
+    if (el && el.value !== lastAutoDetectedText) {
+      lastAutoDetectedText = el.value;
+      generateEditableSceneCards();
+    }
+  }, 600);
 })();
   </script>
   <script src="director-pro.js"></script>
