@@ -129,6 +129,8 @@
     const threeRenderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
     threeRenderer.setSize(540,960); threeRenderer.outputColorSpace=THREE.SRGBColorSpace;
     const threeScene=new THREE.Scene();
+    window.scene = threeScene;
+    window.THREE = THREE;
     const threeCam=new THREE.PerspectiveCamera(44,540/960,0.1,100);
     const camPos=new THREE.Vector3(0,1.1,4.2), camLook=new THREE.Vector3(0,0.1,0);
 
@@ -534,7 +536,7 @@
     return null;
   }
 
-  function buildReal3DPlace(placeType) {
+    function buildReal3DPlace(placeType) {
     const s = getThreeScene();
     if (!s || typeof THREE === "undefined") return;
 
@@ -546,70 +548,62 @@
     active3DEnvironmentGroup.name = "Real3DPlace";
 
     if (placeType === "hospital") {
-      s.background = new THREE.Color("#0f293a");
-      const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(16, 16),
-        new THREE.MeshStandardMaterial({ color: "#cbd5e1", roughness: 0.3 })
-      );
-      floor.rotation.x = -Math.PI / 2;
-      floor.position.y = -1.2;
-      active3DEnvironmentGroup.add(floor);
-
-      const bed = new THREE.Mesh(
-        new THREE.BoxGeometry(1.6, 0.5, 2.6),
+      s.background = new THREE.Color("#0e2a38");
+      // 3D Hospital Bed + Blue Pillow sitting right on floor (y = 0)
+      const bedFrame = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 0.45, 2.0),
         new THREE.MeshStandardMaterial({ color: "#ffffff" })
       );
-      bed.position.set(-2.1, -0.95, -0.5);
-      active3DEnvironmentGroup.add(bed);
+      bedFrame.position.set(-1.35, 0.22, -0.4);
+      const pillow = new THREE.Mesh(
+        new THREE.BoxGeometry(0.75, 0.16, 0.4),
+        new THREE.MeshStandardMaterial({ color: "#38bdf8" })
+      );
+      pillow.position.set(-1.35, 0.5, -1.1);
+      active3DEnvironmentGroup.add(bedFrame, pillow);
 
-      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.9, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.25, 0.1), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      crossV.position.set(0, 1.8, -3.5);
-      crossH.position.set(0, 1.8, -3.5);
+      // Glowing Red Cross Sign on Back Wall behind character
+      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.95, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.25, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
+      crossV.position.set(1.1, 1.5, -1.8);
+      crossH.position.set(1.1, 1.5, -1.8);
       active3DEnvironmentGroup.add(crossV, crossH);
 
     } else if (placeType === "street") {
       s.background = new THREE.Color("#09111e");
-      const road = new THREE.Mesh(
-        new THREE.PlaneGeometry(14, 20),
-        new THREE.MeshStandardMaterial({ color: "#1e293b", roughness: 0.8 })
-      );
-      road.rotation.x = -Math.PI / 2;
-      road.position.y = -1.2;
-      active3DEnvironmentGroup.add(road);
-
-      for (let z = -6; z <= 4; z += 2.5) {
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 1.1), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
-        stripe.position.set(0, -1.18, z);
+      // Yellow Road Stripes on top of your floor (y = 0.02)
+      for (let z = -4; z <= 3; z += 1.8) {
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.03, 0.9), new THREE.MeshBasicMaterial({ color: "#f5b942" }));
+        stripe.position.set(0, 0.02, z);
         active3DEnvironmentGroup.add(stripe);
       }
 
-      const b1 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 6, 3), new THREE.MeshStandardMaterial({ color: "#334155" }));
-      b1.position.set(-3.8, 1.8, -3);
-      const b2 = new THREE.Mesh(new THREE.BoxGeometry(2.5, 7, 3), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
-      b2.position.set(3.8, 2.3, -3.5);
-      active3DEnvironmentGroup.add(b1, b2);
+      // 3D City Buildings & Glowing Streetlight right beside character
+      const leftBldg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4.2, 2.2), new THREE.MeshStandardMaterial({ color: "#334155" }));
+      leftBldg.position.set(-2.2, 2.1, -2.0);
+      const rightBldg = new THREE.Mesh(new THREE.BoxGeometry(1.8, 4.8, 2.2), new THREE.MeshStandardMaterial({ color: "#1e293b" }));
+      rightBldg.position.set(2.2, 2.4, -2.2);
+      const lampPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6), new THREE.MeshStandardMaterial({ color: "#94a3b8" }));
+      lampPole.position.set(1.25, 1.3, -1.0);
+      const lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.16), new THREE.MeshBasicMaterial({ color: "#fde047" }));
+      lampBulb.position.set(1.25, 2.6, -1.0);
+      active3DEnvironmentGroup.add(leftBldg, rightBldg, lampPole, lampBulb);
 
     } else if (placeType === "airport") {
       s.background = new THREE.Color("#172554");
-      const terminalFloor = new THREE.Mesh(
-        new THREE.PlaneGeometry(16, 16),
-        new THREE.MeshStandardMaterial({ color: "#475569", metalness: 0.4, roughness: 0.2 })
-      );
-      terminalFloor.rotation.x = -Math.PI / 2;
-      terminalFloor.position.y = -1.2;
-      active3DEnvironmentGroup.add(terminalFloor);
-
-      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 3.2, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
+      // 3D Airplane flying/parked behind character
+      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 2.6, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
       planeBody.rotation.z = Math.PI / 2;
-      planeBody.position.set(0, 1.1, -4.2);
-      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 3.4), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
-      planeWings.position.set(0, 1.1, -4.2);
+      planeBody.position.set(0, 1.5, -2.2);
+      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.07, 2.8), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
+      planeWings.position.set(0, 1.5, -2.2);
       active3DEnvironmentGroup.add(planeBody, planeWings);
     } else {
       s.background = new THREE.Color("#0d111d");
     }
 
+    s.add(active3DEnvironmentGroup);
+  }
     s.add(active3DEnvironmentGroup);
   }
 
