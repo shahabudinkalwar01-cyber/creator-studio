@@ -602,12 +602,13 @@
       s.background = new THREE.Color("#0d111d");
     }
 
-      s.add(active3DEnvironmentGroup);
-    // Hide the studio desk when in Hospital/Street/Airport & redraw immediately
-    s.traverse(o => { if (o.name && o.name.toLowerCase().includes("desk")) o.visible = (placeType === "studio"); });
-    if (typeof threeRenderer !== "undefined" && typeof threeCam !== "undefined") {
-      threeRenderer.render(s, threeCam);
-    }
+          s.add(active3DEnvironmentGroup);
+    s.traverse(function (o) {
+      if (o.name === "desk") {
+        o.visible = (placeType === "studio");
+      }
+    });
+  }
   
   const SMART_WORD_ENGINE = [
     {
@@ -948,6 +949,7 @@
   }
 })();
   </script>
+  <script src="director-pro.js"></script>
 </body>
 </html>
   
