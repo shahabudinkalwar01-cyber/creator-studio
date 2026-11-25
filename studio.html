@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v12.2 — Unbreakable 3D AI Video Engine</title>
+  <title>Studio v12.4 — Talking Character + 3D AI Reels</title>
   <style>
     :root { --bg:#07090e; --card:#10141f; --input:#0a0e17; --border:#21293b; --gold:#f5c542; --text:#f8fafc; --muted:#94a3b8; --green:#10b981; --red:#ef4444; }
     * { box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
@@ -37,14 +37,14 @@
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">3D + POLLINATIONS BACKUP v12.2</span>
+      <span class="badge">TALKING CHARACTER + 3D v12.4</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
     <div class="card">
-      <div class="step-title">🎙️ Option A: Voice → Smart 3D Objects + AI Art</div>
+      <div class="step-title">🎙️ Option A: Your Voice → Talking Character Reel</div>
       <div class="btn-row">
-        <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
+        <button class="mic-btn" id="micBtn">🎙️ Record & Talk</button>
         <label class="upload-mini">
           <input type="file" id="audioUpload" accept="audio/*" />
           <span id="audioLabel">📁 Upload Audio</span>
@@ -54,8 +54,8 @@
     </div>
 
     <div class="card">
-      <div class="step-title">⚡ Option B: Type Anything (Crying Banana, Menu, Watches...)</div>
-      <input type="text" id="topicInput" placeholder="Type anything (e.g. A sad crying banana, Luxury burger menu)" value="A sad crying banana" />
+      <div class="step-title">⚡ Option B: Type Anything → AI Script + Photos + Talking Voice</div>
+      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, A sad crying banana, Crypto)" value="Luxury Watch Empire" />
       <div class="grid-2">
         <select id="langSelect">
           <option value="en" selected>🇺🇸 English (AI Voice)</option>
@@ -76,27 +76,36 @@
           <option value="aura-es:sirio">Sirio (Spanish Male)</option>
         </select>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Real Pictures + 3D + Voice</button>
+      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Talking Reel</button>
     </div>
 
     <div class="card">
-      <div class="step-title">2. Format & Audio Engine</div>
-      <select id="modeSelect">
-        <option value="shorts" selected>TikTok / Reels / Shorts (9:16 Vertical)</option>
-        <option value="landscape">Full YouTube Video (16:9 Horizontal)</option>
-      </select>
+      <div class="step-title">2. Talking Character, Format & Beat</div>
+      <div class="grid-2">
+        <select id="modeSelect">
+          <option value="shorts" selected>TikTok / Reels / Shorts (9:16)</option>
+          <option value="landscape">Full YouTube (16:9)</option>
+        </select>
+        <select id="avatarSelect">
+          <option value="random" selected>🎭 Random Character</option>
+          <option value="boss">🕶️ Luxury Suit Boss</option>
+          <option value="bot">🤖 Cyber AI Bot</option>
+          <option value="host">🎧 Podcast Creator</option>
+          <option value="off">❌ No Character (3D Only)</option>
+        </select>
+      </div>
       <label class="toggle-row">
         <span>🎵 Auto-Switch BGM + Scene Transition SFX</span>
         <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
       </label>
-      <button class="btn-remix" id="remixBtn">🎲 New 3D Mix, Scene FX & BGM</button>
+      <button class="btn-remix" id="remixBtn">🎲 New Character, 3D Mix & BGM</button>
     </div>
 
     <div class="card">
-      <div class="step-title">3. Live 3D Preview & Export</div>
+      <div class="step-title">3. Live Talking Preview & Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Ready — Type anything & tap AI Build</span>
+        <span class="status" id="statusText">Ready — Tap AI Build Talking Reel above</span>
         <div style="display:flex;gap:8px;">
           <button class="btn-small" id="replayBtn">New Mix</button>
           <button class="btn-small btn-export" id="exportBtn">Export Video</button>
@@ -111,16 +120,17 @@
     const statusText = document.getElementById("statusText"), topicInput = document.getElementById("topicInput");
     const langSelect = document.getElementById("langSelect"), voiceSelect = document.getElementById("voiceSelect");
     const scriptInput = document.getElementById("scriptInput"), modeSelect = document.getElementById("modeSelect");
-    const beatToggle = document.getElementById("beatToggle"), aiMagicBtn = document.getElementById("aiMagicBtn");
-    const exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
+    const avatarSelect = document.getElementById("avatarSelect"), beatToggle = document.getElementById("beatToggle");
+    const aiMagicBtn = document.getElementById("aiMagicBtn"), exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
 
     let aiImages = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
     let animId = null, beatInterval = null, scenes = [], scenePlans = [], sceneDurationMs = 3400;
     let startTime = null, lastSceneIdx = -1, activeRecorder = null, sharedActx = null, sfxDest = null, analyser = null, freqData = null;
     let micRecorder = null, micChunks = [], isMicRecording = false;
-    let activeThemeKey = "luxury", activeBgm = "Dark Trap";
+    let activeThemeKey = "luxury", activeBgm = "Dark Trap", activeAvatar = "boss";
 
     const EN_VOICES = ["aura-en:zeus","aura-en:orion","aura-en:odysseus","aura-en:apollo","aura-en:thalia","aura-en:asteria"];
+    const AVATARS = ["boss","bot","host"];
     const OBJ_3D = ["watch_3d","phone_3d","cube_3d","globe_3d","coins_3d","card_3d","candles_3d","donut_3d","waveform_3d"];
     const CAMERAS_3D = ["orbit_3d","whip_zoom","pullback_3d","pan_parallax","swing_tilt"];
     const SFX_LIST = ["bass","whoosh","ding","shutter","riser"];
@@ -149,23 +159,27 @@
       a.onerror = () => res(0);
     });
 
-    function loadPollinationsBackup(topic) {
-      const looks = ["cinematic dramatic lighting 8k", "moody closeup photography", "epic glowing atmosphere"];
-      const w = canvas.width, h = canvas.height;
-      const imgs = looks.map((lk, i) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        const p = encodeURIComponent(`${topic}, ${lk}, no text`);
-        img.src = `https://image.pollinations.ai/prompt/${p}?width=${w}&height=${h}&seed=${Math.floor(Math.random()*99999)+i}&nologo=true&model=flux`;
-        return img;
-      });
-      aiImages = imgs;
-      return new Promise(resolve => {
-        if (!imgs[0]) return resolve();
-        const timer = setTimeout(resolve, 6500);
-        imgs[0].onload = () => { clearTimeout(timer); resolve(); };
-        imgs[0].onerror = () => { clearTimeout(timer); resolve(); };
-      });
+    async function fetchWikiPhotos(query) {
+      const r = await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=8&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(query)}`);
+      const d = await r.json();
+      return Object.values(d?.query?.pages || {}).filter(p => p.thumbnail?.source).map(p => p.thumbnail.source);
+    }
+
+    async function loadRealPhotoBackup(topic) {
+      try {
+        const cleanQ = topic.replace(/\b(a|an|the|sad|crying|how|to|make|best|empire)\b/gi, "").trim() || topic;
+        let urls = await fetchWikiPhotos(cleanQ);
+        if (urls.length === 0 && cleanQ.includes(" ")) urls = await fetchWikiPhotos(cleanQ.split(" ").pop());
+        const imgs = urls.slice(0, 3).map(u => { const img = new Image(); img.crossOrigin = "anonymous"; img.src = u; return img; });
+        aiImages = imgs;
+        if (imgs[0]) {
+          await new Promise(res => {
+            const t = setTimeout(res, 4000);
+            imgs[0].onload = () => { clearTimeout(t); res(); };
+            imgs[0].onerror = () => { clearTimeout(t); res(); };
+          });
+        }
+      } catch (e) {}
     }
 
     async function generateOwnAiImages(txt, topicFallback) {
@@ -178,13 +192,12 @@
           const data = await res.json();
           if (data.images && data.images.length > 0) {
             aiImages = data.images.map(s => { const img = new Image(); img.src = s; return img; });
-            return "Cloudflare Flux";
+            return;
           }
         }
       } catch (e) {}
-      statusText.textContent = "Using Pollinations AI art for your topic...";
-      await loadPollinationsBackup(topicFallback || txt.slice(0, 60));
-      return "Pollinations AI";
+      statusText.textContent = "Loading real photos for your topic...";
+      await loadRealPhotoBackup(topicFallback || txt.slice(0, 60));
     }
 
     async function processUploadedVoice(blob, label) {
@@ -200,7 +213,7 @@
           scriptInput.dir = /[\u0600-\u06FF]/.test(data.transcript) ? "rtl" : "ltr";
         }
       } catch (e) {}
-      statusText.textContent = "2/2 Generating AI art & 3D objects...";
+      statusText.textContent = "2/2 Syncing talking character & visuals...";
       await generateOwnAiImages(scriptInput.value, topicInput.value);
       startPlayback(null);
     }
@@ -210,7 +223,7 @@
     });
     micBtn.addEventListener("click", async () => {
       if (isMicRecording) {
-        isMicRecording = false; micBtn.classList.remove("recording"); micBtn.textContent = "🎙️ Record & Auto-Build";
+        isMicRecording = false; micBtn.classList.remove("recording"); micBtn.textContent = "🎙️ Record & Talk";
         if (micRecorder && micRecorder.state === "recording") micRecorder.stop();
         return;
       }
@@ -225,14 +238,14 @@
     });
 
     aiMagicBtn.addEventListener("click", async () => {
-      const topic = topicInput.value.trim() || "A sad crying banana", lang = langSelect.value;
+      const topic = topicInput.value.trim() || "Luxury Watch Empire", lang = langSelect.value;
       const tKeys = Object.keys(THEMES);
       activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
       let chosenVoice = voiceSelect.value;
       if (chosenVoice === "random") chosenVoice = EN_VOICES[Math.floor(Math.random() * EN_VOICES.length)];
       if (lang === "es") chosenVoice = "aura-es:sirio";
 
-      aiMagicBtn.disabled = true; statusText.textContent = "1/3 Writing AI script...";
+      aiMagicBtn.disabled = true; statusText.textContent = "1/3 Writing script...";
       let scriptOk = false;
       try {
         const sRes = await fetch(`${WORKER_URL}/script`, {
@@ -241,19 +254,12 @@
         });
         if (sRes.ok) {
           const sData = await sRes.json();
-          if (sData.script) {
-            scriptInput.value = sData.script;
-            scriptInput.dir = (lang==="ur"||lang==="ar")?"rtl":"ltr";
-            scriptOk = true;
-          }
+          if (sData.script) { scriptInput.value = sData.script; scriptInput.dir = (lang==="ur"||lang==="ar")?"rtl":"ltr"; scriptOk = true; }
         }
       } catch (e) {}
+      if (!scriptOk) scriptInput.value = `Look closely at ${topic} right now. 95% of people scroll past the $10,000 secret. Watch how 2026 changes everything.`;
 
-      if (!scriptOk) {
-        scriptInput.value = `Look closely at ${topic} right now. 95% of people scroll past without noticing the $10,000 secret. Watch until 2026 changes everything.`;
-      }
-
-      statusText.textContent = "2/3 Creating AI pictures & voice...";
+      statusText.textContent = "2/3 Creating visuals & talking voice...";
       const jobs = [generateOwnAiImages(scriptInput.value, topic)];
       if (lang === "en" || lang === "es") {
         jobs.push(fetch(`${WORKER_URL}/tts`, {
@@ -261,14 +267,12 @@
           body:JSON.stringify({text:scriptInput.value, voice:chosenVoice})
         }).then(r => r.ok ? r.blob() : null).catch(() => null));
       }
-
       const results = await Promise.all(jobs);
       if (results[1]) {
         audioBufferUrl = URL.createObjectURL(results[1]);
         audioDurationMs = await getAudioDurationMs(audioBufferUrl);
         document.getElementById("audioLabel").textContent = "✅ " + chosenVoice.split(":")[1].toUpperCase();
       }
-
       aiMagicBtn.disabled = false;
       startPlayback(null);
     });
@@ -292,9 +296,11 @@
         const tKeys = Object.keys(THEMES);
         activeThemeKey = tKeys[Math.floor(Math.random() * tKeys.length)];
       }
+      const avSel = avatarSelect.value;
+      activeAvatar = avSel === "random" ? AVATARS[Math.floor(Math.random() * AVATARS.length)] : avSel;
       activeBgm = BGM_LIST[Math.floor(Math.random() * BGM_LIST.length)];
       const parts = scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes = (parts.length ? parts : ["Type anything above and tap AI Build."]).map(t => ({
+      scenes = (parts.length ? parts : ["Tap AI Build Talking Reel."]).map(t => ({
         text:t, stat:extractStat(t), rtl:/[\u0600-\u06FF]/.test(t)
       }));
       sceneDurationMs = audioDurationMs > 1000 ? Math.max(2300, (audioDurationMs + 300) / scenes.length) : 3400;
@@ -317,6 +323,101 @@
       return 0.25 + 0.2 * Math.abs(Math.sin(el * 0.006));
     }
 
+    function getMouthOpen(el) {
+      if (audioEl && !audioEl.paused && analyser && freqData) {
+        analyser.getByteFrequencyData(freqData);
+        let speech = 0; for (let i = 1; i < 10; i++) speech += freqData[i];
+        return Math.min(1, Math.max(0, (speech / (9 * 180)) - 0.08) * 1.6);
+      }
+      return Math.max(0, Math.sin(el * 0.019) * (0.4 + 0.6 * Math.sin(el * 0.007)));
+    }
+
+    function drawTalkingAvatar(type, theme, mouth, en, el) {
+      if (type === "off") return;
+      const W = canvas.width, H = canvas.height, cx = W / 2, cy = H * 0.30;
+      const bob = Math.sin(el * 0.005) * 6 + mouth * -4;
+      const jaw = mouth * 18;
+      const blink = (el % 3600) > 3460;
+
+      ctx.save();
+      ctx.translate(cx, cy + bob);
+
+      // Soft aura behind character
+      const aura = ctx.createRadialGradient(0, -10, 20, 0, 0, 210);
+      aura.addColorStop(0, theme.glow); aura.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = aura; ctx.beginPath(); ctx.arc(0, 0, 210, 0, 6.28); ctx.fill();
+
+      ctx.shadowColor = theme.accent; ctx.shadowBlur = 18 + en * 16;
+
+      if (type === "boss") {
+        // Tailored dark luxury suit shoulders
+        ctx.fillStyle = "#090b10"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(-115, 165); ctx.quadraticCurveTo(-110, 75, -40, 62);
+        ctx.lineTo(40, 62); ctx.quadraticCurveTo(110, 75, 115, 165); ctx.closePath(); ctx.fill(); ctx.stroke();
+        // Shirt V & glowing tie
+        ctx.fillStyle = "#e2e8f0"; ctx.beginPath(); ctx.moveTo(-26, 62); ctx.lineTo(0, 128); ctx.lineTo(26, 62); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.moveTo(-8, 72); ctx.lineTo(8, 72); ctx.lineTo(11, 155); ctx.lineTo(-11, 155); ctx.closePath(); ctx.fill();
+        // Neck & 3D shaded head
+        ctx.fillStyle = "#c68642"; ctx.fillRect(-20, 35, 40, 34);
+        const hg = ctx.createRadialGradient(-16, -24, 10, 0, 0, 78);
+        hg.addColorStop(0, "#f1c27d"); hg.addColorStop(1, "#a66a38");
+        ctx.fillStyle = hg; ctx.beginPath(); ctx.roundRect(-52, -62, 104, 116 + jaw * 0.25, 46); ctx.fill();
+        // Hair
+        ctx.fillStyle = "#111318"; ctx.beginPath(); ctx.arc(0, -36, 55, Math.PI, 0); ctx.fill();
+        // Luxury Sunglasses
+        ctx.fillStyle = "#05070a"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.roundRect(-45, -24, 40, 22, 6); ctx.roundRect(5, -24, 40, 22, 6); ctx.fill(); ctx.stroke();
+        ctx.fillRect(-5, -17, 10, 4);
+        // Talking Mouth
+        ctx.fillStyle = "#2b0909"; ctx.strokeStyle = "#8c3b3b"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(0, 24 + jaw * 0.25, 16 + mouth * 5, 3 + jaw * 0.7, 0, 0, 6.28); ctx.fill(); ctx.stroke();
+        if (mouth > 0.25) { ctx.fillStyle = "#fff"; ctx.fillRect(-10, 22, 20, 4); }
+      } else if (type === "bot") {
+        // Cyber AI Robot Body
+        ctx.fillStyle = "#111827"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.roundRect(-85, 70, 170, 95, 32); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.arc(0, 118, 16 + en * 8, 0, 6.28); ctx.fill();
+        // Antenna
+        ctx.beginPath(); ctx.moveTo(0, -70); ctx.lineTo(0, -104); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0, -110, 9, 0, 6.28); ctx.fill();
+        // 3D Helmet Head
+        const bg = ctx.createLinearGradient(-65, -70, 65, 65);
+        bg.addColorStop(0, "#1e293b"); bg.addColorStop(1, "#090d16");
+        ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(-66, -70, 132, 126, 36); ctx.fill(); ctx.stroke();
+        // Visor Screen
+        ctx.fillStyle = "#030712"; ctx.beginPath(); ctx.roundRect(-50, -45, 100, 44, 14); ctx.fill();
+        ctx.fillStyle = theme.accent;
+        if (blink) { ctx.fillRect(-35, -24, 22, 4); ctx.fillRect(13, -24, 22, 4); }
+        else { ctx.beginPath(); ctx.arc(-24, -23, 10, 0, 6.28); ctx.arc(24, -23, 10, 0, 6.28); ctx.fill(); }
+        // LED Equalizer Mouth
+        for (let b = -3; b <= 3; b++) {
+          const bh = 4 + (1 - Math.abs(b) * 0.2) * (mouth * 26);
+          ctx.fillRect(b * 11 - 4, 26 - bh / 2, 7, bh);
+        }
+      } else if (type === "host") {
+        // Podcast Creator
+        ctx.fillStyle = "#171717"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.roundRect(-95, 68, 190, 98, 40); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#d49a6a"; ctx.fillRect(-18, 36, 36, 36);
+        ctx.beginPath(); ctx.roundRect(-50, -58, 100, 112 + jaw * 0.2, 46); ctx.fill();
+        // Headphones
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.arc(0, -10, 60, Math.PI, 0); ctx.stroke();
+        ctx.fillStyle = "#0f172a"; ctx.fillRect(-66, -24, 18, 46); ctx.fillRect(48, -24, 18, 46);
+        // Eyes
+        ctx.fillStyle = "#090b10";
+        if (blink) { ctx.fillRect(-26, -16, 14, 3); ctx.fillRect(12, -16, 14, 3); }
+        else { ctx.beginPath(); ctx.arc(-19, -15, 6, 0, 6.28); ctx.arc(19, -15, 6, 0, 6.28); ctx.fill(); }
+        // Mouth + Studio Mic in front
+        ctx.fillStyle = "#2b0909"; ctx.beginPath(); ctx.ellipse(0, 22 + jaw * 0.2, 14 + mouth * 5, 3 + jaw * 0.7, 0, 0, 6.28); ctx.fill();
+        ctx.fillStyle = "#1e293b"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.roundRect(-16, 52, 32, 48, 16); ctx.fill(); ctx.stroke();
+        ctx.fillRect(-3, 100, 6, 65);
+      }
+
+      ctx.restore();
+    }
+
     function project3D(x, y, z, rx, ry, cx, cy, scale) {
       let x1 = x * Math.cos(ry) - z * Math.sin(ry), z1 = x * Math.sin(ry) + z * Math.cos(ry);
       let y2 = y * Math.cos(rx) - z1 * Math.sin(rx), z2 = y * Math.sin(rx) + z1 * Math.cos(rx);
@@ -324,123 +425,83 @@
       return [cx + x1 * fov, cy + y2 * fov];
     }
 
-    function draw3DObject(obj, theme, p, e, el) {
-      const W = canvas.width, H = canvas.height, cx = W / 2, cy = H * 0.27;
+    function draw3DObject(obj, theme, p, e, el, hasAvatar) {
+      const W = canvas.width, H = canvas.height;
+      const cx = hasAvatar ? W * 0.80 : W * 0.5, cy = hasAvatar ? H * 0.16 : H * 0.27;
+      const scFactor = hasAvatar ? 0.52 : 1.0;
       ctx.save();
-      const bloom = ctx.createRadialGradient(cx, cy, 10, cx, cy, 180 + e * 60);
-      bloom.addColorStop(0, theme.glow); bloom.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = bloom; ctx.fillRect(0, 0, W, H * 0.55);
-      ctx.shadowColor = theme.accent; ctx.shadowBlur = 24 + e * 22;
+      ctx.translate(cx, cy); ctx.scale(scFactor, scFactor); ctx.translate(-cx, -cy);
+      ctx.shadowColor = theme.accent; ctx.shadowBlur = 22 + e * 18;
 
       if (obj === "watch_3d") {
-        ctx.translate(cx, cy); ctx.scale(0.95 + Math.sin(el * 0.003) * 0.05, 1);
-        const r = 92; ctx.fillStyle = theme.dark; ctx.fillRect(-34, -155, 68, 310);
+        ctx.translate(cx, cy); const r = 88; ctx.fillStyle = theme.dark; ctx.fillRect(-32, -145, 64, 290);
         ctx.fillStyle = "#090b10"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 8;
         ctx.beginPath(); ctx.arc(0, 0, r, 0, 6.28); ctx.fill(); ctx.stroke();
-        for (let m = 0; m < 12; m++) {
-          const a = (m / 12) * 6.28; ctx.fillStyle = theme.accent;
-          ctx.beginPath(); ctx.arc(Math.cos(a)*(r-16), Math.sin(a)*(r-16), m%3===0?4:2, 0, 6.28); ctx.fill();
-        }
         const sa = el * 0.006, ma = el * 0.001;
-        ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ma)*54, Math.sin(ma)*54); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(sa)*72, Math.sin(sa)*72); ctx.stroke();
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(ma)*52, Math.sin(ma)*52); ctx.stroke();
+        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(sa)*68, Math.sin(sa)*68); ctx.stroke();
       } else if (obj === "cube_3d") {
-        const rx = el * 0.0013, ry = el * 0.002, sc = Math.min(W, H) * (0.45 + e * 0.14);
-        const pts = CUBE_VERTS.map(v => project3D(v[0], v[1], v[2], rx, ry, cx, cy, sc));
+        const pts = CUBE_VERTS.map(v => project3D(v[0], v[1], v[2], el*0.0013, el*0.002, cx, cy, Math.min(W, H)*(0.45+e*0.12)));
         ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
         CUBE_EDGES.forEach(([a, b]) => { ctx.beginPath(); ctx.moveTo(pts[a][0], pts[a][1]); ctx.lineTo(pts[b][0], pts[b][1]); ctx.stroke(); });
-        ctx.fillStyle = theme.glow;
-        ctx.beginPath(); [0,1,2,3].forEach((i, idx) => idx===0 ? ctx.moveTo(pts[i][0], pts[i][1]) : ctx.lineTo(pts[i][0], pts[i][1]));
-        ctx.closePath(); ctx.fill();
       } else if (obj === "globe_3d") {
-        const ry = el * 0.0016, r = 1.25, sc = Math.min(W, H) * 0.36;
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
+        const ry = el * 0.0016, r = 1.25, sc = Math.min(W, H) * 0.36; ctx.strokeStyle = theme.accent; ctx.lineWidth = 2.5;
         for (let lat = -1; lat <= 1; lat += 0.5) {
-          const rad = Math.sqrt(Math.max(0.05, r * r - lat * lat)); ctx.beginPath();
-          for (let a = 0; a <= 24; a++) {
-            const ang = (a / 24) * 6.28, [px, py] = project3D(Math.cos(ang)*rad, lat, Math.sin(ang)*rad, 0.35, ry, cx, cy, sc);
-            a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-          }
-          ctx.stroke();
-        }
-        for (let lon = 0; lon < 6; lon++) {
-          const lang = (lon / 6) * Math.PI; ctx.beginPath();
-          for (let a = 0; a <= 24; a++) {
-            const phi = (a / 24) * 6.28, [px, py] = project3D(Math.cos(phi)*Math.cos(lang)*r, Math.sin(phi)*r, Math.cos(phi)*Math.sin(lang)*r, 0.35, ry, cx, cy, sc);
-            a === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-          }
+          const rad = Math.sqrt(Math.max(0.05, r*r - lat*lat)); ctx.beginPath();
+          for (let a = 0; a <= 24; a++) { const ang = (a/24)*6.28, [px,py]=project3D(Math.cos(ang)*rad,lat,Math.sin(ang)*rad,0.35,ry,cx,cy,sc); a===0?ctx.moveTo(px,py):ctx.lineTo(px,py); }
           ctx.stroke();
         }
       } else if (obj === "phone_3d") {
-        ctx.translate(cx, cy + Math.sin(el * 0.003) * 10); ctx.transform(1, -0.06, 0.08, 0.94, 0, 0);
-        const pw = 210, ph = 340;
-        ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.roundRect(-pw/2 + 12, -ph/2 + 10, pw, ph, 28); ctx.fill();
+        ctx.translate(cx, cy); ctx.transform(1, -0.06, 0.08, 0.94, 0, 0);
         ctx.fillStyle = "#0b1120"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.roundRect(-pw/2, -ph/2, pw, ph, 28); ctx.fill(); ctx.stroke();
-        ctx.shadowBlur = 0; ctx.fillStyle = theme.accent; ctx.font = "900 28px -apple-system,sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("+$10,420", 0, -85);
-        ctx.strokeStyle = theme.accent; ctx.lineWidth = 4; ctx.beginPath();
-        [60, 40, 50, 10, -20, -50].forEach((yy, i) => i===0 ? ctx.moveTo(-75+i*30, yy) : ctx.lineTo(-75+i*30, yy));
-        ctx.stroke();
+        ctx.beginPath(); ctx.roundRect(-95, -155, 190, 310, 26); ctx.fill(); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.fillStyle = theme.accent; ctx.font = "900 26px -apple-system,sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("+$10,420", 0, -75);
       } else if (obj === "coins_3d") {
+        ctx.restore(); ctx.save();
         COINS.forEach(c => {
           const y = ((c.y + p * c.sp * 1.4) % 1) * H, x = c.x * W;
-          const w = Math.max(0.12, Math.abs(Math.cos(el * 0.005 + c.ph))) * 26;
+          const w = Math.max(0.12, Math.abs(Math.cos(el * 0.005 + c.ph))) * 22;
           ctx.save(); ctx.translate(x, y);
-          ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.ellipse(4, 0, w, 26, 0, 0, 6.28); ctx.fill();
-          const cg = ctx.createLinearGradient(-w, -26, w, 26);
-          cg.addColorStop(0, "#fff8dc"); cg.addColorStop(0.5, theme.accent); cg.addColorStop(1, theme.dark);
-          ctx.fillStyle = cg; ctx.beginPath(); ctx.ellipse(0, 0, w, 26, 0, 0, 6.28); ctx.fill();
-          if (w > 10) {
-            ctx.shadowBlur = 0; ctx.fillStyle = "#07090e"; ctx.font = `900 ${Math.round(w*1.1)}px -apple-system,sans-serif`;
-            ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("$", 0, 2);
-          }
+          ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.ellipse(0, 0, w, 22, 0, 0, 6.28); ctx.fill();
+          if (w > 9) { ctx.fillStyle = "#07090e"; ctx.font = `900 ${Math.round(w)}px sans-serif`; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText("$",0,1); }
           ctx.restore();
         });
       } else if (obj === "card_3d") {
-        ctx.translate(cx, cy + Math.sin(el * 0.004) * 10); ctx.scale(Math.max(0.15, Math.abs(Math.cos(el * 0.003))), 1);
-        const cw = 300, ch = 180;
-        ctx.fillStyle = theme.dark; ctx.beginPath(); ctx.roundRect(-cw/2 + 12, -ch/2 + 10, cw, ch, 20); ctx.fill();
+        ctx.translate(cx, cy); ctx.scale(Math.max(0.18, Math.abs(Math.cos(el * 0.003))), 1);
         ctx.fillStyle = "#0f172a"; ctx.strokeStyle = theme.accent; ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.roundRect(-cw/2, -ch/2, cw, ch, 20); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = theme.accent; ctx.beginPath(); ctx.roundRect(-110, -30, 48, 36, 6); ctx.fill();
-        ctx.shadowBlur = 0; ctx.font = "800 22px monospace"; ctx.textAlign = "left"; ctx.fillText("VIP CREATOR • 2026", -110, 52);
+        ctx.beginPath(); ctx.roundRect(-140, -85, 280, 170, 18); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = theme.accent; ctx.fillRect(-105, -25, 42, 32);
       } else if (obj === "candles_3d") {
-        for (let i = 0; i < 8; i++) {
-          const bh = (60 + i * 32) * Math.min(1, p * 1.4) * (0.85 + e * 0.3), bw = 34, bx = W * 0.14 + i * 62, by = H * 0.38 - bh;
-          ctx.fillStyle = theme.dark; ctx.fillRect(bx + 10, by - 10, bw, bh);
-          ctx.fillStyle = theme.accent; ctx.fillRect(bx, by, bw, bh);
+        for (let i = 0; i < 6; i++) {
+          const bh = (50 + i * 28) * Math.min(1, p * 1.4), bx = cx - 120 + i * 44, by = cy + 60 - bh;
+          ctx.fillStyle = theme.accent; ctx.fillRect(bx, by, 26, bh);
         }
       } else if (obj === "donut_3d") {
-        const r = 74; ctx.lineWidth = 18;
-        ctx.strokeStyle = theme.dark; ctx.beginPath(); ctx.arc(cx + 6, cy + 6, r, 0, 6.28); ctx.stroke();
-        ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, r, -1.57, -1.57 + 6.28 * Math.min(0.95, p * 1.3)); ctx.stroke();
-        ctx.shadowBlur = 0; ctx.fillStyle = "#fff"; ctx.font = "900 32px -apple-system,sans-serif";
-        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(Math.round(Math.min(95, p * 120)) + "%", cx, cy);
+        ctx.lineWidth = 16; ctx.strokeStyle = theme.dark; ctx.beginPath(); ctx.arc(cx, cy, 68, 0, 6.28); ctx.stroke();
+        ctx.strokeStyle = theme.accent; ctx.beginPath(); ctx.arc(cx, cy, 68, -1.57, -1.57 + 6.28 * Math.min(0.95, p*1.3)); ctx.stroke();
+        ctx.shadowBlur = 0; ctx.fillStyle="#fff"; ctx.font="900 28px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(Math.round(Math.min(95,p*120))+"%", cx, cy);
       } else if (obj === "waveform_3d") {
-        const bw = W / 34;
-        for (let i = 0; i < 24; i++) {
-          const h = (24 + Math.abs(Math.sin(el * 0.012 + i * 0.6)) * 110) * (0.6 + e * 1.1);
-          const x = (W - 24 * bw * 1.35) / 2 + i * bw * 1.35;
-          ctx.fillStyle = theme.dark; ctx.fillRect(x + 6, H * 0.84 - h / 2 + 6, bw, h);
-          ctx.fillStyle = theme.accent; ctx.fillRect(x, H * 0.84 - h / 2, bw, h);
+        ctx.restore(); ctx.save();
+        for (let i = 0; i < 22; i++) {
+          const h = (20 + Math.abs(Math.sin(el*0.012+i*0.6))*95)*(0.6+e);
+          ctx.fillStyle = theme.accent; ctx.fillRect((W - 22*26)/2 + i*26, H*0.85 - h/2, 16, h);
         }
       }
       ctx.restore();
     }
 
     function drawSceneTransition(sel, theme, fxType) {
-      if (sel > 300) return;
-      const t = 1 - sel / 300; ctx.save();
+      if (sel > 280) return;
+      const t = 1 - sel / 280; ctx.save();
       if (fxType === "shockwave") {
         ctx.strokeStyle = theme.accent; ctx.lineWidth = 14 * t; ctx.globalAlpha = t * 0.85;
-        ctx.shadowColor = theme.accent; ctx.shadowBlur = 30;
-        ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, (1 - t) * canvas.width * 0.8, 0, 6.28); ctx.stroke();
+        ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, (1-t)*canvas.width*0.8, 0, 6.28); ctx.stroke();
       } else if (fxType === "flash") {
-        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.38; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.35; ctx.fillRect(0, 0, canvas.width, canvas.height);
       } else {
-        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.65;
-        for (let i = 0; i < 5; i++) ctx.fillRect(Math.sin(sel + i) * 40, ((i * 230 + sel) % canvas.height), canvas.width, 12);
+        ctx.fillStyle = theme.accent; ctx.globalAlpha = t * 0.6;
+        for (let i = 0; i < 4; i++) ctx.fillRect(Math.sin(sel+i)*40, ((i*240+sel)%canvas.height), canvas.width, 10);
       }
       ctx.restore();
     }
@@ -452,56 +513,41 @@
         if (type === "ding") {
           [1760, 2637].forEach((freq, i) => {
             const o = sharedActx.createOscillator(), g = sharedActx.createGain();
-            o.type = "sine"; o.frequency.setValueAtTime(freq, now + i * 0.06);
-            g.gain.setValueAtTime(0.16, now + i * 0.06); g.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            o.type = "sine"; o.frequency.setValueAtTime(freq, now+i*0.06);
+            g.gain.setValueAtTime(0.15, now+i*0.06); g.gain.exponentialRampToValueAtTime(0.001, now+0.38);
             o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-            o.start(now + i * 0.06); o.stop(now + 0.42);
+            o.start(now+i*0.06); o.stop(now+0.4);
           });
         } else if (type === "whoosh" || type === "shutter") {
-          const dur = type === "shutter" ? 0.07 : 0.25, sz = Math.floor(sharedActx.sampleRate * dur);
-          const buf = sharedActx.createBuffer(1, sz, sharedActx.sampleRate), d = buf.getChannelData(0);
-          for (let i = 0; i < sz; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / sz);
+          const dur = type==="shutter"?0.07:0.24, sz = Math.floor(sharedActx.sampleRate*dur), buf = sharedActx.createBuffer(1,sz,sharedActx.sampleRate), d = buf.getChannelData(0);
+          for (let i=0;i<sz;i++) d[i]=(Math.random()*2-1)*(1-i/sz);
           const src = sharedActx.createBufferSource(); src.buffer = buf;
-          const f = sharedActx.createBiquadFilter(); f.type = "bandpass";
-          f.frequency.setValueAtTime(type === "shutter" ? 3200 : 400, now);
-          if (type === "whoosh") f.frequency.exponentialRampToValueAtTime(2200, now + dur);
-          const g = sharedActx.createGain(); g.gain.setValueAtTime(0.22, now); g.gain.exponentialRampToValueAtTime(0.001, now + dur);
-          src.connect(f); f.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-          src.start(now);
+          const f = sharedActx.createBiquadFilter(); f.type = "bandpass"; f.frequency.setValueAtTime(type==="shutter"?3200:400, now);
+          if (type==="whoosh") f.frequency.exponentialRampToValueAtTime(2200, now+dur);
+          const g = sharedActx.createGain(); g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now+dur);
+          src.connect(f); f.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); src.start(now);
         } else {
           const o = sharedActx.createOscillator(), g = sharedActx.createGain();
-          o.type = type === "riser" ? "sawtooth" : "sine";
-          o.frequency.setValueAtTime(type === "riser" ? 90 : 125, now);
-          o.frequency.exponentialRampToValueAtTime(type === "riser" ? 440 : 35, now + 0.26);
-          g.gain.setValueAtTime(0.28, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-          o.start(now); o.stop(now + 0.3);
+          o.type = type==="riser"?"sawtooth":"sine"; o.frequency.setValueAtTime(type==="riser"?90:125, now);
+          o.frequency.exponentialRampToValueAtTime(type==="riser"?440:35, now+0.26);
+          g.gain.setValueAtTime(0.25, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.28);
+          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); o.start(now); o.stop(now+0.3);
         }
       } catch (e) {}
     }
 
     function startBgm() {
       clearInterval(beatInterval); if (!beatToggle.checked || !sharedActx) return;
-      let step = 0; const ms = activeBgm === "Doc Heartbeat" ? 650 : activeBgm === "Cyber Synth" ? 260 : 440;
+      let step = 0; const ms = activeBgm==="Doc Heartbeat"?650:activeBgm==="Cyber Synth"?260:440;
       const tick = () => {
         if (!sharedActx) return;
         try {
           const now = sharedActx.currentTime, o = sharedActx.createOscillator(), g = sharedActx.createGain();
-          if (activeBgm === "Cyber Synth") {
-            o.type = "sawtooth"; o.frequency.setValueAtTime([110, 130.8, 164.8, 146.8][step % 4], now);
-            g.gain.setValueAtTime(0.05, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-          } else if (activeBgm === "Tech Ambient") {
-            o.type = "sine"; o.frequency.setValueAtTime([220, 277.2, 329.6][step % 3], now);
-            g.gain.setValueAtTime(0.06, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
-          } else if (activeBgm === "Doc Heartbeat") {
-            o.type = "sine"; o.frequency.setValueAtTime(step % 2 === 0 ? 62 : 48, now);
-            g.gain.setValueAtTime(0.14, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-          } else {
-            o.type = "triangle"; o.frequency.setValueAtTime(step % 4 === 0 ? 55 : 49, now);
-            g.gain.setValueAtTime(0.09, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-          }
-          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest);
-          o.start(now); o.stop(now + 0.43); step++;
+          if (activeBgm==="Cyber Synth") { o.type="sawtooth"; o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now); g.gain.setValueAtTime(0.05,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.22); }
+          else if (activeBgm==="Tech Ambient") { o.type="sine"; o.frequency.setValueAtTime([220,277.2,329.6][step%3],now); g.gain.setValueAtTime(0.06,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.42); }
+          else if (activeBgm==="Doc Heartbeat") { o.type="sine"; o.frequency.setValueAtTime(step%2===0?62:48,now); g.gain.setValueAtTime(0.14,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.2); }
+          else { o.type="triangle"; o.frequency.setValueAtTime(step%4===0?55:49,now); g.gain.setValueAtTime(0.09,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.35); }
+          o.connect(g); g.connect(sharedActx.destination); if (sfxDest) g.connect(sfxDest); o.start(now); o.stop(now+0.43); step++;
         } catch (e) {}
       };
       tick(); beatInterval = setInterval(tick, ms);
@@ -509,11 +555,11 @@
 
     function getCameraOffset(cam, p, depth) {
       const ease = 1 - Math.pow(1 - p, 3);
-      if (cam === "orbit_3d") return { x: Math.sin(p * 6.28) * 26 * depth, y: Math.cos(p * 6.28) * 18 * depth, z: 1.08 + Math.sin(p * 3.14) * 0.08 * depth, rot: Math.sin(p * 6.28) * 0.04 };
-      if (cam === "whip_zoom") return { x: 0, y: 0, z: 1 + ease * 0.22 * depth, rot: (1 - ease) * 0.08 };
-      if (cam === "pullback_3d") return { x: 0, y: (1 - ease) * -20 * depth, z: 1.32 - ease * 0.26 * depth, rot: (1 - ease) * -0.06 };
-      if (cam === "pan_parallax") return { x: (p - 0.5) * -80 * depth, y: 0, z: 1.12, rot: 0 };
-      return { x: Math.sin(p * 3.14) * 20 * depth, y: 0, z: 1.1, rot: Math.sin(p * 6.28) * 0.065 };
+      if (cam === "orbit_3d") return { x: Math.sin(p*6.28)*24*depth, y: Math.cos(p*6.28)*16*depth, z: 1.07+Math.sin(p*3.14)*0.07*depth, rot: Math.sin(p*6.28)*0.035 };
+      if (cam === "whip_zoom") return { x: 0, y: 0, z: 1+ease*0.2*depth, rot: (1-ease)*0.07 };
+      if (cam === "pullback_3d") return { x: 0, y: (1-ease)*-18*depth, z: 1.28-ease*0.22*depth, rot: (1-ease)*-0.05 };
+      if (cam === "pan_parallax") return { x: (p-0.5)*-70*depth, y: 0, z: 1.1, rot: 0 };
+      return { x: Math.sin(p*3.14)*18*depth, y: 0, z: 1.08, rot: Math.sin(p*6.28)*0.055 };
     }
 
     function withCam(camOff, fn) {
@@ -528,17 +574,14 @@
       if (el >= tot) {
         clearInterval(beatInterval); if (audioEl) audioEl.pause();
         if (activeRecorder && activeRecorder.state === "recording") activeRecorder.stop();
-        else {
-          const loaded = aiImages.filter(i => i.complete && i.naturalWidth > 0).length;
-          statusText.textContent = `Done (${loaded} real AI pics | BGM: ${activeBgm})`;
-        }
+        else statusText.textContent = `Done | Character: ${activeAvatar} | BGM: ${activeBgm}`;
         return;
       }
 
       const idx = Math.min(scenes.length - 1, Math.floor(el / sceneDurationMs)), sel = el % sceneDurationMs;
       const plan = scenePlans[idx];
       if (idx !== lastSceneIdx) { lastSceneIdx = idx; playSceneSfx(plan.sfx); }
-      const p = sel / sceneDurationMs, sc = scenes[idx], theme = THEMES[activeThemeKey], en = getEnergy(el);
+      const p = sel / sceneDurationMs, sc = scenes[idx], theme = THEMES[activeThemeKey], en = getEnergy(el), mouth = getMouthOpen(el);
 
       withCam(getCameraOffset(plan.cam, p, 1.0), () => {
         const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.45, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
@@ -549,26 +592,27 @@
           const scImg = Math.max(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight) * 1.08;
           ctx.drawImage(img, (canvas.width - img.naturalWidth * scImg) / 2, (canvas.height - img.naturalHeight * scImg) / 2, img.naturalWidth * scImg, img.naturalHeight * scImg);
           const vig = ctx.createLinearGradient(0, 0, 0, canvas.height);
-          vig.addColorStop(0, "rgba(0,0,0,0.32)"); vig.addColorStop(0.6, "rgba(0,0,0,0.58)"); vig.addColorStop(1, "rgba(0,0,0,0.88)");
+          vig.addColorStop(0, "rgba(0,0,0,0.38)"); vig.addColorStop(0.6, "rgba(0,0,0,0.62)"); vig.addColorStop(1, "rgba(0,0,0,0.88)");
           ctx.fillStyle = vig; ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
       });
 
-      withCam(getCameraOffset(plan.cam, p, 1.6), () => {
-        draw3DObject(plan.obj, theme, p, en, el);
+      withCam(getCameraOffset(plan.cam, p, 1.5), () => {
+        draw3DObject(plan.obj, theme, p, en, el, activeAvatar !== "off");
+        drawTalkingAvatar(activeAvatar, theme, mouth, en, el);
       });
 
       drawSceneTransition(sel, theme, plan.fx);
 
-      const isV = canvas.height > canvas.width, capY = canvas.height * 0.62;
+      const isV = canvas.height > canvas.width, capY = canvas.height * 0.66;
       if (sc.stat) {
         ctx.save(); ctx.direction = "ltr";
-        const sw = isV ? canvas.width * 0.48 : 280, sx = (canvas.width - sw) / 2, sy = capY - 110;
+        const sw = isV ? canvas.width * 0.48 : 280, sx = (canvas.width - sw) / 2, sy = capY - 105;
         ctx.fillStyle = theme.accent; ctx.shadowColor = theme.accent; ctx.shadowBlur = 24;
-        ctx.beginPath(); ctx.roundRect(sx, sy, sw, 56, 14); ctx.fill();
-        ctx.shadowBlur = 0; ctx.fillStyle = "#07090e"; ctx.font = `900 ${isV?32:36}px -apple-system,sans-serif`;
+        ctx.beginPath(); ctx.roundRect(sx, sy, sw, 54, 14); ctx.fill();
+        ctx.shadowBlur = 0; ctx.fillStyle = "#07090e"; ctx.font = `900 ${isV?30:34}px -apple-system,sans-serif`;
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(sc.stat, canvas.width / 2, sy + 28); ctx.restore();
+        ctx.fillText(sc.stat, canvas.width / 2, sy + 27); ctx.restore();
       }
 
       const words = sc.text.split(" ");
@@ -616,7 +660,7 @@
 
       startBgm();
       const loaded = aiImages.filter(i => i.complete && i.naturalWidth > 0).length;
-      statusText.textContent = `Playing (${loaded} AI pics | 3D Glow | BGM: ${activeBgm})`;
+      statusText.textContent = `Playing (${activeAvatar} | ${loaded} pics | BGM: ${activeBgm})`;
       if (audioEl) { audioEl.pause(); audioEl = null; }
       if (audioBufferUrl) {
         audioEl = new Audio(audioBufferUrl);
@@ -637,13 +681,13 @@
       if (activeRecorder && activeRecorder.state === "recording") return;
       const stream = canvas.captureStream(30); startPlayback(stream, false);
       const mt = ["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm","video/mp4"].find(m => MediaRecorder.isTypeSupported(m)) || "";
-      exportBtn.disabled = true; statusText.textContent = "Exporting glowing 3D video...";
+      exportBtn.disabled = true; statusText.textContent = "Exporting talking Reel...";
       const chunks = []; activeRecorder = new MediaRecorder(stream, mt ? {mimeType:mt, videoBitsPerSecond:3500000} : {});
       activeRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
       activeRecorder.onstop = () => {
         clearInterval(beatInterval); const blob = new Blob(chunks, {type:mt || "video/webm"});
         const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-        a.download = mt.includes("mp4") ? "glowing-3d-v12.mp4" : "glowing-3d-v12.webm"; a.click();
+        a.download = mt.includes("mp4") ? "talking-ai-reel.mp4" : "talking-ai-reel.webm"; a.click();
         exportBtn.disabled = false; activeRecorder = null;
         statusText.textContent = `Exported (${(blob.size/1024).toFixed(0)} KB)!`;
       };
