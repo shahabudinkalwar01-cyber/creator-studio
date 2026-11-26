@@ -203,7 +203,6 @@
 
     // --- 2 CHARACTER SLOTS ---
     const loader=new GLTFLoader();
-    const BASE_GLB = "https://jsdelivr.net";
 const URLS = {
   soldier:     BASE_GLB + "Soldier.glb",
   michelle:    BASE_GLB + "Michelle.glb",
@@ -277,7 +276,11 @@ const URLS = {
         chars[1].model.rotation.y = -Math.PI / 2;
       }
     }
-
+function reloadModels() {
+  const isSol = glbSelect.value === "soldier";
+  loadChar(0, isSol ? URLS.soldier : URLS.robot, isSol);
+  loadChar(1, URLS.robot, false);
+}
     reloadModels();
     sceneMode.addEventListener("change", reloadModels);
     glbSelect.addEventListener("change", reloadModels);
