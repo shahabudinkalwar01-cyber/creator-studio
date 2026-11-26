@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Motion & RGB Reel Studio</title>
+  <style>
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
+    body{margin:0;background:#08090d;color:#fff;padding-bottom:50px}
+    .card{margin:10px;padding:12px;background:#11141d;border:1px solid #222838;border-radius:12px}
+    h3{margin:0 0 8px 0;font-size:12px;color:#f5b942;text-transform:uppercase;letter-spacing:.6px}
+    textarea{width:100%;height:74px;background:#080a10;color:#fff;border:1px solid #2d3548;border-radius:8px;padding:9px;font-size:13px;resize:none}
+    .row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+    button.btn{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;min-width:90px}
+    .gold{background:#f5b942;color:#000}.green{background:#10b981;color:#000}.red{background:#ef4444;color:#fff}.blue{background:#2563eb;color:#fff}.dark{background:#1c2230;color:#fff;border:1px solid #2e374d}
+    .stage{width:270px;height:480px;margin:0 auto;border:2px solid #f5b942;border-radius:12px;overflow:hidden;background:#000}
+    canvas{display:block;width:100%;height:100%}
+    .sc{background:#171c29;border:1px solid #2a3347;border-radius:10px;padding:9px;margin-top:8px}
+    .sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+    select,input[type="text"]{background:#0a0d14;color:#fff;border:1px solid #303a52;border-radius:6px;padding:5px 7px;font-size:11px;width:100%}
+    .mini-btn{padding:5px 8px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
+  </style>
+</head>
+<body>
+
+  <!-- 1. INPUT: SCRIPT, MIC VOICE, AUDIO OR UPLOAD REEL MP4 -->
+  <div class="card">
+    <h3>1. Script, Voice or Upload Reel Video</h3>
+    <textarea id="txt">An airplane flew over the green jungle! Next a golden coin unlocked our AI empire. Now millions of creators win fast.</textarea>
+
+    <div class="row" style="background:#0a0c12;padding:8px;border-radius:8px;border:1px solid #f5b942">
+      <span style="font-size:11px;font-weight:700;color:#f5b942">🎙️ PC Studio Bass:</span>
+      <input id="bassRange" type="range" min="0" max="14" value="9" style="flex:1;accent-color:#f5b942">
+      <span id="bassVal" style="font-size:11px;font-weight:700;color:#10b981">+9 dB</span>
+      <label style="font-size:11px;color:#38bdf8;font-weight:700;margin-left:6px"><input id="rgbToggle" type="checkbox" checked> RGB Glow</label>
+    </div>
+
+    <div class="row">
+      <button id="micBtn" class="btn red">🎤 Mic</button>
+      <button class="btn dark" onclick="document.getElementById('audIn').click()">🎵 Audio</button>
+      <button class="btn dark" onclick="document.getElementById('vidIn').click()">🎬 Upload Reel</button>
+      <input id="audIn" type="file" accept="audio/*" style="display:none">
+      <input id="vidIn" type="file" accept="video/*" style="display:none">
+    </div>
+    <div class="row">
+      <button class="btn gold" onclick="buildVideo()">✨ Auto-Build RGB & Objects</button>
+    </div>
+  </div>
+
+  <!-- 2. LIVE 9:16 STAGE & EXPORT -->
+  <div class="card">
+    <h3>2. Live 9:16 Preview (8 Non-Repeating FX + 8 SFX)</h3>
+    <div class="stage"><canvas id="cv" width="270" height="480"></canvas></div>
+    <div class="row">
+      <button class="btn green" onclick="playVideo(false)">▶ Play</button>
+      <button class="btn blue" onclick="playVideo(true)">⬇️ Export Video</button>
+    </div>
+    <div id="st" style="margin-top:6px;font-size:11px;color:#10b981;text-align:center">Ready — Each scene gets a unique animation, SFX & matching object!</div>
+  </div>
+
+  <!-- 3. MANUAL POST-GENERATION CONTROLS -->
+  <div class="card">
+    <h3>3. Manual Camera, Object, Photo & FX Controls</h3>
+    <div id="sceneList"></div>
+  </div>
+
+  <video id="bgVid" playsinline muted style="display:none"></video>
+
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),bgVid=document.getElementById('bgVid');
+let scenes=[],activeIdx=0,playing=false,sceneStart=0,audUrl=null,hasReel=false,rec=null,chunks=[];
+
+document.getElementById('bassRange').oninput=function(){document.getElementById('bassVal').textContent='+'+this.value+' dB';};
+
+// 8 DISTINCT IN/OUT ANIMATION COMBOS (NEVER REPEATS PREVIOUS)
+const ANIM_COMBOS=[
+  {id:0,name:'Zoom Pop -> Slide Left'},
+  {id:1,name:'Drop Bounce -> Shrink Out'},
+  {id:2,name:'Swipe Right -> Drop Down'},
+  {id:3,name:'3D Spin -> Swipe Right'},
+  {id:4,name:'Rise Up -> Spin Out'},
+  {id:5,name:'Glitch Flash -> Slide Up'},
+  {id:6,name:'Pendulum Swing -> Fade Out'},
+  {id:7,name:'Split Expand -> Whip Out'}
+];
+
+// 8 MATCHING WEB AUDIO SFX (DIFFERENT SOUND FOR EACH ANIMATION)
+function playMatchedSFX(animId){
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ac.createOscillator(),g=ac.createGain();
+    osc.connect(g);g.connect(ac.destination);
+    const now=ac.currentTime;
+    g.gain.setValueAtTime(0.14,now);
+
+    if(animId===0){osc.type='sine';osc.frequency.setValueAtTime(320,now);osc.frequency.exponentialRampToValueAtTime(920,now+0.14);}
+    else if(animId===1){osc.type='sine';osc.frequency.setValueAtTime(140,now);osc.frequency.exponentialRampToValueAtTime(38,now+0.22);}
+    else if(animId===2){osc.type='triangle';osc.frequency.setValueAtTime(220,now);osc.frequency.exponentialRampToValueAtTime(75,now+0.18);}
+    else if(animId===3){osc.type='sine';osc.frequency.setValueAtTime(1040,now);osc.frequency.exponentialRampToValueAtTime(1560,now+0.2);}
+    else if(animId===4){osc.type='sawtooth';osc.frequency.setValueAtTime(180,now);osc.frequency.exponentialRampToValueAtTime(540,now+0.22);g.gain.setValueAtTime(0.08,now);}
+    else if(animId===5){osc.type='square';osc.frequency.setValueAtTime(680,now);osc.frequency.setValueAtTime(340,now+0.07);g.gain.setValueAtTime(0.07,now);}
+    else if(animId===6){osc.type='triangle';osc.frequency.setValueAtTime(520,now);osc.frequency.exponentialRampToValueAtTime(260,now+0.12);}
+    else{osc.type='sine';osc.frequency.setValueAtTime(800,now);osc.frequency.exponentialRampToValueAtTime(120,now+0.15);}
+
+    g.gain.exponentialRampToValueAtTime(0.001,now+0.24);
+    osc.start(now);osc.stop(now+0.25);
+  }catch(e){}
+}
+
+// FREE AUTOMATIC WORD-TO-OBJECT FETCHER (ICONIFY 200,000+ VECTOR ICONS)
+async function fetchWordObject(sc){
+  const stopWords=/^(the|and|for|with|that|this|from|into|over|next|now|our|are|was|were|have|has|had|you|your|they|their|what|when|how)$/i;
+  const words=sc.text.replace(/[^a-zA-Z\s]/g,'').split(/\s+/).filter(w=>w.length>2&&!stopWords.test(w));
+  const keyword=(words.at(-1)||words.at(0)||'star').toLowerCase();
+  sc.keyword=keyword;
+
+  try{
+    const res=await fetch('https://iconify.design');
+    const data=await res.json();
+    if(data&&data.icons&&data.icons.length>0){
+      const iconName=data.icons.at(0);
+      const img=new Image();
+      img.crossOrigin='anonymous';
+      img.onload=()=>{sc.fetchedImg=img;};
+      img.src='https://iconify.design';
+    }
+  }catch(e){}
+}
+
+// 1. BUILD SCENES WITH NON-REPEATING ANIMATIONS & AUTO OBJECT FETCHING
+function buildVideo(){
+  const raw=document.getElementById('txt').value.trim();
+  const arr=raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  let t=0,prevAnim=-1;
+  const bgCycle=['luxury','cyber','crimson','space'];
+
+  scenes=arr.map((text,i)=>{
+    const dur=Math.max(2.0,text.split(/\s+/).length*0.44);
+    // Pick an animation strictly different from the previous scene
+    let animId=(i*3+1)%ANIM_COMBOS.length;
+    if(animId===prevAnim)animId=(animId+1)%ANIM_COMBOS.length;
+    prevAnim=animId;
+
+    const sc={
+      id:i,text,keyword:'',animId,bg:bgCycle.at(i%bgCycle.length),
+      showObj:true,cam:i%2===0?'zoom_in':'zoom_out',
+      fetchedImg:null,customImg:null,start:t,end:t+dur
+    };
+    fetchWordObject(sc);
+    t+=dur;
+    return sc;
+  });
+
+  activeIdx=0;sceneStart=performance.now();
+  renderEditor();
+  document.getElementById('st').textContent='Built '+scenes.length+' Scenes with Auto Objects, RGB Glow & Unique SFX!';
+}
+
+// 2. MANUAL POST-GENERATION CONTROLS
+function renderEditor(){
+  const box=document.getElementById('sceneList');box.innerHTML='';
+  scenes.forEach((sc,i)=>{
+    const div=document.createElement('div');div.className='sc';
+    div.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:4px">
+        <b style="font-size:11px;color:#f5b942">Scene ${i+1} (${sc.keyword||'auto'})</b>
+        <div style="display:flex;gap:4px">
+          <button class="mini-btn" style="background:${sc.showObj?'#10b981':'#4b5563'};color:#000" onclick="toggleObj(${i})">${sc.showObj?'👁️ Show':'🚫 Hide'}</button>
+          <button class="mini-btn" style="background:#2563eb;color:#fff" onclick="document.getElementById('imgIn_${i}').click()">🖼️ Photo</button>
+          <button class="mini-btn" style="background:#dc2626;color:#fff" onclick="delSc(${i})">🗑️</button>
+        </div>
+      </div>
+      <input type="text" style="margin-top:6px" value="${sc.text.replace(/"/g,'&quot;')}" oninput="scenes.at(${i}).text=this.value">
+      <div class="sc-grid">
+        <select onchange="setAnim(${i},Number(this.value))">
+          ${ANIM_COMBOS.map(a=>`<option value="${a.id}" ${sc.animId===a.id?'selected':''}>✨ ${a.name}</option>`).join('')}
+        </select>
+        <select onchange="setCam(${i},this.value)">
+          <option value="zoom_in" ${sc.cam==='zoom_in'?'selected':''}>🎥 Cam: Zoom In</option>
+          <option value="zoom_out" ${sc.cam==='zoom_out'?'selected':''}>🎥 Cam: Zoom Out</option>
+          <option value="pan" ${sc.cam==='pan'?'selected':''}>🎥 Cam: Pan Move</option>
+          <option value="shake" ${sc.cam==='shake'?'selected':''}>🎥 Cam: Shake</option>
+        </select>
+      </div>
