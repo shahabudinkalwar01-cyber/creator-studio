@@ -2,16 +2,17 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://unpkg.com"></script>
+  <script type="importmap">{"imports":{"three":"https://jsdelivr.net"}}</script>
 </head>
 <body style="margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center;padding:15px;">
   <button id="testBtn" style="padding:14px 24px;font-size:16px;background:#f5b942;border:none;border-radius:10px;font-weight:bold;">Tap Me to Change 3D Color</button>
-  <p id="msg">Waiting...</p>
+  <p id="msg">Loading 3D...</p>
   <canvas id="c" style="width:280px;height:420px;border:2px solid #f5b942;border-radius:12px;"></canvas>
-  <script>
+  <script type="module">
+    import * as THREE from "three";
     const msg = document.getElementById("msg");
-    msg.textContent = "Step 1 OK: Script Started!";
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c") });
+    msg.textContent = "3D Loaded OK!";
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("c"), antialias: true });
     renderer.setSize(280, 420, false);
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#38bdf8");
@@ -19,7 +20,7 @@
     cam.position.z = 3;
     const box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshNormalMaterial());
     scene.add(box);
-    document.getElementById("testBtn").onclick = function() {
+    document.getElementById("testBtn").onclick = () => {
       scene.background = new THREE.Color("#22c55e");
       msg.textContent = "Button Works! Green 3D World!";
     };
