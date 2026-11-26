@@ -169,3 +169,154 @@ function renderEditor(){
       <div class="sc-grid">
         <select onchange="setAnim(${i},Number(this.value))">
           ${ANIM_COMBOS.map(a=>`<option value="${a.id}" ${sc.capAnimId===a.id?'selected':''}>✨ ${a.name}</option>`).join('')}
+        </select>
+        <select onchange="setCam(${i},this.value)">
+          <option value="zoom_in" ${sc.cam==='zoom_in'?'selected':''}>🎥 Cam: Zoom In</option>
+          <option value="zoom_out" ${sc.cam==='zoom_out'?'selected':''}>🎥 Cam: Zoom Out</option>
+          <option value="pan" ${sc.cam==='pan'?'selected':''}>🎥 Cam: Pan Move</option>
+          <option value="shake" ${sc.cam==='shake'?'selected':''}>🎥 Cam: Shake</option>
+        </select>
+      </div>
+      <input type="file" id="imgIn_${i}" accept="image/*" style="display:none" onchange="loadPhoto(${i},event)">
+    `;
+    box.appendChild(div);
+  });
+}
+
+function previewSc(i){activeIdx=i;sceneStart=performance.now();playMatchedSFX(scenes.at(i).capAnimId);}
+function toggleObj(i){const s=scenes.at(i);if(s){s.showObj=!s.showObj;previewSc(i);renderEditor();}}
+function setAnim(i,v){const s=scenes.at(i);if(s){s.capAnimId=v;s.animId=(v+1)%ANIM_COMBOS.length;previewSc(i);}}
+function setCam(i,v){const s=scenes.at(i);if(s){s.cam=v;previewSc(i);}}
+function loadPhoto(i,ev){const f=ev.target.files.item(0);if(f){const img=new Image();img.onload=()=>{const s=scenes.at(i);if(s){s.customImg=img;s.showObj=true;previewSc(i);}};img.src=URL.createObjectURL(f);}}
+function delSc(i){scenes.splice(i,1);document.getElementById('txt').value=scenes.map(s=>s.text).join('. ');buildVideo();}
+
+function getAnimTransform(animId,prog,t){
+  let x=0,y=Math.sin(t*3)*5,scale=1,rot=0,alpha=1;
+  const inP=Math.min(1,prog/0.18),outP=prog>0.84?(prog-0.84)/0.16:0;
+  if(animId===0){scale=inP*(1-outP);x=-outP*180;}
+  else if(animId===1){y+=(1-inP)*-140;scale=1-outP;}
+  else if(animId===2){x=(1-inP)*180;y+=outP*140;}
+  else if(animId===3){rot=(1-inP)*3.14;x=outP*180;}
+  else if(animId===4){y+=(1-inP)*140;rot=outP*3.14;scale=1-outP*0.5;}
+  else if(animId===5){x=inP<1?(Math.random()-0.5)*16:0;y+=-outP*140;}
+  else if(animId===6){rot=Math.sin(t*5)*0.22;alpha=(1-outP)*inP;}
+  else{scale=inP;x=outP*220;alpha=1-outP;}
+  return {x,y,scale:Math.max(0.01,scale),rot,alpha:Math.max(0,alpha)};
+}
+
+function renderLoop(){
+  const now=performance.now(),t=now*0.001;
+  const sc=scenes.at(activeIdx)||{text:'READY',keyword:'star',animId:0,capAnimId:1,bg:'luxury',showObj:true,cam:'zoom_in',start:0,end:2};
+  const dur=Math.max(0.5,sc.end-sc.start),prog=Math.min(1,(now-sceneStart)/(dur*1000));
+  const useRGB=document.getElementById('rgbToggle').checked;
+  const rgbColor='hsl('+Math.floor((t*160)%360)+',100%,55%)';
+
+  ctx.save();
+  let camZoom=1,camX=0,camY=0;
+  if(sc.cam==='zoom_in')camZoom=1+prog*0.12;
+  else if(sc.cam==='zoom_out')camZoom=1.14-prog*0.12;
+  else if(sc.cam==='pan')camX=Math.sin(prog*Math.PI)*16;
+  else if(sc.cam==='shake'&&prog<0.25){camX=(Math.random()-0.5)*10;camY=(Math.random()-0.5)*10;}
+  ctx.translate(135+camX,240+camY);ctx.scale(camZoom,camZoom);ctx.translate(-135,-240);
+
+  if(hasReel&&bgVid.readyState>=2){
+    ctx.drawImage(bgVid,0,0,270,480);ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(0,0,270,480);
+  }else{
+    const bgMap={luxury:'#090a0f',cyber:'#050d1a',crimson:'#1a080c',space:'#050816'};
+    ctx.fillStyle=bgMap[sc.bg]||'#090a0f';ctx.fillRect(-20,-20,310,520);
+  }
+
+  const objTr=getAnimTransform(sc.animId,prog,t);
+  if(sc.showObj){
+    ctx.save();ctx.globalAlpha=objTr.alpha;ctx.translate(135+objTr.x,185+objTr.y);ctx.scale(objTr.scale,objTr.scale);ctx.rotate(objTr.rot);
+    if(useRGB){ctx.shadowColor=rgbColor;ctx.shadowBlur=22;}
+    const img=sc.customImg||sc.fetchedImg;
+    if(img)ctx.drawImage(img,-62,-62,124,124);
+    else{ctx.fillStyle='#f5b942';ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();ctx.fillStyle='#000';ctx.font='900 28px sans-serif';ctx.textAlign='center';ctx.fillText('$',0,10);}
+    ctx.restore();
+  }
+
+  const capTr=getAnimTransform(sc.capAnimId??sc.animId,prog,t);
+  ctx.save();ctx.globalAlpha=capTr.alpha;ctx.translate(135+capTr.x,385+capTr.y);ctx.scale(capTr.scale,capTr.scale);ctx.rotate(capTr.rot*0.25);
+  const words=sc.text.toUpperCase().split(' '),last=words.pop()||'';
+  ctx.font='900 17px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;
+  if(useRGB){ctx.shadowColor=rgbColor;ctx.shadowBlur=14;}
+  const l1=words.slice(0,4).join(' '),l2=words.slice(4).join(' ');
+  if(l1){ctx.strokeText(l1,0,-23);ctx.fillText(l1,0,-23);}
+  if(l2){ctx.strokeText(l2,0,3);ctx.fillText(l2,0,3);}
+  const bw=ctx.measureText(last).width+22;
+  ctx.fillStyle=useRGB?rgbColor:'#f5b942';ctx.beginPath();ctx.roundRect(-bw/2,15,bw,28,7);ctx.fill();
+  ctx.shadowBlur=0;ctx.fillStyle='#000';ctx.fillText(last,0,35);
+  ctx.restore();ctx.restore();
+  requestAnimationFrame(renderLoop);
+}
+
+document.getElementById('micBtn').onclick=async function(){
+  if(!rec||rec.state==='inactive'){
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(st);chunks=[];
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{audUrl=URL.createObjectURL(new Blob(chunks));document.getElementById('st').textContent='Mic Voice Saved!';};
+    rec.start();this.textContent='⏹️ Stop';
+  }else{rec.stop();this.textContent='🎤 Mic';}
+};
+document.getElementById('audIn').onchange=e=>{if(e.target.files.item(0)){audUrl=URL.createObjectURL(e.target.files.item(0));document.getElementById('st').textContent='Audio Loaded!';}};
+
+document.getElementById('vidIn').onchange=async e=>{
+  const f=e.target.files.item(0);
+  if(!f)return;
+  bgVid.src=URL.createObjectURL(f);bgVid.loop=true;bgVid.play();
+  hasReel=true;audUrl=null;
+  const st=document.getElementById('st');
+  st.textContent='Loading built-in keyless Whisper AI...';
+  try{
+    if(!localWhisper){
+      const {pipeline,env}=await import('https://jsdelivr.net');
+      env.allowLocalModels=false;
+      localWhisper=await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{
+        progress_callback:p=>{if(p.status==='progress')st.textContent='Downloading AI Model: '+Math.round(p.progress)+'% (One-time)';}
+      });
+    }
+    st.textContent='Reading Reel audio & generating captions...';
+    const rawBuf=await f.arrayBuffer();
+    const tmpCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const decoded=await tmpCtx.decodeAudioData(rawBuf);
+    const offCtx=new OfflineAudioContext(1,Math.ceil(decoded.duration*16000),16000);
+    const src=offCtx.createBufferSource();src.buffer=decoded;src.connect(offCtx.destination);src.start(0);
+    const rendered=await offCtx.startRendering();
+    const langCode=document.getElementById('langSel').value.split('-').at(0);
+    const out=await localWhisper(rendered.getChannelData(0),{language:langCode,chunk_length_s:25,stride_length_s:5});
+    if(out&&out.text){
+      document.getElementById('txt').value=out.text.trim();
+      buildVideo();
+      st.textContent='Keyless Auto-Captions Ready ('+scenes.length+' Scenes)!';
+    }
+  }catch(err){
+    buildVideo();
+    st.textContent='Reel Loaded! Edit captions above or tap Shuffle.';
+  }
+};
+
+function playVideo(save){
+  if(!scenes.length)buildVideo();
+  speechSynthesis.cancel();
+  if(hasReel){bgVid.currentTime=0;bgVid.muted=false;bgVid.play();}
+  else if(audUrl)new Audio(audUrl).play();
+  else speechSynthesis.speak(new SpeechSynthesisUtterance(scenes.map(s=>s.text).join('. ')));
+  playing=true;const stTime=performance.now();let last=-1,vr=null,vc=[];
+  if(save){
+    vr=new MediaRecorder(cv.captureStream(30));vr.ondataavailable=e=>vc.push(e.data);
+    vr.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(vc,{type:'video/webm'}));a.download='RGB_Reel.webm';a.click();document.getElementById('st').textContent='Exported!';};
+    vr.start();
+  }
+  const iv=setInterval(()=>{
+    const sec=(performance.now()-stTime)/1000;
+    const idx=scenes.findIndex(s=>sec>=s.start&&sec<s.end);
+    if(idx!==-1&&idx!==last){last=idx;activeIdx=idx;sceneStart=performance.now();playMatchedSFX(scenes.at(idx).capAnimId);}
+    if(sec>=scenes.at(-1).end){clearInterval(iv);playing=false;if(hasReel)bgVid.muted=true;if(vr)vr.stop();}
+  },80);
+}
+
+buildVideo();renderLoop();
+</script>
+</body>
+</html>
