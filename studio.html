@@ -425,8 +425,9 @@
       const el=Math.max(0,now-startTime),tot=scenes.length*sceneDurationMs;
       if(el>=tot){clearInterval(beatInterval);if(audioEl)audioEl.pause();if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();else statusText.textContent=`Done | BGM: ${activeBgm}`;return;}
 
-      const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx],theme=THEMES[activeThemeKey];
-      const p=sel/sceneDurationMs,sc=scenes[idx];
+    const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs));
+    const sel=el-idx*sceneDurationMs,p=sel/sceneDurationMs,sc=scenes[idx];
+    const plan=scenePlans[idx]||{target:"laptop",anim1:"Idle",anim2:"Idle",isFight:false};
       if(idx!==lastSceneIdx){
         lastSceneIdx=idx;
        const autoMode = plan.isFight ? "two_fight" : (idx % 2 === 1 ? "two_talk" : "desk");
