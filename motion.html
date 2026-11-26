@@ -137,7 +137,7 @@ async function fetchWordObject(sc){
 // 1. BUILD SCENES WITH NON-REPEATING ANIMATIONS & AUTO OBJECT FETCHING
 function buildVideo(){
   const raw=document.getElementById('txt').value.trim();
-  const arr=raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  const arr=/[.!?]/.test(raw)?raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean):(raw.match(/\S+(?:\s+\S+){0,2}/g)||[]);
   let t=0,prevAnim=-1;
   const bgCycle=['luxury','cyber','crimson','space'];
 
@@ -150,7 +150,7 @@ function buildVideo(){
 
     const sc={
       id:i,text,keyword:'',animId,bg:bgCycle.at(i%bgCycle.length),
-      showObj:true,cam:i%2===0?'zoom_in':'zoom_out',
+      showObj:!hasReel,cam:i%2===0?'zoom_in':'zoom_out',
       fetchedImg:null,customImg:null,start:t,end:t+dur
     };
     fetchWordObject(sc);
