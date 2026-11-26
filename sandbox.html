@@ -1,209 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Cartoon & Creator Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; background: #090b12; color: #fff; padding-bottom: 50px; }
-    .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 10px; background: #0f131f; border-bottom: 1px solid #22293a; position: sticky; top: 0; z-index: 50; }
-    .tab-btn { padding: 7px 14px; border-radius: 20px; border: 1px solid #2d364d; background: #161c2c; color: #fff; font-weight: 700; font-size: 12px; white-space: nowrap; cursor: pointer; }
-    .tab-btn.active { background: #f5b942; color: #000; border-color: #f5b942; }
-    .card { margin: 12px; padding: 14px; background: #121724; border: 1px solid #232b3e; border-radius: 14px; }
-    h3 { margin: 0 0 10px 0; font-size: 13px; color: #f5b942; text-transform: uppercase; letter-spacing: 0.5px; }
-    textarea { width: 100%; height: 90px; background: #090c14; color: #fff; border: 1px solid #2e374d; border-radius: 10px; padding: 10px; font-size: 14px; resize: none; }
-    .row { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
-    .btn { flex: 1; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; min-width: 110px; }
-    .btn-gold { background: #f5b942; color: #000; }
-    .btn-green { background: #10b981; color: #000; }
-    .btn-red { background: #ef4444; color: #fff; }
-    .btn-blue { background: #2563eb; color: #fff; }
-    .btn-dark { background: #1f2638; color: #fff; border: 1px solid #323c54; }
-    #stageWrap { position: relative; width: 100%; max-width: 340px; aspect-ratio: 9/16; margin: 0 auto; border-radius: 14px; overflow: hidden; border: 2px solid #f5b942; background: #000; }
-    canvas { display: block; width: 100%; height: 100%; }
-    .scene-card { background: #192030; border: 1px solid #2f384f; border-radius: 10px; padding: 10px; margin-top: 8px; }
-    .scene-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
-    select, input[type="text"] { background: #0c0f18; color: #fff; border: 1px solid #323b52; border-radius: 6px; padding: 5px 8px; font-size: 12px; }
-    input[type="text"] { width: 100%; }
+    *{box-sizing:border-box;font-family:sans-serif}
+    body{margin:0;background:#090b12;color:#fff;padding:10px}
+    .tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+    .tab{padding:7px 12px;border-radius:18px;border:none;background:#1a2030;color:#fff;font-weight:700;font-size:12px;white-space:nowrap}
+    .tab.on{background:#f5b942;color:#000}
+    .box{background:#121724;border:1px solid #252e42;border-radius:12px;padding:12px;margin-bottom:12px}
+    textarea{width:100%;height:75px;background:#090c14;color:#fff;border:1px solid #303a52;border-radius:8px;padding:8px;font-size:13px}
+    .row{display:flex;gap:8px;margin-top:8px}
+    button.btn{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer}
+    canvas{display:block;width:270px;height:480px;margin:0 auto;border:2px solid #f5b942;border-radius:12px;background:#000}
+    .sc{background:#1a2133;padding:8px;border-radius:8px;margin-top:6px;font-size:12px}
   </style>
 </head>
 <body>
-
-  <!-- TOP 5 CREATOR TABS -->
-  <div class="tabs" id="categoryTabs">
-    <button class="tab-btn active" data-mode="cartoon">🧸 3D Cartoon</button>
-    <button class="tab-btn" data-mode="iman">💰 Iman Wealth</button>
-    <button class="tab-btn" data-mode="story">🎬 Action Story</button>
-    <button class="tab-btn" data-mode="song">🎵 Song & Beat</button>
-    <button class="tab-btn" data-mode="cyber">🔷 Cyber AI</button>
+  <div class="tabs">
+    <button class="tab on" onclick="setMode('jungle',this)">🧸 3D Cartoon</button>
+    <button class="tab" onclick="setMode('wealth',this)">💰 Iman Wealth</button>
+    <button class="tab" onclick="setMode('space',this)">🚀 Space AI</button>
+    <button class="tab" onclick="setMode('ocean',this)">🌊 Ocean</button>
+    <button class="tab" onclick="setMode('city',this)">🏙️ City</button>
   </div>
 
-  <!-- CARD 1: SCRIPT, MIC RECORDING & STUDIO BASS -->
-  <div class="card">
-    <h3>1. Script, Voice Record or Upload Audio</h3>
-    <textarea id="scriptBox">One sunny morning, Leo walked through the green jungle. Suddenly he saw a rocket flying into outer space! Next he swam across the blue ocean and met his best friend in the city.</textarea>
-
-    <div style="margin-top:10px; padding:10px; background:#0d1019; border:1px solid #f5b942; border-radius:10px;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:12px; font-weight:700; color:#f5b942;">🎙️ PC Studio Bass Voice Enhancer</span>
-        <button id="bassToggle" class="btn-green" style="border:none; border-radius:6px; padding:4px 10px; font-weight:700; font-size:11px;">ON (+8 dB)</button>
-      </div>
-      <div class="row" style="margin-top:6px;">
-        <span style="font-size:11px; color:#9ca3af;">Deep Bass:</span>
-        <input id="bassSlider" type="range" min="0" max="14" value="8" style="flex:1; accent-color:#f5b942;">
-      </div>
-    </div>
-
+  <div class="box">
+    <textarea id="txt">Leo walked in the green jungle. Next a rocket flew into space! Then he swam in the ocean and met his friend in the city.</textarea>
     <div class="row">
-      <button id="recordMicBtn" class="btn btn-red">🎤 Record Voice</button>
-      <button id="uploadAudioBtn" class="btn btn-dark">📁 Upload Audio</button>
-      <input id="audioFileInput" type="file" accept="audio/*" style="display:none;">
+      <button class="btn" style="background:#ef4444;color:#fff" id="micBtn">🎤 Record Voice</button>
+      <button class="btn" style="background:#1f2937;color:#fff" onclick="document.getElementById('audIn').click()">📁 Audio</button>
+      <input type="file" id="audIn" accept="audio/*" style="display:none">
     </div>
     <div class="row">
-      <button id="generateBtn" class="btn btn-gold">✨ Build 3D Cartoon Video</button>
+      <button class="btn" style="background:#f5b942;color:#000" onclick="build()">✨ Build 3D Video</button>
+      <button class="btn" style="background:#10b981;color:#000" onclick="play()">▶ Play</button>
+      <button class="btn" style="background:#2563eb;color:#fff" onclick="exp()">⬇️ Export</button>
     </div>
+    <div id="st" style="font-size:11px;color:#10b981;margin-top:6px;text-align:center">Ready!</div>
   </div>
 
-  <!-- CARD 2: LIVE 3D CARTOON & MOTION STAGE -->
-  <div class="card">
-    <h3>2. Live 3D Stage & Video Export</h3>
-    <div id="stageWrap">
-      <canvas id="stageCanvas" width="360" height="640"></canvas>
-    </div>
-    <div class="row">
-      <button id="playBtn" class="btn btn-green">▶ Play Video</button>
-      <button id="exportBtn" class="btn btn-blue">⬇️ Export Video</button>
-    </div>
-    <div id="statusText" style="margin-top:8px; font-size:12px; color:#10b981; text-align:center;">100% Ready — Zero downloads, works offline!</div>
-  </div>
-
-  <!-- CARD 3: EDIT OR REMOVE SCENES BEFORE EXPORT -->
-  <div class="card">
-    <h3>3. Edit or Remove Scenes Before Export</h3>
-    <div id="sceneList"></div>
-  </div>
+  <div class="box"><canvas id="cv" width="270" height="480"></canvas></div>
+  <div class="box" id="list"></div>
 
 <script>
-  const canvas = document.getElementById("stageCanvas");
-  const ctx = canvas.getContext("2d");
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let scenes=[],cur={text:'READY',env:'jungle',two:false},playing=false,audUrl=null,rec=null,chunks=[];
 
-  let scenes = [];
-  let currentScene = { text: "READY TO CREATE", env: "jungle", twoChars: false };
-  let isPlaying = false;
-  let playStart = 0;
-  let audioUrl = null;
-  let audioEl = null;
+function setMode(e,el){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  cur={text:e.toUpperCase()+' MODE',env:e,two:e==='city'};
+}
 
-  // === 1. SCRIPT-TO-SCENE ENGINE (DETECTS PLACES & CHARACTERS FROM WORDS) ===
-  function compileScript() {
-    const raw = document.getElementById("scriptBox").value.trim();
-    const parts = raw.split(/(?<=[.!?])|\b(?=next\b|then\b|suddenly\b|and\b)/i).map(s => s.trim()).filter(Boolean);
-    let cursor = 0;
+function build(){
+  const raw=document.getElementById('txt').value.trim();
+  const arr=raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  let t=0;
+  scenes=arr.map((s,i)=>{
+    const d=Math.max(1.8,s.split(' ').length*0.45),l=s.toLowerCase();
+    let env='jungle';
+    if(/space|moon|rocket|star/.test(l))env='space';
+    else if(/ocean|sea|water|swim/.test(l))env='ocean';
+    else if(/city|street|karachi|car/.test(l))env='city';
+    else if(/money|rich|gold|iman|win/.test(l))env='wealth';
+    const two=/friend|meet|two|talk|fight/.test(l);
+    const o={id:i,text:s,env,two,start:t,end:t+d};t+=d;return o;
+  });
+  if(scenes.length)cur=scenes[0];
+  renderCards();
+  document.getElementById('st').textContent='Built '+scenes.length+' Scenes!';
+}
 
-    scenes = parts.map((text, i) => {
-      const dur = Math.max(1.8, text.split(/\s+/).length * 0.44);
-      const low = text.toLowerCase();
-      let env = "jungle";
-      if (/space|moon|rocket|star|planet/.test(low)) env = "space";
-      else if (/ocean|sea|water|swim|river/.test(low)) env = "ocean";
-      else if (/city|street|karachi|car|school|road/.test(low)) env = "city";
-      else if (/money|rich|gold|iman|business|win|grow/.test(low)) env = "wealth";
+function renderCards(){
+  const box=document.getElementById('list');box.innerHTML='';
+  scenes.forEach((s,i)=>{
+    const d=document.createElement('div');d.className='sc';
+    d.innerHTML='<b>Scene '+(i+1)+' ('+s.env+')</b> <button style="float:right;background:#dc2626;color:#fff;border:none;border-radius:4px" onclick="delSc('+i+')">🗑️</button><br>'+s.text;
+    box.appendChild(d);
+  });
+}
+function delSc(i){scenes.splice(i,1);document.getElementById('txt').value=scenes.map(s=>s.text).join('. ');build();}
 
-      const twoChars = /friend|meet|people|talk|fight|rival|two/.test(low);
-      const item = { id: i, text, env, twoChars, start: cursor, end: cursor + dur };
-      cursor += dur;
-      return item;
-    });
+document.getElementById('micBtn').onclick=async function(){
+  if(!rec||rec.state==='inactive'){
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    rec=new MediaRecorder(st);chunks=[];
+    rec.ondataavailable=e=>chunks.push(e.data);
+    rec.onstop=()=>{audUrl=URL.createObjectURL(new Blob(chunks));document.getElementById('st').textContent='Voice Saved!';};
+    rec.start();this.textContent='⏹️ Stop';
+  }else{rec.stop();this.textContent='🎤 Record Voice';}
+};
+document.getElementById('audIn').onchange=e=>{if(e.target.files[0]){audUrl=URL.createObjectURL(e.target.files[0]);document.getElementById('st').textContent='Audio Loaded!';}};
 
-    if (scenes.length > 0) currentScene = scenes.at(0);
-    renderSceneCards();
+function hero(x,y,col,t,flip){
+  const b=playing?Math.abs(Math.sin(t*7))*12:0;
+  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(x,y+50,26,8,0,0,7);ctx.fill();
+  ctx.fillStyle='#1e293b';ctx.fillRect(x-12,y+24-b,8,25);ctx.fillRect(x+4,y+24-b,8,25);
+  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x-18,y-6-b,36,34,10);ctx.fill();
+  ctx.fillStyle='#fed7aa';ctx.beginPath();ctx.arc(x,y-28-b,25,0,7);ctx.fill();
+  const ox=flip?-3:3;
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x-8+ox,y-30-b,6,0,7);ctx.arc(x+8+ox,y-30-b,6,0,7);ctx.fill();
+  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(x-8+ox,y-30-b,3,0,7);ctx.arc(x+8+ox,y-30-b,3,0,7);ctx.fill();
+  ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(x,y-33-b,25,Math.PI,0);ctx.fill();
+}
+
+function draw(){
+  const t=performance.now()*0.001,e=cur.env;
+  ctx.fillStyle=e==='space'?'#050816':e==='wealth'?'#090a0f':e==='city'?'#1e293b':'#38bdf8';
+  ctx.fillRect(0,0,270,480);
+  if(e==='jungle'){
+    ctx.fillStyle='#fde047';ctx.beginPath();ctx.arc(220,60,24,0,7);ctx.fill();
+    ctx.fillStyle='#22c55e';ctx.beginPath();ctx.ellipse(135,410,200,110,0,0,7);ctx.fill();
+    ctx.fillStyle='#78350f';ctx.fillRect(42,270,12,45);ctx.fillStyle='#15803d';ctx.beginPath();ctx.arc(48,255,28,0,7);ctx.fill();
+  }else if(e==='space'){
+    ctx.fillStyle='#a855f7';ctx.beginPath();ctx.arc(200,90,28,0,7);ctx.fill();
+    ctx.fillStyle='#475569';ctx.beginPath();ctx.ellipse(135,410,200,110,0,0,7);ctx.fill();
+  }else if(e==='ocean'){
+    ctx.fillStyle='#0284c7';ctx.fillRect(0,280,270,200);
+    ctx.fillStyle='#fde047';ctx.beginPath();ctx.ellipse(135,380,140,60,0,0,7);ctx.fill();
+  }else if(e==='city'){
+    ctx.fillStyle='#334155';ctx.fillRect(20,130,65,200);ctx.fillRect(185,110,70,220);
+    ctx.fillStyle='#0f172a';ctx.fillRect(0,320,270,160);
+  }else{
+    ctx.fillStyle='#f5b942';ctx.fillRect(185,180,18,60);ctx.fillRect(210,150,18,90);
+    ctx.fillStyle='#10b981';ctx.fillRect(235,110,18,130);
   }
+  if(cur.two){hero(90,320,'#f97316',t,false);hero(185,320,'#3b82f6',t+1,true);}
+  else hero(135,320,'#f97316',t,false);
 
-  // === 2. DRAW 3D-SHADED CARTOON ENVIRONMENTS, CHARACTERS & CAPTIONS ===
-  function draw3DTree(x, y, scale) {
-    ctx.fillStyle = "#78350f";
-    ctx.fillRect(x - 8 * scale, y, 16 * scale, 55 * scale);
-    ctx.fillStyle = "#15803d";
-    ctx.beginPath(); ctx.arc(x, y - 15 * scale, 38 * scale, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#22c55e";
-    ctx.beginPath(); ctx.arc(x - 10 * scale, y - 25 * scale, 26 * scale, 0, Math.PI * 2); ctx.fill();
+  ctx.font='900 16px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;
+  const w=cur.text.toUpperCase().split(' '),last=w.pop()||'';
+  ctx.strokeText(w.slice(0,4).join(' '),135,415);ctx.fillText(w.slice(0,4).join(' '),135,415);
+  ctx.fillStyle='#f5b942';ctx.fillRect(65,428,140,26);
+  ctx.fillStyle='#000';ctx.fillText(last,135,446);
+  requestAnimationFrame(draw);
+}
+
+function play(save){
+  build();if(!scenes.length)return;
+  speechSynthesis.cancel();
+  if(audUrl)new Audio(audUrl).play();
+  else speechSynthesis.speak(new SpeechSynthesisUtterance(scenes.map(s=>s.text).join('. ')));
+  playing=true;const st=performance.now();
+  let vr=null,vc=[];
+  if(save){
+    vr=new MediaRecorder(cv.captureStream(30));
+    vr.ondataavailable=e=>vc.push(e.data);
+    vr.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(vc,{type:'video/webm'}));a.download='Cartoon.webm';a.click();};
+    vr.start();
   }
-
-  function drawCartoonHero(x, y, shirtColor, capColor, t, speaking, flip) {
-    const bounce = speaking ? Math.abs(Math.sin(t * 7)) * 14 : Math.sin(t * 2) * 3;
-    const armWave = speaking ? Math.sin(t * 10) * 0.6 : 0.2;
-    const cy = y - bounce;
-
-    // Shadow on 3D ground
-    ctx.fillStyle = "rgba(0,0,0,0.35)";
-    ctx.beginPath(); ctx.ellipse(x, y + 65, 34, 10, 0, 0, Math.PI * 2); ctx.fill();
-
-    // Legs
-    ctx.fillStyle = "#1e293b";
-    ctx.fillRect(x - 16, cy + 32, 11, 32);
-    ctx.fillRect(x + 5, cy + 32, 11, 32);
-
-    // Waving Arms
-    ctx.save();
-    ctx.translate(x - 24, cy + 5);
-    ctx.rotate(0.4 + armWave);
-    ctx.fillStyle = shirtColor;
-    ctx.fillRect(-6, 0, 12, 34);
-    ctx.restore();
-
-    ctx.save();
-    ctx.translate(x + 24, cy + 5);
-    ctx.rotate(-0.4 - armWave);
-    ctx.fillStyle = shirtColor;
-    ctx.fillRect(-6, 0, 12, 34);
-    ctx.restore();
-
-    // 3D Shaded Torso
-    const bodyGrad = ctx.createLinearGradient(x - 25, cy, x + 25, cy + 40);
-    bodyGrad.addColorStop(0, shirtColor);
-    bodyGrad.addColorStop(1, "#0f172a");
-    ctx.fillStyle = bodyGrad;
-    ctx.beginPath(); ctx.roundRect(x - 22, cy - 5, 44, 42, 14); ctx.fill();
-
-    // Big 3D Cartoon Head
-    const headGrad = ctx.createRadialGradient(x - 10, cy - 45, 5, x, cy - 35, 38);
-    headGrad.addColorStop(0, "#ffedd5");
-    headGrad.addColorStop(1, "#fdba74");
-    ctx.fillStyle = headGrad;
-    ctx.beginPath(); ctx.arc(x, cy - 35, 34, 0, Math.PI * 2); ctx.fill();
-
-    // Big Expressive Eyes
-    const eyeOffset = flip ? -4 : 4;
-    ctx.fillStyle = "#ffffff";
-    ctx.beginPath(); ctx.arc(x - 11 + eyeOffset, cy - 38, 8, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 11 + eyeOffset, cy - 38, 8, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#0f172a";
-    ctx.beginPath(); ctx.arc(x - 10 + eyeOffset, cy - 38, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 12 + eyeOffset, cy - 38, 4, 0, Math.PI * 2); ctx.fill();
-
-    // Animated Talking Mouth
-    ctx.fillStyle = "#991b1b";
-    const mouthH = speaking ? 4 + Math.abs(Math.sin(t * 14)) * 9 : 4;
-    ctx.beginPath(); ctx.ellipse(x + eyeOffset, cy - 20, 8, mouthH, 0, 0, Math.PI * 2); ctx.fill();
-
-    // Cartoon Cap
-    ctx.fillStyle = capColor;
-    ctx.beginPath(); ctx.arc(x, cy - 42, 34, Math.PI, 0); ctx.fill();
-    ctx.fillRect(x - 34, cy - 45, 74, 7);
-  }
-
-  function renderFrame() {
-    const t = performance.now() * 0.001;
-    const env = currentScene.env;
-
-    // 1. DRAW 3D ENVIRONMENT BACKDROP
-    if (env === "jungle") {
-      const sky = ctx.createLinearGradient(0, 0, 0, 420);
-      sky.addColorStop(0, "#0284c7"); sky.addColorStop(1, "#7dd3fc");
-      ctx.fillStyle = sky; ctx.fillRect(0, 0, 360, 640);
-      ctx.fillStyle = "#fde047"; ctx.beginPath(); ctx.arc(290, 85, 32, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#22c55e"; ctx.beginPath(); ctx.ellipse(180, 520, 280, 170, 0, 0, Math.PI * 2); ctx.fill();
-      draw3DTree(65, 350, 1.1);
-      draw3DTree(295, 365, 0.9);
-    } else if (env === "space") {
+  const iv=setInterval(()=>{
+    const sec=(performance.now()-st)/1000;
+    const f=scenes.find(s=>sec>=s.start&&sec<s.end);
+    if(f)cur=f;
+    if(sec>=scenes[scenes.length-1].end){clearInterval(iv);playing=false;if(vr)vr.stop();}
+  },100);
+}
+function exp(){document.getElementById('st').textContent='Exporting...';play(true);}
+build();draw();
+</script>
+</body>
+</html>
