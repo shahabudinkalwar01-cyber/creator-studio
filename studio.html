@@ -426,6 +426,7 @@
       if(el>=tot){clearInterval(beatInterval);if(audioEl)audioEl.pause();if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();else statusText.textContent=`Done | BGM: ${activeBgm}`;return;}
 
       const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx],theme=THEMES[activeThemeKey];
+      const p=sel/sceneDurationMs,sc=scenes[idx];
       if(idx!==lastSceneIdx){
         lastSceneIdx=idx;
        const autoMode = plan.isFight ? "two_fight" : (idx % 2 === 1 ? "two_talk" : "desk");
@@ -436,7 +437,7 @@
         playCharAnim(0, plan.anim1);
         if(sceneMode.value!=="desk") playCharAnim(1, plan.anim2);
       }
-      const p=sel/sceneDurationMs,sc=scenes[idx];
+      
 
       // Animate props & update 3D mixers
       trophyGroup.rotation.y += dt * 1.8;
