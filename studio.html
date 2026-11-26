@@ -997,11 +997,6 @@
               activePlace = active.place;
               buildReal3DPlace(active.place);
             }
-
-            if (sceneSelect && sceneSelect.value !== active.mode) {
-              sceneSelect.value = active.mode;
-              sceneSelect.dispatchEvent(new Event("change"));
-            }
           }
 
           if (editableScenes.length > 0 && elapsed > editableScenes[editableScenes.length - 1].end) {
