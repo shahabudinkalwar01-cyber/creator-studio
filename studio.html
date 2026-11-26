@@ -3,126 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v15.2 — 2-Character 3D Director + Multi-Object Camera</title>
+  <title>Studio v16 — 4-Style 3D Video Generator</title>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
   <style>
     :root{--bg:#07090e;--card:#10141f;--input:#0a0e17;--border:#21293b;--gold:#f5c542;--text:#f8fafc;--muted:#94a3b8;--green:#10b981;--red:#ef4444;}
     *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-    body{background:var(--bg);color:var(--text);padding:14px 12px 46px;}
+    body{background:var(--bg);color:var(--text);padding:14px 12px 50px;}
     .container{max-width:680px;margin:0 auto;}
     .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
     .badge{font-size:11px;font-weight:700;color:var(--gold);border:1px solid rgba(245,197,66,0.4);background:rgba(245,197,66,0.08);padding:5px 11px;border-radius:999px;}
     .back-link{color:var(--muted);text-decoration:none;font-size:0.85rem;}
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:13px;}
     .step-title{font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:9px;}
-    input[type="text"],select,textarea{width:100%;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:11px;padding:10px;font-size:0.9rem;margin-bottom:9px;}
-    textarea{min-height:78px;line-height:1.4;resize:vertical;}
-    .grid-2,.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
-    .btn-ai{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:11px;padding:13px;font-size:0.94rem;font-weight:800;cursor:pointer;}
-    .btn-ai:disabled,.btn-small:disabled{opacity:0.55;}
+    textarea{width:100%;min-height:92px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:0.95rem;line-height:1.45;resize:vertical;margin-bottom:10px;}
+    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px;}
     .mic-btn{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,0.4);border-radius:11px;padding:10px;font-size:0.84rem;font-weight:700;cursor:pointer;}
     .mic-btn.recording{background:var(--red);color:#fff;}
-    .upload-mini{display:flex;align-items:center;justify-content:center;text-align:center;background:rgba(245,197,66,0.08);color:var(--gold);border:1.5px dashed var(--gold);border-radius:11px;padding:10px;font-size:0.83rem;font-weight:700;cursor:pointer;}
+    .upload-mini{display:flex;align-items:center;justify-content:center;background:var(--input);color:var(--text);border:1px dashed #374151;border-radius:11px;padding:10px;font-size:0.84rem;font-weight:600;cursor:pointer;}
     input[type="file"]{display:none;}
-    .toggle-row{display:flex;justify-content:space-between;align-items:center;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:10px 13px;margin-bottom:9px;font-size:0.83rem;font-weight:600;}
-    .btn-remix{width:100%;background:#1e293b;color:var(--gold);border:1px solid var(--gold);border-radius:11px;padding:12px;font-size:0.9rem;font-weight:700;cursor:pointer;}
-    canvas{width:100%;aspect-ratio:9/16;max-height:500px;object-fit:contain;background:#000;border-radius:12px;border:1px solid var(--border);display:block;margin:0 auto 12px;}
+    .btn-gen{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:12px;padding:14px;font-size:1rem;font-weight:800;cursor:pointer;}
+    .var-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+    .var-card{background:var(--input);border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:left;}
+    .var-card.active{border-color:var(--gold);background:rgba(245,197,66,0.08);}
+    .var-card strong{display:block;font-size:0.9rem;margin-bottom:3px;color:var(--text);}
+    .var-card span{font-size:0.74rem;color:var(--muted);}
+    canvas{width:100%;aspect-ratio:9/16;max-height:490px;object-fit:contain;background:#000;border-radius:12px;border:1px solid var(--border);display:block;margin:0 auto 12px;}
     .controls-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-    .status{font-size:0.79rem;color:var(--green);flex:1;min-width:170px;}
+    .status{font-size:0.8rem;color:var(--green);flex:1;min-width:170px;}
     .btn-small{background:#1e293b;color:var(--text);border:1px solid var(--border);padding:9px 13px;border-radius:8px;font-size:0.84rem;font-weight:600;cursor:pointer;}
     .btn-export{background:var(--green);color:#052e16;border:none;}
+    .btn-small:disabled{opacity:0.5;}
+    .scene-row{background:var(--input);border:1px solid var(--border);border-radius:12px;padding:11px;margin-bottom:9px;}
+    .scene-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+    .scene-head input[type="text"]{flex:1;background:#111827;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:0.84rem;}
+    .chk-lbl{display:flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:700;color:var(--gold);white-space:nowrap;cursor:pointer;}
+    .chk-lbl input{width:17px;height:17px;accent-color:var(--gold);}
+    .row-tools{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;}
+    .row-tools select{background:#111827;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px;font-size:0.76rem;}
+    .pic-btn{background:#1e293b;color:#7dd3fc;border:1px solid #0284c7;border-radius:8px;padding:6px 9px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap;}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="topbar">
-      <span class="badge">3D DIRECTOR v15.2 • 2 FIGHT/TALK + MULTI-OBJECT</span>
+      <span class="badge">UNLIMITED 3D STUDIO v16</span>
       <a href="index.html" class="back-link">← Home</a>
     </div>
 
+    <!-- 1. Clean Script Box + Optional Mic/Audio -->
     <div class="card">
-      <div class="step-title">1. Voice or Script (Words Control Camera & Objects!)</div>
+      <div class="step-title">1. Paste Script or Add Voice</div>
+      <textarea id="scriptInput">95% of creators waste 10 hours on their phone. In 2026, smart AI systems build a $10,000 empire fast. Celebrate every win around the world!</textarea>
       <div class="btn-row">
-        <button class="mic-btn" id="micBtn">🎙️ Record & Auto-Build</button>
-        <label class="upload-mini"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Upload Audio</span></label>
+        <button class="mic-btn" id="micBtn">🎙️ Record Voice (Free)</button>
+        <label class="upload-mini"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Upload Audio (Optional)</span></label>
       </div>
-      <textarea id="scriptInput">Watch 95% of creators waste 10 hours on their phone. In 2026, two rivals fight for the $10,000 trophy! Smart AI systems win big.</textarea>
+      <button class="btn-gen" id="generateBtn">✨ Generate 4 Different Videos</button>
     </div>
 
-    <div class="card">
-      <div class="step-title">⚡ AI Script + Photos + Voice</div>
-      <input type="text" id="topicInput" placeholder="Topic (e.g. Luxury Watch Empire, 2 Rivals Fighting)" value="Luxury Watch Empire" />
-      <div class="grid-2">
-        <select id="langSelect">
-          <option value="en" selected>🇺🇸 English (AI Voice)</option>
-          <option value="es">🇪🇸 Español (AI Voice)</option>
-          <option value="roman">🇵🇰 Roman Urdu</option>
-          <option value="ur">🇵🇰 اردو (Urdu)</option>
-          <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
-          <option value="ar">🇸🇦 العربية (Arabic)</option>
-        </select>
-        <select id="voiceSelect">
-          <option value="random" selected>🎲 Random Voice</option>
-          <option value="aura-en:zeus">Zeus (Deep)</option>
-          <option value="aura-en:orion">Orion (Luxury)</option>
-          <option value="aura-en:apollo">Apollo (YouTube)</option>
-          <option value="aura-en:thalia">Thalia (Female)</option>
-        </select>
+    <!-- 2. Pick 1 of 4 Generated Video Styles -->
+    <div class="card" id="variantsCard" style="display:none;">
+      <div class="step-title">2. Choose Your Favorite Video (4 Styles)</div>
+      <div class="var-grid">
+        <button class="var-card active" data-var="0"><strong>🎬 1. Dark Luxury</strong><span>Gold • Coins/Watch • Orbit • Trap</span></button>
+        <button class="var-card" data-var="1"><strong>🤖 2. Cyber 3D Bot</strong><span>Cyan • Blender Robot • Whip • Synth</span></button>
+        <button class="var-card" data-var="2"><strong>📈 3. Neon Finance</strong><span>Emerald • 3D Bars • Low Angle • Ambient</span></button>
+        <button class="var-card" data-var="3"><strong>🔥 4. Viral Impact</strong><span>Crimson • Glitch Cuts • Pullback • Heartbeat</span></button>
       </div>
-      <button class="btn-ai" id="aiMagicBtn">✨ AI Build Multi-Object 3D Movie</button>
     </div>
 
+    <!-- 3. Preview & Export -->
     <div class="card">
-      <div class="step-title">2. 3D Characters, Fight/Talk Mode & Format</div>
-      <div class="grid-2">
-        <select id="sceneMode">
-          <option value="desk" selected>💻 1 Char + 3D Table & 5 Objects</option>
-          <option value="two_talk">🗣️ 2 Characters Talking (Face-to-Face)</option>
-          <option value="two_fight">🥊 2 Robots Fighting (Punch & KO)</option>
-        </select>
-        <select id="glbSelect">
-  <option value="soldier">🪖 3D Soldier (Human)</option>
-  <option value="michelle">👩 Michelle (Woman)</option>
-  <option value="xbot">🏃‍♂️ X-Bot Athlete</option>
-  <option value="robot">🤖 Expressive Robot</option>
-  <option value="fox">🦊 3D Cartoon Fox</option>
-  <option value="horse">🐎 3D Horse</option>
-  <option value="parrot">🦜 3D Parrot</option>
-  <option value="flamingo">🦩 3D Flamingo</option>
-  <option value="ceo">🤵 Business CEO (Iman Style)</option>
-  <option value="doctor">🩺 Hospital Doctor</option>
-  <option value="astronaut">👨‍🚀 Space Astronaut</option>
-  <option value="ninja">🥷 Cyber Ninja</option>
-  <option value="superhero">🦸‍♂️ 3D Superhero</option>
-  <option value="cartoon_kid">🧸 Cartoon Kid</option>
-  <option value="police">👮‍♂️ Police Officer</option>
-  <option value="alien">👽 Space Alien</option>
-</select>
-      </div>
-      <div class="grid-2">
-        <label class="upload-mini"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload Custom .GLB</span></label>
-        <select id="modeSelect">
-          <option value="shorts" selected>9:16 Reels / Shorts</option>
-          <option value="landscape">16:9 YouTube</option>
-        </select>
-      </div>
-      <label class="toggle-row">
-        <span>🎵 Auto BGM + Fast Whoosh & Punch SFX</span>
-        <input type="checkbox" id="beatToggle" checked style="width:20px;height:20px;" />
-      </label>
-      <button class="btn-remix" id="remixBtn">🎲 Play / Remix Camera (Face → Wide → Object)</button>
-    </div>
-
-    <div class="card">
-      <div class="step-title">3. Live 3D Stage & MP4 Export</div>
+      <div class="step-title">3. Live Preview & Free MP4 Export</div>
       <canvas id="previewCanvas" width="720" height="1280"></canvas>
       <div class="controls-row">
-        <span class="status" id="statusText">Loading 3D characters & props...</span>
+        <span class="status" id="statusText">Paste script & tap Generate 4 Different Videos</span>
         <div style="display:flex;gap:8px;">
           <button class="btn-small" id="replayBtn">Replay</button>
           <button class="btn-small btn-export" id="exportBtn">Export MP4</button>
         </div>
       </div>
+    </div>
+
+    <!-- 4. Editable Scene Rows -->
+    <div class="card" id="editorCard" style="display:none;">
+      <div class="step-title">4. Edit Any Scene (Hide/Show 3D, Change Object, Camera & FX)</div>
+      <div id="sceneRowsContainer"></div>
     </div>
   </div>
 
@@ -130,911 +96,416 @@
     import * as THREE from "three";
     import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-    const WORKER_URL="https://viralengine.shahabudinkalwar001.workers.dev";
-    const canvas=document.getElementById("previewCanvas"),ctx=canvas.getContext("2d");
-    const statusText=document.getElementById("statusText"),topicInput=document.getElementById("topicInput");
-    const langSelect=document.getElementById("langSelect"),voiceSelect=document.getElementById("voiceSelect");
-    const scriptInput=document.getElementById("scriptInput"),modeSelect=document.getElementById("modeSelect");
-    const sceneMode=document.getElementById("sceneMode"),glbSelect=document.getElementById("glbSelect");
-    const beatToggle=document.getElementById("beatToggle"),aiMagicBtn=document.getElementById("aiMagicBtn");
-    const exportBtn=document.getElementById("exportBtn"),micBtn=document.getElementById("micBtn");
+    const canvas = document.getElementById("previewCanvas"), ctx = canvas.getContext("2d");
+    const statusText = document.getElementById("statusText"), scriptInput = document.getElementById("scriptInput");
+    const variantsCard = document.getElementById("variantsCard"), editorCard = document.getElementById("editorCard");
+    const rowsBox = document.getElementById("sceneRowsContainer"), exportBtn = document.getElementById("exportBtn"), micBtn = document.getElementById("micBtn");
 
     // --- THREE.JS 3D STAGE ---
-    const threeRenderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
-    threeRenderer.setSize(540,960); threeRenderer.outputColorSpace=THREE.SRGBColorSpace;
-    const threeScene=new THREE.Scene();
-    window.scene = threeScene;
-    window.THREE = THREE;
-    const threeCam=new THREE.PerspectiveCamera(44,540/960,0.1,100);
-    const camPos=new THREE.Vector3(0,1.1,4.2), camLook=new THREE.Vector3(0,0.1,0);
+    const threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true });
+    threeRenderer.setSize(540, 960); threeRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    const threeScene = new THREE.Scene();
+    const threeCam = new THREE.PerspectiveCamera(44, 540/960, 0.1, 100);
+    const camPos = new THREE.Vector3(0, 1.0, 4.0), camLook = new THREE.Vector3(0, 0.1, 0);
 
-    const hemi=new THREE.HemisphereLight(0xffffff,0x111827,1.6);
-    const keyL=new THREE.DirectionalLight(0xffffff,2.4); keyL.position.set(3,6,4);
-    const rimL=new THREE.DirectionalLight(0xf5c542,2.5); rimL.position.set(-4,4,-3);
-    const propL=new THREE.PointLight(0xf5c542,3.2,6); propL.position.set(0,0.4,0.8);
-    threeScene.add(hemi,keyL,rimL,propL);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x111827, 1.6);
+    const keyL = new THREE.DirectionalLight(0xffffff, 2.3); keyL.position.set(3, 6, 4);
+    const rimL = new THREE.DirectionalLight(0xf5c542, 2.5); rimL.position.set(-4, 4, -3);
+    const propL = new THREE.PointLight(0xf5c542, 3.0, 6); propL.position.set(0, 0.5, 1.2);
+    threeScene.add(hemi, keyL, rimL, propL);
 
-    // 3D Floor + Grid
-    const floor=new THREE.Mesh(new THREE.PlaneGeometry(24,24),new THREE.MeshStandardMaterial({color:0x06080f,roughness:0.25,metalness:0.7,transparent:true,opacity:0.86}));
-    floor.rotation.x=-Math.PI/2; floor.position.y=-1.0;
-    const grid=new THREE.GridHelper(22,26,0xf5c542,0x1e293b); grid.position.y=-0.99;
-    threeScene.add(floor,grid);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24,24), new THREE.MeshStandardMaterial({color:0x06080f,roughness:0.25,metalness:0.7,transparent:true,opacity:0.82}));
+    floor.rotation.x = -Math.PI/2; floor.position.y = -1.0;
+    const grid = new THREE.GridHelper(22, 26, 0xf5c542, 0x1e293b); grid.position.y = -0.99;
+    threeScene.add(floor, grid);
 
-    // 3D Table + Multiple 3D Props (Laptop + Gold Coins + Phone + Bars + Trophy)
-    const deskGroup=new THREE.Group();
-    const darkMat=new THREE.MeshStandardMaterial({color:0x0f172a,roughness:0.3,metalness:0.8});
-    const neonMat=new THREE.MeshBasicMaterial({color:0xf5c542});
-    const goldMat=new THREE.MeshStandardMaterial({color:0xf5c542,roughness:0.2,metalness:0.9});
+    // Build Reusable 3D Objects on Stage
+    const darkMat = new THREE.MeshStandardMaterial({color:0x0f172a,roughness:0.3,metalness:0.8});
+    const neonMat = new THREE.MeshBasicMaterial({color:0xf5c542});
+    const goldMat = new THREE.MeshStandardMaterial({color:0xf5c542,roughness:0.2,metalness:0.9});
 
-    const topSlab=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.08,1.0),darkMat); topSlab.position.set(0,-0.18,0.82);
-    const trim=new THREE.Mesh(new THREE.BoxGeometry(2.42,0.025,1.02),neonMat); trim.position.set(0,-0.18,0.82);
-    deskGroup.add(topSlab,trim);
-    [[-1.08,0.4],[1.08,0.4],[-1.08,1.22],[1.08,1.22]].forEach(([lx,lz])=>{const l=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.82,0.07),darkMat);l.position.set(lx,-0.59,lz);deskGroup.add(l);});
+    const objs3D = {};
+    function makeGroup(name){ const g = new THREE.Group(); g.visible = false; threeScene.add(g); objs3D[name] = g; return g; }
 
-    // Prop 1: 3D Laptop (Center)
-    const lapGroup=new THREE.Group(); lapGroup.position.set(0,-0.125,0.82);
-    lapGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.66,0.03,0.44),darkMat));
-    const lid=new THREE.Mesh(new THREE.BoxGeometry(0.66,0.42,0.025),darkMat); lid.position.set(0,0.21,0.2); lid.rotation.x=-0.3;
-    const scr=new THREE.Mesh(new THREE.PlaneGeometry(0.6,0.36),neonMat); scr.position.set(0,0.21,0.18); scr.rotation.x=-0.3; scr.rotation.y=Math.PI;
-    lapGroup.add(lid,scr); deskGroup.add(lapGroup);
+    // 1. Coins
+    const cg = makeGroup("coins");
+    for(let i=0;i<5;i++){ const m=new THREE.Mesh(new THREE.CylinderGeometry(0.45,0.45,0.1,24),goldMat); m.position.set((i%2)*0.08, -0.7+i*0.14, 0); cg.add(m); }
+    // 2. Phone
+    const pg = makeGroup("phone");
+    pg.add(new THREE.Mesh(new THREE.BoxGeometry(0.95,1.75,0.1),darkMat));
+    const ps=new THREE.Mesh(new THREE.PlaneGeometry(0.82,1.55),neonMat); ps.position.z=0.06; pg.add(ps);
+    // 3. Laptop
+    const lg = makeGroup("laptop");
+    const lb=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.06,0.9),darkMat); lb.position.y=-0.35; lg.add(lb);
+    const ll=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.9,0.05),darkMat); ll.position.set(0,0.08,-0.45); ll.rotation.x=-0.2; lg.add(ll);
+    const ls=new THREE.Mesh(new THREE.PlaneGeometry(1.26,0.76),neonMat); ls.position.set(0,0.08,-0.41); ls.rotation.x=-0.2; lg.add(ls);
+    // 4. Bars
+    const bg = makeGroup("bars");
+    for(let i=0;i<4;i++){ const h=0.45+i*0.4; const b=new THREE.Mesh(new THREE.BoxGeometry(0.32,h,0.32),goldMat); b.position.set(-0.68+i*0.45, -1.0+h/2, 0); bg.add(b); }
+    // 5. Trophy / Diamond
+    const tg = makeGroup("trophy");
+    tg.add(new THREE.Mesh(new THREE.OctahedronGeometry(0.68, 0), goldMat));
+    // 6. Watch
+    const wg = makeGroup("watch");
+    wg.add(new THREE.Mesh(new THREE.BoxGeometry(0.45,2.0,0.12),darkMat));
+    const wr=new THREE.Mesh(new THREE.CylinderGeometry(0.65,0.65,0.18,28),goldMat); wr.rotation.x=Math.PI/2; wg.add(wr);
+    const wf=new THREE.Mesh(new THREE.CircleGeometry(0.54,28),darkMat); wf.position.z=0.1; wg.add(wf);
+    // 7. Globe
+    const gg = makeGroup("globe");
+    gg.add(new THREE.Mesh(new THREE.SphereGeometry(0.78,16,12), new THREE.MeshBasicMaterial({color:0xf5c542,wireframe:true})));
+    // 8. Cube
+    const cbg = makeGroup("cube");
+    cbg.add(new THREE.Mesh(new THREE.BoxGeometry(1.1,1.1,1.1), new THREE.MeshBasicMaterial({color:0xf5c542,wireframe:true})));
 
-    // Prop 2: 3D Gold Coin Stack (Left on Desk: x=-0.82)
-    const coinGroup=new THREE.Group(); coinGroup.position.set(-0.82,-0.14,0.82);
-    for(let c=0;c<5;c++){const cm=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.14,0.04,20),goldMat);cm.position.set((c%2)*0.03,c*0.045,0);coinGroup.add(cm);}
-    deskGroup.add(coinGroup);
+    // 9. Blender GLB Robot
+    const loader = new GLTFLoader();
+    let botModel = null, botMixer = null, botActs = {}, botCur = "", botReady = false;
+    loader.load("https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb", gltf => {
+      botModel = gltf.scene;
+      const box = new THREE.Box3().setFromObject(botModel);
+      const md = Math.max(...box.getSize(new THREE.Vector3()).toArray()) || 1;
+      botModel.scale.setScalar(2.0 / md); box.setFromObject(botModel);
+      const c = box.getCenter(new THREE.Vector3());
+      botModel.position.set(-c.x, -box.min.y - 1.0, -c.z);
+      botModel.visible = false; threeScene.add(botModel);
+      botMixer = new THREE.AnimationMixer(botModel);
+      gltf.animations.forEach(cl => { botActs[cl.name] = botMixer.clipAction(cl); });
+      botReady = true;
+    });
 
-    // Prop 3: 3D Glowing Phone (Right on Desk: x=+0.82)
-    const phoneGroup=new THREE.Group(); phoneGroup.position.set(0.82,0.08,0.82); phoneGroup.rotation.y=-0.35;
-    phoneGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.24,0.44,0.03),darkMat));
-    const pScr=new THREE.Mesh(new THREE.PlaneGeometry(0.2,0.38),neonMat); pScr.position.z=0.017; phoneGroup.add(pScr);
-    deskGroup.add(phoneGroup);
+    function playBotAnim(name) {
+      if (!botReady || !botActs[name] || botCur === name) return;
+      if (botCur && botActs[botCur]) botActs[botCur].fadeOut(0.2);
+      botActs[name].reset().fadeIn(0.2).play(); botCur = name;
+    }
 
-    // Prop 4: 3D Rising Chart Bars (Left Floor: x=-1.45)
-    const barsGroup=new THREE.Group(); barsGroup.position.set(-1.45,-1.0,0.2);
-    for(let b=0;b<4;b++){const bm=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.35+b*0.28,0.16),goldMat);bm.position.set(b*0.22,(0.35+b*0.28)/2,0);barsGroup.add(bm);}
-    deskGroup.add(barsGroup);
-
-    // Prop 5: 3D Spinning Trophy (Right Floor: x=+1.45)
-    const trophyGroup=new THREE.Group(); trophyGroup.position.set(1.45,-0.35,0.2);
-    const cup=new THREE.Mesh(new THREE.OctahedronGeometry(0.26,0),goldMat); trophyGroup.add(cup);
-    deskGroup.add(trophyGroup);
-
-    threeScene.add(deskGroup);
-
-    // --- 2 CHARACTER SLOTS ---
-    const loader=new GLTFLoader();
-    const URLS={robot:"https://jsdelivr.net",soldier:"https://jsdelivr.net"};
-    const chars=[
-      {model:null,mixer:null,acts:{},cur:"",ready:false},
-      {model:null,mixer:null,acts:{},cur:"",ready:false}
+    // --- 4 DISTINCT VIDEO PRESETS ---
+    const VARIATIONS = [
+      { name:"Dark Luxury", bg:"#0b0803", accent:"#f5c542", hex:0xf5c542, glow:"rgba(245,197,66,0.38)", bgm:"Dark Trap", defCam:"orbit", defFx:"shockwave", defObj:"coins" },
+      { name:"Cyber 3D Bot", bg:"#051024", accent:"#38bdf8", hex:0x38bdf8, glow:"rgba(56,189,248,0.38)", bgm:"Cyber Synth", defCam:"zoom_in", defFx:"flash", defObj:"robot" },
+      { name:"Neon Finance", bg:"#02140d", accent:"#10b981", hex:0x10b981, glow:"rgba(16,185,129,0.38)", bgm:"Tech Ambient", defCam:"pan", defFx:"shockwave", defObj:"bars" },
+      { name:"Viral Impact", bg:"#140507", accent:"#ef4444", hex:0xef4444, glow:"rgba(239,68,68,0.38)", bgm:"Doc Heartbeat", defCam:"pull_back", defFx:"glitch", defObj:"watch" }
     ];
+    const WORD_ENV_HEX = { coins:0xf5c542, phone:0x38bdf8, bars:0x10b981, trophy:0xf5c542, watch:0xfb923c, globe:0xc084fc, robot:0x38bdf8, laptop:0x94a3b8 };
+    const EMOJIS = [[/money|\$|rich|empire/i,"💸"],[/phone|app/i,"📱"],[/95%|100%|win|celebrate/i,"🏆"],[/2026|world/i,"🌍"],[/waste|hours|watch|time/i,"⏰"],[/ai|system|fast/i,"🚀"]];
 
-    function loadChar(slot, url, isSoldier) {
-      const ch = chars[slot]; ch.ready = false;
-      if (ch.model) { threeScene.remove(ch.model); ch.model = null; }
-      ch.acts = {}; ch.cur = "";
-      loader.load(url, (gltf) => {
-        ch.model = gltf.scene;
-        if (isSoldier) ch.model.rotation.y = Math.PI;
-        const box = new THREE.Box3().setFromObject(ch.model);
-        const maxD = Math.max(...box.getSize(new THREE.Vector3()).toArray()) || 1;
-        ch.model.scale.setScalar(2.0 / maxD);
-        box.setFromObject(ch.model);
-        const cen = box.getCenter(new THREE.Vector3());
-        ch.model.userData.baseY = -box.min.y - 1.0;
-        ch.model.userData.baseX = -cen.x;
-        ch.model.userData.baseZ = -cen.z;
-        ch.model.position.set(ch.model.userData.baseX, ch.model.userData.baseY, ch.model.userData.baseZ);
-        threeScene.add(ch.model);
+    let activeVarIdx = 0, scenes = [], bgPhotos = [], audioBufferUrl = null, audioDurationMs = 0, audioEl = null;
+    let animId = null, beatInterval = null, startTime = null, lastSceneIdx = -1, sceneDurationMs = 3200;
+    let activeRecorder = null, sharedActx = null, sfxDest = null, analyser = null, freqData = null, prevT = 0;
+    let micRecorder = null, micChunks = [], isMicRecording = false, recognition = null;
 
-        ch.mixer = new THREE.AnimationMixer(ch.model);
-        gltf.animations.forEach(c => { ch.acts[c.name] = ch.mixer.clipAction(c); });
-        ch.ready = true;
-        playCharAnim(slot, Object.keys(ch.acts)[0] || "");
-        positionCharsForMode();
-        if (slot === 0) statusText.textContent = "3D Stage & Multi-Objects Ready!";
+    const getAudioDur = u => new Promise(r => { const a=new Audio(u); a.onloadedmetadata=()=>r(isFinite(a.duration)?a.duration*1000:0); a.onerror=()=>r(0); });
+    const extractStat = t => { const m=t.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|x)\b)/i); return m?m[0].toUpperCase():null; };
+    const findEmoji = t => { for(const[rx,em]of EMOJIS) if(rx.test(t)) return em; return null; };
+
+    function matchWordToObj(txt, fallback) {
+      if (/money|\$|rich|coin|empire|pay/i.test(txt)) return "coins";
+      if (/phone|app|mobile|tiktok/i.test(txt)) return "phone";
+      if (/95%|100%|chart|grow|bar|data/i.test(txt)) return "bars";
+      if (/win|celebrate|trophy|best/i.test(txt)) return "trophy";
+      if (/watch|time|hour|clock|waste/i.test(txt)) return "watch";
+      if (/world|global|2026|earth/i.test(txt)) return "globe";
+      if (/ai|robot|system|bot/i.test(txt)) return "robot";
+      if (/edit|code|laptop|work/i.test(txt)) return "laptop";
+      return fallback;
+    }
+
+    async function loadUnlimitedWikiPhotos(script) {
+      try {
+        const kw = script.replace(/[^a-zA-Z\s]/g,"").split(/\s+/).filter(w=>w.length>4).slice(0,2).join(" ") || "technology";
+        const d = await (await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=6&prop=pageimages&pithumbsize=900&gsrsearch=${encodeURIComponent(kw)}`)).json();
+        bgPhotos = Object.values(d?.query?.pages||{}).filter(p=>p.thumbnail?.source).slice(0,4).map(p=>{const i=new Image();i.crossOrigin="anonymous";i.src=p.thumbnail.source;return i;});
+      } catch(e){}
+    }
+
+    // Mic + Unlimited Free Live Transcription
+    micBtn.addEventListener("click", async () => {
+      if (isMicRecording) {
+        isMicRecording=false; micBtn.classList.remove("recording"); micBtn.textContent="🎙️ Record Voice (Free)";
+        if(micRecorder?.state==="recording") micRecorder.stop();
+        if(recognition) try{recognition.stop();}catch(e){}
+        return;
+      }
+      try {
+        const ms = await navigator.mediaDevices.getUserMedia({audio:true}); micChunks=[]; micRecorder=new MediaRecorder(ms);
+        micRecorder.ondataavailable=e=>{if(e.data.size>0)micChunks.push(e.data);};
+        micRecorder.onstop=async()=>{
+          ms.getTracks().forEach(t=>t.stop());
+          audioBufferUrl=URL.createObjectURL(new Blob(micChunks,{type:"audio/webm"}));
+          audioDurationMs=await getAudioDur(audioBufferUrl);
+          document.getElementById("audioLabel").textContent="✅ Mic Saved";
+          statusText.textContent="Voice ready! Tap Generate 4 Videos.";
+        };
+        micRecorder.start();
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SR) {
+          recognition = new SR(); recognition.continuous=true; recognition.lang="en-US"; let tr="";
+          recognition.onresult=ev=>{for(let i=ev.resultIndex;i<ev.results.length;i++)if(ev.results[i].isFinal){tr+=ev.results[i][0].transcript.trim()+". ";scriptInput.value=tr.trim();}};
+          recognition.start();
+        }
+        isMicRecording=true; micBtn.classList.add("recording"); micBtn.textContent="⏹️ Stop Recording";
+        statusText.textContent="Listening... Speak clearly";
+      } catch(e){ statusText.textContent="Mic permission blocked"; }
+    });
+
+    document.getElementById("audioUpload").addEventListener("change", async e => {
+      if (!e.target.files[0]) return;
+      audioBufferUrl = URL.createObjectURL(e.target.files[0]);
+      audioDurationMs = await getAudioDur(audioBufferUrl);
+      document.getElementById("audioLabel").textContent = "✅ " + e.target.files[0].name.slice(0,12);
+    });
+
+    function buildScenesFromScript(varIdx) {
+      const v = VARIATIONS[varIdx];
+      const parts = scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
+      const list = parts.length ? parts : ["Paste your script above."];
+      scenes = list.map((t, i) => ({
+        text: t, stat: extractStat(t),
+        show3D: true,
+        obj: i === 0 && varIdx === 1 ? "robot" : "auto",
+        cam: v.defCam,
+        fx: v.defFx,
+        customImg: null
+      }));
+      sceneDurationMs = audioDurationMs > 1000 ? Math.max(2200, (audioDurationMs + 300) / scenes.length) : 3200;
+      renderSceneRows();
+    }
+
+    // Build Editable Horizontal Scene Rows!
+    function renderSceneRows() {
+      rowsBox.innerHTML = "";
+      scenes.forEach((sc, idx) => {
+        const div = document.createElement("div"); div.className = "scene-row";
+        div.innerHTML = `
+          <div class="scene-head">
+            <input type="text" value="${sc.text.replace(/"/g,'&quot;')}" data-idx="${idx}" class="sc-txt" />
+            <label class="chk-lbl"><input type="checkbox" ${sc.show3D?"checked":""} data-idx="${idx}" class="sc-chk" /> Show 3D</label>
+          </div>
+          <div class="row-tools">
+            <select data-idx="${idx}" class="sc-obj">
+              <option value="auto" ${sc.obj==="auto"?"selected":""}>✨ Auto (Words)</option>
+              <option value="robot" ${sc.obj==="robot"?"selected":""}>🤖 3D Robot</option>
+              <option value="coins" ${sc.obj==="coins"?"selected":""}>🪙 Coins</option>
+              <option value="phone" ${sc.obj==="phone"?"selected":""}>📱 Phone</option>
+              <option value="laptop" ${sc.obj==="laptop"?"selected":""}>💻 Laptop</option>
+              <option value="bars" ${sc.obj==="bars"?"selected":""}>📊 Chart</option>
+              <option value="trophy" ${sc.obj==="trophy"?"selected":""}>🏆 Trophy</option>
+              <option value="watch" ${sc.obj==="watch"?"selected":""}>⌚ Watch</option>
+              <option value="globe" ${sc.obj==="globe"?"selected":""}>🌍 Globe</option>
+            </select>
+            <select data-idx="${idx}" class="sc-cam">
+              <option value="orbit" ${sc.cam==="orbit"?"selected":""}>🎥 Orbit</option>
+              <option value="zoom_in" ${sc.cam==="zoom_in"?"selected":""}>🔍 Zoom In</option>
+              <option value="pull_back" ${sc.cam==="pull_back"?"selected":""}>🔭 Pull Back</option>
+              <option value="pan" ${sc.cam==="pan"?"selected":""}>↔️ Pan</option>
+              <option value="static" ${sc.cam==="static"?"selected":""}>⏹️ Static</option>
+            </select>
+            <select data-idx="${idx}" class="sc-fx">
+              <option value="shockwave" ${sc.fx==="shockwave"?"selected":""}>⚡ Wave</option>
+              <option value="flash" ${sc.fx==="flash"?"selected":""}>💥 Flash</option>
+              <option value="glitch" ${sc.fx==="glitch"?"selected":""}>📺 Glitch</option>
+              <option value="none" ${sc.fx==="none"?"selected":""}>No FX</option>
+            </select>
+            <label class="pic-btn"><input type="file" accept="image/*" data-idx="${idx}" class="sc-pic" />🖼️ ${sc.customImg?"✅":"Pic"}</label>
+          </div>`;
+        rowsBox.appendChild(div);
+      });
+
+      rowsBox.querySelectorAll(".sc-txt").forEach(el => el.oninput = e => {
+        const i = +e.target.dataset.idx; scenes[i].text = e.target.value; scenes[i].stat = extractStat(e.target.value);
+      });
+      rowsBox.querySelectorAll(".sc-chk").forEach(el => el.onchange = e => { scenes[+e.target.dataset.idx].show3D = e.target.checked; });
+      rowsBox.querySelectorAll(".sc-obj").forEach(el => el.onchange = e => { scenes[+e.target.dataset.idx].obj = e.target.value; });
+      rowsBox.querySelectorAll(".sc-cam").forEach(el => el.onchange = e => { scenes[+e.target.dataset.idx].cam = e.target.value; });
+      rowsBox.querySelectorAll(".sc-fx").forEach(el => el.onchange = e => { scenes[+e.target.dataset.idx].fx = e.target.value; });
+      rowsBox.querySelectorAll(".sc-pic").forEach(el => el.onchange = e => {
+        const f = e.target.files[0]; if (!f) return;
+        const img = new Image(); img.src = URL.createObjectURL(f);
+        scenes[+e.target.dataset.idx].customImg = img; renderSceneRows();
       });
     }
 
-    function playCharAnim(slot, name) {
-      const ch = chars[slot];
-      if (!ch.ready || !ch.acts[name] || ch.cur === name) return;
-      if (ch.cur && ch.acts[ch.cur]) ch.acts[ch.cur].fadeOut(0.2);
-      ch.acts[name].reset().fadeIn(0.2).play();
-      ch.cur = name;
-    }
-
-    function positionCharsForMode() {
-      const m = sceneMode.value;
-      deskGroup.visible = m === "desk";
-      if (chars[0].model) {
-        const u = chars[0].model.userData;
-        if (m === "desk") { chars[0].model.position.set(u.baseX, u.baseY, u.baseZ - 0.12); chars[0].model.rotation.y = glbSelect.value === "soldier" ? Math.PI : 0; }
-        else { chars[0].model.position.set(u.baseX - 0.95, u.baseY, u.baseZ); chars[0].model.rotation.y = Math.PI / 2; }
-      }
-      if (chars[1].model) {
-        chars[1].model.visible = m !== "desk";
-        const u = chars[1].model.userData;
-        chars[1].model.position.set(u.baseX + 0.95, u.baseY, u.baseZ);
-        chars[1].model.rotation.y = -Math.PI / 2;
-      }
-    }
-function reloadModels() {
-  const isSol = glbSelect.value === "soldier";
-  loadChar(0, isSol ? URLS.soldier : URLS.robot, isSol);
-  loadChar(1, URLS.robot, false);
-}
-    reloadModels();
-    sceneMode.addEventListener("change", reloadModels);
-    glbSelect.addEventListener("change", reloadModels);
-    document.getElementById("glbUpload").addEventListener("change", e => {
-      const f = e.target.files[0]; if (!f) return;
-      document.getElementById("glbLabel").textContent = "✅ " + f.name.slice(0, 10);
-      loadChar(0, URLS.robot && URL.createObjectURL(f), false);
+    document.getElementById("generateBtn").addEventListener("click", async () => {
+      variantsCard.style.display = "block";
+      editorCard.style.display = "block";
+      await loadUnlimitedWikiPhotos(scriptInput.value);
+      buildScenesFromScript(activeVarIdx);
+      startPlayback(null);
     });
 
-    // --- AUDIO & SCRIPT STATE ---
-    let aiImages=[],audioBufferUrl=null,audioDurationMs=0,audioEl=null,animId=null,beatInterval=null;
-    let scenes=[],scenePlans=[],sceneDurationMs=3400,startTime=null,lastSceneIdx=-1,activeRecorder=null,sharedActx=null,sfxDest=null,analyser=null,freqData=null;
-    let micRecorder=null,micChunks=[],isMicRecording=false,activeThemeKey="luxury",activeBgm="Dark Trap",prevT=0;
-
-    const EN_VOICES=["aura-en:zeus","aura-en:orion","aura-en:apollo","aura-en:thalia"];
-    const BGM_LIST=["Dark Trap","Cyber Synth","Tech Ambient","Doc Heartbeat"];
-    const THEMES={
-      luxury:{bg:"#0b0803",accent:"#f5c542",hex:0xf5c542,text:"#ffffff",glow:"rgba(245,197,66,0.38)"},
-      crimson:{bg:"#140507",accent:"#ef4444",hex:0xef4444,text:"#ffffff",glow:"rgba(239,68,68,0.38)"},
-      cyber:{bg:"#051024",accent:"#38bdf8",hex:0x38bdf8,text:"#f8fafc",glow:"rgba(56,189,248,0.38)"},
-      finance:{bg:"#02140d",accent:"#10b981",hex:0x10b981,text:"#ecfdf5",glow:"rgba(16,185,129,0.38)"}
-    };
-    const EMOJIS=[[/money|cash|\$|rich|empire/i,"💸"],[/fight|punch|rival|beat/i,"🥊"],[/phone|app|mobile/i,"📱"],[/win|trophy|95%|100%/i,"🏆"],[/2026|fast|fire/i,"🔥"],[/waste|hours/i,"⏰"]];
-
-    modeSelect.addEventListener("change",()=>{
-      const sh=modeSelect.value==="shorts"; canvas.width=sh?720:1280; canvas.height=sh?1280:720; canvas.style.aspectRatio=sh?"9/16":"16/9";
-      threeRenderer.setSize(sh?540:960,sh?960:540); threeCam.aspect=sh?(540/960):(960/540); threeCam.updateProjectionMatrix();
-    });
-    const getAudioDur=u=>new Promise(r=>{const a=new Audio(u);a.onloadedmetadata=()=>r(isFinite(a.duration)?a.duration*1000:0);a.onerror=()=>r(0);});
-
-    async function loadPhotos(txt,tf){
-      try{const res=await fetch(`${WORKER_URL}/images`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({script:txt,style:activeThemeKey})});if(res.ok){const d=await res.json();if(d.images?.length){aiImages=d.images.map(s=>{const i=new Image();i.src=s;return i;});return;}}}catch(e){}
-      try{const cq=(tf||txt).replace(/\b(a|an|the|empire|fighting)\b/gi,"").trim()||"city";const d=await(await fetch(`https://en.wikipedia.org/w/api.php?origin=*&format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=6&prop=pageimages&pithumbsize=1000&gsrsearch=${encodeURIComponent(cq)}`)).json();aiImages=Object.values(d?.query?.pages||{}).filter(p=>p.thumbnail?.source).slice(0,3).map(p=>{const i=new Image();i.crossOrigin="anonymous";i.src=p.thumbnail.source;return i;});}catch(e){}
-    }
-    async function processVoice(blob,lbl){
-      audioBufferUrl=URL.createObjectURL(blob);audioDurationMs=await getAudioDur(audioBufferUrl);document.getElementById("audioLabel").textContent=lbl;statusText.textContent="Listening...";
-      try{const res=await fetch(`${WORKER_URL}/transcribe`,{method:"POST",body:blob});const d=await res.json();if(res.ok&&d.transcript)scriptInput.value=d.transcript;}catch(e){}
-      await loadPhotos(scriptInput.value,topicInput.value);startPlayback(null,false);
-    }
-    document.getElementById("audioUpload").addEventListener("change",e=>{if(e.target.files[0])processVoice(e.target.files[0],"✅ Audio");});
-    micBtn.addEventListener("click",async()=>{
-      if(isMicRecording){isMicRecording=false;micBtn.classList.remove("recording");micBtn.textContent="🎙️ Record & Auto-Build";if(micRecorder?.state==="recording")micRecorder.stop();return;}
-      try{const ms=await navigator.mediaDevices.getUserMedia({audio:true});micChunks=[];micRecorder=new MediaRecorder(ms);micRecorder.ondataavailable=e=>{if(e.data.size>0)micChunks.push(e.data);};micRecorder.onstop=()=>{ms.getTracks().forEach(t=>t.stop());processVoice(new Blob(micChunks,{type:"audio/webm"}),"✅ Mic");};micRecorder.start();isMicRecording=true;micBtn.classList.add("recording");micBtn.textContent="⏹️ Stop";statusText.textContent="Recording...";}catch(e){statusText.textContent="Mic blocked";}
+    document.querySelectorAll(".var-card").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".var-card").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeVarIdx = +btn.dataset.var;
+        buildScenesFromScript(activeVarIdx);
+        startPlayback(null);
+      });
     });
 
-    aiMagicBtn.addEventListener("click",async()=>{
-      const topic=topicInput.value.trim()||"Luxury Watch Empire",lang=langSelect.value,tk=Object.keys(THEMES);
-      activeThemeKey=tk[Math.floor(Math.random()*tk.length)];
-      let cv=voiceSelect.value;if(cv==="random")cv=EN_VOICES[Math.floor(Math.random()*EN_VOICES.length)];if(lang==="es")cv="aura-es:sirio";
-      aiMagicBtn.disabled=true;statusText.textContent="1/3 Writing script...";let ok=false;
-      try{const sr=await fetch(`${WORKER_URL}/script`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,lang,tone:activeThemeKey})});if(sr.ok){const sd=await sr.json();if(sd.script){scriptInput.value=sd.script;scriptInput.dir=(lang==="ur"||lang==="ar")?"rtl":"ltr";ok=true;}}}catch(e){}
-      if(!ok)scriptInput.value=`Watch 95% of creators waste 10 hours on their phone. In 2026, two rivals fight for the $10,000 trophy! Smart AI systems win big.`;
-      statusText.textContent="2/3 Loading 3D backdrop & voice...";
-      const jobs=[loadPhotos(scriptInput.value,topic)];
-      if(lang==="en"||lang==="es")jobs.push(fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:scriptInput.value,voice:cv})}).then(r=>r.ok?r.blob():null).catch(()=>null));
-      const res=await Promise.all(jobs);
-      if(res[1]){audioBufferUrl=URL.createObjectURL(res[1]);audioDurationMs=await getAudioDur(audioBufferUrl);document.getElementById("audioLabel").textContent="✅ "+cv.split(":")[1].toUpperCase();}
-      aiMagicBtn.disabled=false;startPlayback(null,false);
-    });
-
-    const extractStat=t=>{const m=t.match(/(\$[\d,.]+[kKmMbB]?|\d+%|\b20\d{2}\b|\b\d+\s?(?:hours|hrs|days|x)\b)/i);return m?m[0].toUpperCase():null;};
-    const findEmoji=txt=>{for(const[rx,em]of EMOJIS){if(rx.test(txt))return em;}return null;};
-
-    // Map words in voice/script -> matching 3D Prop Target + Character Animations!
-    function planSceneForText(text, idx) {
-      const m = sceneMode.value;
-      let target = "laptop";
-      if (/money|\$|rich|coin|empire|pay/i.test(text)) target = "coins";
-      else if (/phone|app|mobile|tiktok|reel/i.test(text)) target = "phone";
-      else if (/95%|100%|chart|grow|waste|hours/i.test(text)) target = "bars";
-      else if (/win|trophy|celebrate|2026|best/i.test(text)) target = "trophy";
-
-      let anim1 = "Idle", anim2 = "Idle", isFight = false;
-      if (m === "two_fight" || /fight|punch|rival|beat|attack/i.test(text)) {
-        isFight = true;
-        anim1 = idx % 2 === 0 ? "Punch" : "Running";
-        anim2 = idx % 2 === 0 ? "Death" : "Punch";
-      } else if (m === "two_talk") {
-        anim1 = idx % 2 === 0 ? "Wave" : "Yes";
-        anim2 = idx % 2 === 0 ? "Idle" : "Wave";
-      } else {
-        const k = Object.keys(chars[0].acts);
-        const f = pat => k.find(x => pat.test(x)) || k[0] || "Idle";
-        if (/walk|move|step/i.test(text)) anim1 = f(/walk/i);
-        else if (/fast|run/i.test(text)) anim1 = f(/run/i);
-        else if (/win|celebrate|trophy/i.test(text)) anim1 = f(/dance|thumbs|jump/i);
-        else if (/waste|edit|hours/i.test(text)) anim1 = f(/sit|idle/i);
-        else anim1 = f(/wave|idle/i);
-      }
-      return { target, anim1, anim2, isFight };
-    }
-
-    function buildScenes(rand=false){
-      if(rand){const tk=Object.keys(THEMES);activeThemeKey=tk[Math.floor(Math.random()*tk.length)];}
-      activeBgm=BGM_LIST[Math.floor(Math.random()*BGM_LIST.length)];
-      const parts=scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      scenes=(parts.length?parts:["Tap AI Build above."]).map(t=>({text:t,stat:extractStat(t),rtl:/[\u0600-\u06FF]/.test(t)}));
-      sceneDurationMs=audioDurationMs>1000?Math.max(2300,(audioDurationMs+300)/scenes.length):3400;
-      scenePlans=scenes.map((sc,i)=>planSceneForText(sc.text,i));
-      positionCharsForMode();
-    }
-
-    function playWhooshAndPunch(isFight){
-      if(!sharedActx||!beatToggle.checked)return;
-      try{
+    function playWhoosh() {
+      if (!sharedActx) return;
+      try {
         const now=sharedActx.currentTime,dur=0.22,sz=Math.floor(sharedActx.sampleRate*dur),buf=sharedActx.createBuffer(1,sz,sharedActx.sampleRate),d=buf.getChannelData(0);
         for(let i=0;i<sz;i++)d[i]=(Math.random()*2-1)*Math.sin((i/sz)*Math.PI);
         const src=sharedActx.createBufferSource();src.buffer=buf;const f=sharedActx.createBiquadFilter();f.type="bandpass";
-        f.frequency.setValueAtTime(300,now);f.frequency.exponentialRampToValueAtTime(3200,now+0.11);f.frequency.exponentialRampToValueAtTime(480,now+dur);
-        const g=sharedActx.createGain();g.gain.setValueAtTime(0.35,now);g.gain.exponentialRampToValueAtTime(0.01,now+dur);
+        f.frequency.setValueAtTime(300,now);f.frequency.exponentialRampToValueAtTime(3000,now+0.11);
+        const g=sharedActx.createGain();g.gain.setValueAtTime(0.28,now);g.gain.exponentialRampToValueAtTime(0.01,now+dur);
         src.connect(f);f.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);src.start(now);
-
-        const o=sharedActx.createOscillator(),og=sharedActx.createGain();o.type="sine";
-        o.frequency.setValueAtTime(isFight?180:120,now);o.frequency.exponentialRampToValueAtTime(32,now+0.22);
-        og.gain.setValueAtTime(isFight?0.45:0.28,now);og.gain.exponentialRampToValueAtTime(0.001,now+0.24);
-        o.connect(og);og.connect(sharedActx.destination);if(sfxDest)og.connect(sfxDest);o.start(now);o.stop(now+0.25);
-      }catch(e){}
+      } catch(e){}
     }
 
-    function startBgm(){
-      clearInterval(beatInterval);if(!beatToggle.checked||!sharedActx)return;
-      let step=0;const ms=activeBgm==="Doc Heartbeat"?650:activeBgm==="Cyber Synth"?260:440;
-      const tick=()=>{if(!sharedActx)return;try{const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();if(activeBgm==="Cyber Synth"){o.type="sawtooth";o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now);g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);}else if(activeBgm==="Tech Ambient"){o.type="sine";o.frequency.setValueAtTime([220,277.2,329.6][step%3],now);g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.42);}else{o.type="triangle";o.frequency.setValueAtTime(step%4===0?55:49,now);g.gain.setValueAtTime(0.09,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);}o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.43);step++;}catch(e){}};
-      tick();beatInterval=setInterval(tick,ms);
-    }
-
-    // 3-BEAT CAMERA DIRECTOR: 1) Close-up Face -> 2) Pull Back Wide -> 3) Zoom to 2nd Char or Word-Matched Object!
-    function updateDirectorCamera(plan, p, idx) {
-      const m = sceneMode.value;
-      const goals = {
-        coins:  { pos: [-0.95, 0.35, 1.9], look: [-0.82, -0.05, 0.82] },
-        phone:  { pos: [0.95, 0.35, 1.9],  look: [0.82, 0.08, 0.82] },
-        bars:   { pos: [-1.1, 0.25, 2.1],  look: [-1.25, -0.4, 0.2] },
-        trophy: { pos: [1.1, 0.25, 2.1],   look: [1.45, -0.35, 0.2] },
-        laptop: { pos: [0.25, 0.45, 2.1],  look: [0, 0.05, 0.82] }
+    function startBgm(bgmName) {
+      clearInterval(beatInterval); if (!sharedActx) return;
+      let step = 0; const ms = bgmName==="Doc Heartbeat"?650:bgmName==="Cyber Synth"?260:440;
+      const tick = () => {
+        if (!sharedActx) return;
+        try {
+          const now=sharedActx.currentTime,o=sharedActx.createOscillator(),g=sharedActx.createGain();
+          if(bgmName==="Cyber Synth"){o.type="sawtooth";o.frequency.setValueAtTime([110,130.8,164.8,146.8][step%4],now);g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.22);}
+          else if(bgmName==="Tech Ambient"){o.type="sine";o.frequency.setValueAtTime([220,277.2,329.6][step%3],now);g.gain.setValueAtTime(0.06,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.42);}
+          else{o.type="triangle";o.frequency.setValueAtTime(step%4===0?55:49,now);g.gain.setValueAtTime(0.08,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.35);}
+          o.connect(g);g.connect(sharedActx.destination);if(sfxDest)g.connect(sfxDest);o.start(now);o.stop(now+0.43);step++;
+        } catch(e){}
       };
-
-      let dPos, dLook;
-      if (m !== "desk") {
-        // 2-Character Talk/Fight Camera: Face 1 -> Wide Fight/Talk -> Face 2
-        if (p < 0.36) { dPos = [-0.55, 0.72, 2.1]; dLook = [-0.92, 0.48, 0]; }
-        else if (p < 0.68) { dPos = [0, 0.6, 4.3]; dLook = [0, 0.1, 0]; }
-        else { dPos = [0.55, 0.72, 2.1]; dLook = [0.92, 0.48, 0]; }
-      } else {
-        // 1-Char + Desk Camera: Face -> Pull Back Wide -> Zoom to Word-Matched Object!
-        if (p < 0.35) { dPos = [0.18, 0.75, 1.85]; dLook = [0, 0.55, -0.1]; }
-        else if (p < 0.66) { dPos = [-0.35, 0.95, 4.35]; dLook = [0, 0.0, 0.4]; }
-        else {
-          const tgt = goals[plan.target] || goals.laptop;
-          dPos = tgt.pos; dLook = tgt.look;
-        }
-      }
-
-      camPos.lerp(new THREE.Vector3(...dPos), 0.12);
-      camLook.lerp(new THREE.Vector3(...dLook), 0.12);
-      threeCam.position.copy(camPos);
-      threeCam.lookAt(camLook);
+      tick(); beatInterval = setInterval(tick, ms);
     }
 
-    function drawFrame(now){
-      if(startTime===null){startTime=now;prevT=now;}
-      const dt=Math.min(0.05,(now-prevT)/1000); prevT=now;
-      const el=Math.max(0,now-startTime),tot=scenes.length*sceneDurationMs;
-      if(el>=tot){clearInterval(beatInterval);if(audioEl)audioEl.pause();if(activeRecorder&&activeRecorder.state==="recording")activeRecorder.stop();else statusText.textContent=`Done | BGM: ${activeBgm}`;return;}
+    function updateCamera(cam, p, idx) {
+      const ease = 1 - Math.pow(1 - p, 3), dir = idx % 2 === 0 ? 1 : -1;
+      let dp = [0, 0.9, 4.0], dl = [0, 0, 0];
+      if (cam === "orbit") { const a = (-0.75 + p * 1.5) * dir; dp = [Math.sin(a)*3.7, 0.8 + Math.sin(p*3.14)*0.4, Math.cos(a)*3.7]; }
+      else if (cam === "zoom_in") { dp = [0.2*dir, 0.7-ease*0.3, 4.5-ease*2.1]; }
+      else if (cam === "pull_back") { dp = [-0.2*dir, 0.4+ease*0.6, 2.2+ease*2.3]; }
+      else if (cam === "pan") { dp = [(-1.4+p*2.8)*dir, 0.7, 3.6]; }
+      camPos.lerp(new THREE.Vector3(...dp), 0.14); camLook.lerp(new THREE.Vector3(...dl), 0.14);
+      threeCam.position.copy(camPos); threeCam.lookAt(camLook);
+    }
 
-    const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs));
-    const sel=el-idx*sceneDurationMs,p=sel/sceneDurationMs,sc=scenes[idx];
-    const plan=scenePlans[idx]||{target:"laptop",anim1:"Idle",anim2:"Idle",isFight:false};
-      if(idx!==lastSceneIdx){
-        lastSceneIdx=idx;
-       const autoMode = plan.isFight ? "two_fight" : (idx % 2 === 1 ? "two_talk" : "desk");
-      if (sceneMode.value !== autoMode) { sceneMode.value = autoMode; positionCharsForMode(); }
-      const tKeys = Object.keys(THEMES);
-      activeThemeKey = tKeys[idx % tKeys.length];
-        playWhooshAndPunch(plan.isFight);
-        playCharAnim(0, plan.anim1);
-        if(sceneMode.value!=="desk") playCharAnim(1, plan.anim2);
-      }
-      const theme = THEMES[activeThemeKey] || THEMES.luxury;
+    function drawFrame(now) {
+      if (startTime === null) { startTime = now; prevT = now; }
+      const dt = Math.min(0.05, (now - prevT) / 1000); prevT = now;
+      const el = Math.max(0, now - startTime), tot = scenes.length * sceneDurationMs;
+      const v = VARIATIONS[activeVarIdx];
 
-      // Animate props & update 3D mixers
-      trophyGroup.rotation.y += dt * 1.8;
-      coinGroup.rotation.y += dt * 1.2;
-      neonMat.color.setHex(theme.hex); rimL.color.setHex(theme.hex); propL.color.setHex(theme.hex);
-      grid.material.color.setHex(theme.hex);
-      chars.forEach(c => { if (c.mixer && c.model?.visible !== false) c.mixer.update(dt); });
-
-      // In fight mode, move fighter 1 forward slightly on punch!
-      if(sceneMode.value==="two_fight" && chars[0].model && chars[1].model){
-        const lunge = Math.sin(Math.min(1, p * 2.2) * Math.PI) * 0.48;
-        chars[0].model.position.x = chars[0].model.userData.baseX - 0.95 + lunge;
+      if (el >= tot) {
+        clearInterval(beatInterval); if (audioEl) audioEl.pause();
+        if (activeRecorder?.state === "recording") activeRecorder.stop();
+        else statusText.textContent = `Done (${v.name}) — Edit scenes below or Export MP4`;
+        return;
       }
 
-      // 1. Backdrop
-      const g=ctx.createRadialGradient(canvas.width/2,canvas.height*0.4,20,canvas.width/2,canvas.height/2,canvas.width*0.9);
-      g.addColorStop(0,theme.glow);g.addColorStop(1,theme.bg);ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);
-      const img=aiImages[idx%Math.max(1,aiImages.length)];
-      if(img&&img.complete&&img.naturalWidth>0){
-        const z=1.04+p*0.12,scI=Math.max(canvas.width/img.naturalWidth,canvas.height/img.naturalHeight)*z;
-        ctx.save();ctx.globalAlpha=0.32;ctx.drawImage(img,(canvas.width-img.naturalWidth*scI)/2,(canvas.height-img.naturalHeight*scI)/2,img.naturalWidth*scI,img.naturalHeight*scI);ctx.restore();
-      }
+      const idx = Math.min(scenes.length - 1, Math.floor(el / sceneDurationMs)), sel = el % sceneDurationMs, p = sel / sceneDurationMs;
+      const sc = scenes[idx];
+      if (idx !== lastSceneIdx) { lastSceneIdx = idx; if (sc.fx !== "none") playWhoosh(); }
 
-      // 2. Render 3D Room with Smart Camera Director
-      updateDirectorCamera(plan, p, idx);
-      threeRenderer.render(threeScene, threeCam);
-      ctx.drawImage(threeRenderer.domElement, 0, 0, canvas.width, canvas.height);
+      // Determine active 3-word chunk & auto-match object/environment to the CURRENT WORDS!
+      const words = sc.text.split(" ");
+      const chunks = []; for (let i = 0; i < words.length; i += 3) chunks.push(words.slice(i, i + 3));
+      const cIdx = Math.min(chunks.length - 1, Math.floor(p * chunks.length)), ac = chunks[cIdx] || words;
+      const lp = (p * chunks.length) % 1, aw = Math.min(ac.length - 1, Math.floor(lp * ac.length));
+      const activeObj = sc.obj === "auto" ? matchWordToObj(ac.join(" "), v.defObj) : sc.obj;
+      const envHex = sc.obj === "auto" ? (WORD_ENV_HEX[activeObj] || v.hex) : v.hex;
 
-      if(sel<170){ctx.fillStyle=theme.accent;ctx.globalAlpha=(1-sel/170)*0.24;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.globalAlpha=1;}
-
-      // 3. Captions, Badge & Emoji
-      const isV=canvas.height>canvas.width,capY=canvas.height*0.77;
-      if(sc.stat){
-        ctx.save();ctx.direction="ltr";const sw=isV?canvas.width*0.44:260,sx=(canvas.width-sw)/2,sy=capY-132;
-        ctx.fillStyle=theme.accent;ctx.shadowColor=theme.accent;ctx.shadowBlur=20;ctx.beginPath();ctx.roundRect(sx,sy,sw,46,12);ctx.fill();
-        ctx.shadowBlur=0;ctx.fillStyle="#07090e";ctx.font=`900 ${isV?28:32}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(sc.stat,canvas.width/2,sy+23);ctx.restore();
-      }
-      const words=sc.text.split(" ");ctx.font=`900 ${isV?46:52}px -apple-system,sans-serif`;ctx.textBaseline="middle";ctx.lineJoin="round";
-      if(sc.rtl){
-        ctx.save();ctx.direction="rtl";ctx.textAlign="center";const h=Math.ceil(words.length/2),ch=p<0.5?words.slice(0,h).join(" "):words.slice(h).join(" ");
-        ctx.lineWidth=12;ctx.strokeStyle="#000";ctx.strokeText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.fillStyle=theme.text;ctx.fillText(ch,canvas.width/2,capY,canvas.width*0.86);ctx.restore();
-      }else{
-        const chunks=[];for(let i=0;i<words.length;i+=3)chunks.push(words.slice(i,i+3));
-        const cIdx=Math.min(chunks.length-1,Math.floor(p*chunks.length)),ac=chunks[cIdx]||words,lp=(p*chunks.length)%1,aw=Math.min(ac.length-1,Math.floor(lp*ac.length));
-        const ct=ac.join(" ").toUpperCase(),fw=ctx.measureText(ct).width,sf=Math.min(1,(canvas.width*0.86)/Math.max(1,fw+32));
-        const em=findEmoji(ac[aw]||"");
-        if(em){const pe=Math.min(1,lp*5);ctx.save();ctx.font=`${Math.round(58*pe)}px sans-serif`;ctx.textAlign="center";ctx.fillText(em,canvas.width/2,capY-56-(1-pe)*12);ctx.restore();}
-        ctx.save();ctx.translate(canvas.width/2,capY);ctx.scale(sf,sf);
-        let xc=-fw/2;ctx.textAlign="left";
-        ac.forEach((rw,wi)=>{
-          const w=rw.toUpperCase(),ww=ctx.measureText(w).width;
-          if(wi===aw){ctx.save();ctx.fillStyle=theme.accent;ctx.beginPath();ctx.roundRect(xc-8,-30,ww+16,60,12);ctx.fill();ctx.restore();ctx.fillStyle="#07090e";ctx.fillText(w,xc,0);}
-          else{ctx.lineWidth=10;ctx.strokeStyle="#000";ctx.strokeText(w,xc,0);ctx.fillStyle=theme.text;ctx.fillText(w,xc,0);}
-          xc+=ctx.measureText(w+" ").width;
-        });
+      // Backdrop + Scene Photo or Auto Wiki Photo
+      const g = ctx.createRadialGradient(canvas.width/2, canvas.height*0.4, 20, canvas.width/2, canvas.height/2, canvas.width*0.9);
+      g.addColorStop(0, v.glow); g.addColorStop(1, v.bg); ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const pic = sc.customImg || bgPhotos[idx % Math.max(1, bgPhotos.length)];
+      if (pic && pic.complete && pic.naturalWidth > 0) {
+        const scI = Math.max(canvas.width/pic.naturalWidth, canvas.height/pic.naturalHeight) * (1.04 + p*0.1);
+        ctx.save(); ctx.globalAlpha = 0.34;
+        ctx.drawImage(pic, (canvas.width - pic.naturalWidth*scI)/2, (canvas.height - pic.naturalHeight*scI)/2, pic.naturalWidth*scI, pic.naturalHeight*scI);
         ctx.restore();
       }
-      const bh=canvas.height*0.035;ctx.fillStyle="#000";ctx.fillRect(0,0,canvas.width,bh);ctx.fillRect(0,canvas.height-bh,canvas.width,bh);
-      animId=requestAnimationFrame(drawFrame);
+
+      // 3D Stage & Objects (respects Show 3D checkbox!)
+      Object.entries(objs3D).forEach(([k, grp]) => {
+        grp.visible = sc.show3D && k === activeObj;
+        if (grp.visible) grp.rotation.y = el * 0.0018;
+      });
+      if (botModel) {
+        botModel.visible = sc.show3D && activeObj === "robot";
+        if (botModel.visible && botMixer) { botMixer.update(dt); playBotAnim(p < 0.5 ? "Dance" : "Wave"); }
+      }
+      if (sc.show3D) {
+        neonMat.color.setHex(envHex); goldMat.color.setHex(envHex); rimL.color.setHex(envHex); propL.color.setHex(envHex);
+        grid.material.color.setHex(envHex);
+        updateCamera(sc.cam, p, idx);
+        threeRenderer.render(threeScene, threeCam);
+        ctx.drawImage(threeRenderer.domElement, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Scene Transition Effect
+      if (sel < 240 && sc.fx !== "none") {
+        const t = 1 - sel / 240; ctx.save();
+        if (sc.fx === "shockwave") { ctx.strokeStyle = v.accent; ctx.lineWidth = 12*t; ctx.globalAlpha = t*0.8; ctx.beginPath(); ctx.arc(canvas.width/2,canvas.height/2,(1-t)*canvas.width*0.75,0,6.28); ctx.stroke(); }
+        else if (sc.fx === "flash") { ctx.fillStyle = v.accent; ctx.globalAlpha = t*0.3; ctx.fillRect(0,0,canvas.width,canvas.height); }
+        else { ctx.fillStyle = v.accent; ctx.globalAlpha = t*0.55; for(let i=0;i<4;i++) ctx.fillRect(Math.sin(sel+i)*35,((i*240+sel)%canvas.height),canvas.width,9); }
+        ctx.restore();
+      }
+
+      // Captions, Stat Badge & Auto Emoji
+      const capY = canvas.height * 0.76;
+      if (sc.stat) {
+        ctx.save(); const sw = canvas.width * 0.44, sx = (canvas.width - sw)/2, sy = capY - 128;
+        ctx.fillStyle = v.accent; ctx.beginPath(); ctx.roundRect(sx, sy, sw, 46, 12); ctx.fill();
+        ctx.fillStyle = "#07090e"; ctx.font = "900 28px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(sc.stat, canvas.width/2, sy + 23); ctx.restore();
+      }
+
+      const em = findEmoji(ac[aw] || "");
+      if (em) { const pe = Math.min(1, lp*5); ctx.save(); ctx.font = `${Math.round(58*pe)}px sans-serif`; ctx.textAlign="center"; ctx.fillText(em, canvas.width/2, capY-56-(1-pe)*12); ctx.restore(); }
+
+      ctx.font = "900 46px -apple-system,sans-serif"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+      const ct = ac.join(" ").toUpperCase(), fw = ctx.measureText(ct).width, sf = Math.min(1, (canvas.width*0.86)/Math.max(1, fw+32));
+      ctx.save(); ctx.translate(canvas.width/2, capY); ctx.scale(sf, sf);
+      let xc = -fw/2; ctx.textAlign = "left";
+      ac.forEach((rw, wi) => {
+        const w = rw.toUpperCase(), ww = ctx.measureText(w).width;
+        if (wi === aw) { ctx.fillStyle = v.accent; ctx.beginPath(); ctx.roundRect(xc-8,-30,ww+16,60,12); ctx.fill(); ctx.fillStyle="#07090e"; ctx.fillText(w,xc,0); }
+        else { ctx.lineWidth=10; ctx.strokeStyle="#000"; ctx.strokeText(w,xc,0); ctx.fillStyle="#fff"; ctx.fillText(w,xc,0); }
+        xc += ctx.measureText(w + " ").width;
+      });
+      ctx.restore();
+
+      animId = requestAnimationFrame(drawFrame);
     }
 
-    function startPlayback(recStream=null,rand=false){
-      cancelAnimationFrame(animId);clearInterval(beatInterval);buildScenes(rand);startTime=null;lastSceneIdx=-1;
-      if(!sharedActx)sharedActx=new(window.AudioContext||window.webkitAudioContext)();
-      if(sharedActx.state==="suspended")sharedActx.resume();
-      if(!analyser){analyser=sharedActx.createAnalyser();analyser.fftSize=64;freqData=new Uint8Array(analyser.frequencyBinCount);}
-      if(recStream){sfxDest=sharedActx.createMediaStreamDestination();sfxDest.stream.getAudioTracks().forEach(t=>recStream.addTrack(t));}else sfxDest=null;
-      startBgm(); statusText.textContent=`Playing (${sceneMode.value} | BGM: ${activeBgm})`;
-      if(audioEl){audioEl.pause();audioEl=null;}
-      if(audioBufferUrl){audioEl=new Audio(audioBufferUrl);try{const s=sharedActx.createMediaElementSource(audioEl);s.connect(analyser);analyser.connect(sharedActx.destination);if(sfxDest)s.connect(sfxDest);}catch(e){}audioEl.play().catch(()=>{});}
-      animId=requestAnimationFrame(drawFrame);
+    function startPlayback(recStream = null) {
+      cancelAnimationFrame(animId); clearInterval(beatInterval); startTime = null; lastSceneIdx = -1;
+      if (!sharedActx) sharedActx = new (window.AudioContext || window.webkitAudioContext)();
+      if (sharedActx.state === "suspended") sharedActx.resume();
+      if (recStream) { sfxDest = sharedActx.createMediaStreamDestination(); sfxDest.stream.getAudioTracks().forEach(t => recStream.addTrack(t)); }
+      else sfxDest = null;
+
+      const v = VARIATIONS[activeVarIdx];
+      startBgm(v.bgm);
+      statusText.textContent = `Playing Style ${activeVarIdx+1}: ${v.name}`;
+      if (audioEl) { audioEl.pause(); audioEl = null; }
+      if (audioBufferUrl) {
+        audioEl = new Audio(audioBufferUrl);
+        try { const s = sharedActx.createMediaElementSource(audioEl); s.connect(sharedActx.destination); if (sfxDest) s.connect(sfxDest); } catch(e){}
+        audioEl.play().catch(()=>{});
+      }
+      animId = requestAnimationFrame(drawFrame);
     }
 
-    document.getElementById("remixBtn").addEventListener("click",()=>startPlayback(null,true));
-    document.getElementById("replayBtn").addEventListener("click",()=>startPlayback(null,true));
-    exportBtn.addEventListener("click",()=>{
-      if(activeRecorder&&activeRecorder.state==="recording")return;
-      const stream=canvas.captureStream(30);startPlayback(stream,false);
-      const mp4=['video/mp4;codecs="avc1,opus"','video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4'],webm=["video/webm;codecs=vp8,opus","video/webm;codecs=vp8","video/webm"];
-      const mt=[...mp4,...webm].find(m=>MediaRecorder.isTypeSupported(m))||"",isMp4=mt.includes("mp4");
-      exportBtn.disabled=true;statusText.textContent=`Exporting ${isMp4?"MP4":"WebM"}...`;
-      const chunks=[];activeRecorder=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:3500000}:{});
-      activeRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data);};
-      activeRecorder.onstop=()=>{clearInterval(beatInterval);const blob=new Blob(chunks,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=isMp4?"3d-director.mp4":"3d-director.webm";a.click();exportBtn.disabled=false;activeRecorder=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;};
+    document.getElementById("replayBtn").addEventListener("click", () => { if (!scenes.length) buildScenesFromScript(activeVarIdx); startPlayback(null); });
+    exportBtn.addEventListener("click", () => {
+      if (activeRecorder?.state === "recording") return;
+      if (!scenes.length) buildScenesFromScript(activeVarIdx);
+      const stream = canvas.captureStream(30); startPlayback(stream);
+      const mt = ['video/mp4;codecs="avc1,opus"','video/mp4',"video/webm;codecs=vp8,opus","video/webm"].find(m => MediaRecorder.isTypeSupported(m)) || "";
+      const isMp4 = mt.includes("mp4"); exportBtn.disabled = true; statusText.textContent = `Exporting ${isMp4?"MP4":"WebM"}...`;
+      const chunks = []; activeRecorder = new MediaRecorder(stream, mt ? {mimeType:mt, videoBitsPerSecond:3500000} : {});
+      activeRecorder.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
+      activeRecorder.onstop = () => {
+        clearInterval(beatInterval); const blob = new Blob(chunks, {type:mt||"video/webm"}), a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = isMp4 ? "viral-3d-reel.mp4" : "viral-3d-reel.webm"; a.click();
+        exportBtn.disabled = false; activeRecorder = null; statusText.textContent = `Exported ${isMp4?"MP4":"WebM"} (${(blob.size/1024).toFixed(0)} KB)!`;
+      };
       activeRecorder.start(250);
     });
-    // =========================================================================
-// v17.1 SAFE AUTO-DIRECTOR: REAL 3D PLACES, STUDIO BASS & SCENE EDITOR
-// =========================================================================
-(function () {
-  let studioBassEnabled = true;
-  let studioBassLevel = 6;
-  let editableScenes = [];
-  let active3DEnvironmentGroup = null;
-
-  function getThreeScene() {
-    try {
-      if (typeof scene !== "undefined" && scene) return scene;
-      if (window.scene) return window.scene;
-    } catch (e) {}
-    return null;
-  }
-
-        let activeMotionGroup = null;
-
-  function buildReal3DPlace(placeType) {
-    const s = getThreeScene();
-    if (!s || typeof THREE === "undefined") return;
-
-    if (active3DEnvironmentGroup) {
-      s.remove(active3DEnvironmentGroup);
-    }
-
-    active3DEnvironmentGroup = new THREE.Group();
-    active3DEnvironmentGroup.name = "Real3DPlace";
-    activeMotionGroup = new THREE.Group();
-    activeMotionGroup.position.set(0.55, 1.35, -0.2);
-
-    // Hide the static desk automatically for Iman Wealth, Kids Cartoon, Airport, Hospital & Street
-    s.traverse(function (o) {
-      if (o.name === "desk") {
-        o.visible = (placeType === "studio");
-      }
-    });
-
-    if (placeType === "iman") {
-      // IMAN GADZHI STYLE: Dark Wealth Stage + Floating 3D Gold Coin + Rising Growth Chart
-      s.background = new THREE.Color("#090a0f");
-      const heights = [0.35, 0.65, 1.05];
-      heights.forEach((h, i) => {
-        const bar = new THREE.Mesh(
-          new THREE.BoxGeometry(0.15, h, 0.15),
-          new THREE.MeshStandardMaterial({ color: i === 2 ? "#10b981" : "#f5b942", metalness: 0.4 })
-        );
-        bar.position.set((i - 1) * 0.22, h / 2 - 0.35, 0);
-        activeMotionGroup.add(bar);
-      });
-      const coin = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.28, 0.28, 0.06, 24),
-        new THREE.MeshStandardMaterial({ color: "#f5b942", metalness: 0.85, roughness: 0.2 })
-      );
-      coin.rotation.x = Math.PI / 2;
-      coin.position.set(-1.1, 0.15, 0);
-      activeMotionGroup.add(coin);
-
-    } else if (placeType === "cartoon") {
-      // KIDS CARTOON STYLE: Bright Sky + Cute Bouncing 3D Cartoon Stars & Blocks
-      s.background = new THREE.Color("#38bdf8");
-      const block1 = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.45, 0.45), new THREE.MeshStandardMaterial({ color: "#facc15" }));
-      block1.position.set(-1.1, -0.8, 0);
-      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16), new THREE.MeshStandardMaterial({ color: "#f43f5e" }));
-      ball.position.set(0, 0.2, 0);
-      activeMotionGroup.add(block1, ball);
-
-    } else if (placeType === "hospital") {
-      s.background = new THREE.Color("#0e2a38");
-      const bedFrame = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.42, 1.5), new THREE.MeshStandardMaterial({ color: "#ffffff" }));
-      bedFrame.position.set(-0.62, 0.22, -0.9);
-      const pillow = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.16, 0.35), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
-      pillow.position.set(-0.62, 0.48, -1.4);
-      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.85, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      const crossH = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.22, 0.12), new THREE.MeshBasicMaterial({ color: "#ef4444" }));
-      crossV.position.set(0.55, 1.45, -1.3);
-      crossH.position.set(0.55, 1.45, -1.3);
-      active3DEnvironmentGroup.add(bedFrame, pillow, crossV, crossH);
-
-    } else if (placeType === "street") {
-      s.background = new THREE.Color("#09111e");
-      const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.35, 0), new THREE.MeshStandardMaterial({ color: "#38bdf8", wireframe: true }));
-      activeMotionGroup.add(core);
-
-    } else if (placeType === "airport") {
-      s.background = new THREE.Color("#172554");
-      const planeBody = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 1.8, 12), new THREE.MeshStandardMaterial({ color: "#f8fafc" }));
-      planeBody.rotation.z = Math.PI / 2;
-      planeBody.position.set(0, 1.55, -1.5);
-      const planeWings = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.06, 2.0), new THREE.MeshStandardMaterial({ color: "#38bdf8" }));
-      planeWings.position.set(0, 1.55, -1.5);
-      active3DEnvironmentGroup.add(planeBody, planeWings);
-
-    } else {
-      s.background = new THREE.Color("#0d111d");
-    }
-
-    active3DEnvironmentGroup.add(activeMotionGroup);
-    s.add(active3DEnvironmentGroup);
-  }
-
-  // Smoothly float & spin the Iman-style 3D motion graphics
-  setInterval(function () {
-    if (activeMotionGroup) {
-      activeMotionGroup.rotation.y += 0.03;
-      activeMotionGroup.position.y = 1.35 + Math.sin(Date.now() * 0.004) * 0.07;
-    }
-  }, 30);
-
-  // 5-TAB CATEGORY SWITCHER (KEEPS ALL EXISTING FEATURES INTACT)
-  function injectCategoryTabs() {
-    if (document.getElementById("creatorCategoryTabs")) return;
-    const container = document.body.firstElementChild || document.body;
-    const tabBar = document.createElement("div");
-    tabBar.id = "creatorCategoryTabs";
-    tabBar.style.cssText = "display:flex; gap:6px; overflow-x:auto; padding:10px; background:#0b0f19; border-bottom:1px solid #262d3d; position:sticky; top:0; z-index:999;";
-
-    const tabs = [
-      { id: "story",   label: "🎬 3D Story",     mode: "two_talk", place: "studio",   bass: 6 },
-      { id: "iman",    label: "💰 Iman Wealth",  mode: "desk",     place: "iman",     bass: 9 },
-      { id: "cartoon", label: "🧸 Kids Cartoon", mode: "two_talk", place: "cartoon",  bass: 4 },
-      { id: "song",    label: "🎵 Song & Beat",  mode: "desk",     place: "street",   bass: 10 },
-      { id: "voice",   label: "🎙️ Voice Studio", mode: "desk",     place: "studio",   bass: 8 }
-    ];
-
-    tabBar.innerHTML = tabs.map((t, idx) => `
-      <button type="button" data-tab="${t.id}" class="catTabBtn" style="white-space:nowrap; padding:7px 12px; border-radius:20px; border:1px solid #374151; background:${idx === 0 ? "#f5b942" : "#161c2c"}; color:${idx === 0 ? "#000" : "#fff"}; font-weight:700; font-size:12px; cursor:pointer;">
-        ${t.label}
-      </button>
-    `).join("");
-
-    container.insertBefore(tabBar, container.firstChild);
-
-    tabBar.querySelectorAll(".catTabBtn").forEach(btn => {
-      btn.onclick = function () {
-        tabBar.querySelectorAll(".catTabBtn").forEach(b => {
-          b.style.background = "#161c2c";
-          b.style.color = "#fff";
-        });
-        this.style.background = "#f5b942";
-        this.style.color = "#000";
-
-        const chosen = tabs.find(t => t.id === this.dataset.tab);
-        if (!chosen) return;
-
-        studioBassLevel = chosen.bass;
-        const bassLabel = document.getElementById("bassGainLabel");
-        const bassSlider = document.getElementById("bassGainSlider");
-        if (bassLabel) bassLabel.textContent = "+" + chosen.bass + " dB";
-        if (bassSlider) bassSlider.value = chosen.bass;
-
-        const sceneSelect = document.getElementById("sceneMode");
-        if (sceneSelect) {
-          sceneSelect.value = chosen.mode;
-          sceneSelect.dispatchEvent(new Event("change"));
-        }
-        buildReal3DPlace(chosen.place);
-      };
-    });
-  }
-  
-  const SMART_WORD_ENGINE = [
-    {
-      keywords: ["hospital", "hopital", "doctor", "sick", "patient", "clinic", "emergency"],
-      place: "hospital",
-      mode: "two_talk",
-      emotion: "😟 Worried",
-      move: "🏥 Medical Check",
-      camera: "📷 Medium Close-Up",
-      object: "🛏️ 3D Bed & Red Cross",
-      sfx: "pulse"
-    },
-    {
-      keywords: ["airport", "flight", "plane", "terminal", "travel"],
-      place: "airport",
-      mode: "two_talk",
-      emotion: "😰 Stressed",
-      move: "🚶 Walk Terminal",
-      camera: "🎥 Wide Airport Shot",
-      object: "✈️ 3D Airplane",
-      sfx: "whoosh"
-    },
-    {
-      keywords: ["fight", "hit", "punch", "attack", "beat", "rival", "angry", "war"],
-      place: "keep",
-      mode: "two_fight",
-      emotion: "😠 Angry",
-      move: "🥊 Fight Combo",
-      camera: "⚡ Action Shake Zoom",
-      object: "🔥 Combat Impact",
-      sfx: "punch"
-    },
-    {
-      keywords: ["street", "road", "karachi", "city", "outside", "market", "bazaar"],
-      place: "street",
-      mode: "two_talk",
-      emotion: "🗣️ Expressive",
-      move: "🚶 Walk Street",
-      camera: "🎬 Side Pan Shot",
-      object: "🏙️ 3D Road & Buildings",
-      sfx: "whoosh"
-    },
-    {
-      keywords: ["money", "rich", "dollar", "win", "trophy", "success", "luxury", "watch", "gold"],
-      place: "studio",
-      mode: "desk",
-      emotion: "😎 Confident",
-      move: "🙌 Celebrate",
-      camera: "🎥 Hero Low Zoom",
-      object: "🏆 Gold Trophy",
-      sfx: "ding"
-    }
-  ];
-
-  function triggerDirectorSFX(type) {
-    try {
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      const ctx = (typeof sharedActx !== "undefined" && sharedActx) ? sharedActx : new Ctx();
-      if (ctx.state === "suspended") ctx.resume();
-      const now = ctx.currentTime;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      if (type === "punch") {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(35, now + 0.18);
-        gain.gain.setValueAtTime(0.5, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-      } else if (type === "ding") {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(880, now);
-        osc.frequency.setValueAtTime(1320, now + 0.08);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(200, now);
-        osc.frequency.exponentialRampToValueAtTime(60, now + 0.2);
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
-      }
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.36);
-    } catch (e) {}
-  }
-
-  function injectStudioUpgradeUI() {
-    const scriptBox = document.getElementById("scriptInput");
-    if (scriptBox && !document.getElementById("studioBassBar")) {
-      const bassBar = document.createElement("div");
-      bassBar.id = "studioBassBar";
-      bassBar.style.cssText = "margin-top:10px; padding:10px; background:#141824; border:1px solid #f5b942; border-radius:10px; display:flex; flex-direction:column; gap:8px;";
-      bassBar.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="color:#f5b942; font-weight:700; font-size:13px;">🎙️ PC Studio Bass (Remove Thin Voice)</span>
-          <button id="toggleBassBtn" type="button" style="background:#10b981; color:#000; border:none; padding:5px 12px; border-radius:6px; font-weight:700; font-size:12px; cursor:pointer;">ON (Studio Pro)</button>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="color:#9ca3af; font-size:11px;">Deep Bass:</span>
-          <input id="bassGainSlider" type="range" min="0" max="12" value="6" step="1" style="flex:1; accent-color:#f5b942;">
-          <span id="bassGainLabel" style="color:#fff; font-size:11px; width:36px;">+6 dB</span>
-        </div>
-      `;
-      scriptBox.parentNode.appendChild(bassBar);
-
-      document.getElementById("toggleBassBtn").onclick = function () {
-        studioBassEnabled = !studioBassEnabled;
-        this.textContent = studioBassEnabled ? "ON (Studio Pro)" : "OFF (Original)";
-        this.style.background = studioBassEnabled ? "#10b981" : "#374151";
-        this.style.color = studioBassEnabled ? "#000" : "#fff";
-      };
-
-      document.getElementById("bassGainSlider").oninput = function () {
-        studioBassLevel = Number(this.value);
-        document.getElementById("bassGainLabel").textContent = "+" + studioBassLevel + " dB";
-      };
-    }
-
-    const exportBtn = Array.from(document.querySelectorAll("button")).find(b => b.textContent.includes("Export MP4"));
-    if (exportBtn && !document.getElementById("sceneEditorPanel")) {
-      const editorPanel = document.createElement("div");
-      editorPanel.id = "sceneEditorPanel";
-      editorPanel.style.cssText = "margin:12px 0; padding:10px; background:#111520; border:1px solid #2a3142; border-radius:10px;";
-      editorPanel.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="color:#f5b942; font-weight:700; font-size:13px;">🎬 Edit or Remove Scenes Before Export</span>
-          <button id="refreshCardsBtn" type="button" style="background:#2563eb; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer;">Sync Script</button>
-        </div>
-        <div id="castMoodBadge" style="color:#10b981; font-size:11px; margin-bottom:8px;"></div>
-        <div id="sceneCardsContainer" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto;"></div>
-      `;
-      exportBtn.parentNode.parentNode.insertBefore(editorPanel, exportBtn.parentNode);
-      document.getElementById("refreshCardsBtn").onclick = generateEditableSceneCards;
-    }
-  }
-
-    function generateEditableSceneCards() {
-    const scriptEl = document.getElementById("scriptInput");
-    const topicEl = document.querySelector("input[type='text']");
-    const container = document.getElementById("sceneCardsContainer");
-    if (!scriptEl || !container) return;
-
-    const phrases = scriptEl.value
-      .split(/(?<=[,.!?])|\b(?=and\b|then\b|on\b|to\b)/i)
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    let cursor = 0;
-    let currentPlace = "studio";
-
-    if (topicEl && topicEl.value) {
-      const tLow = topicEl.value.toLowerCase();
-      for (const r of SMART_WORD_ENGINE) {
-        if (r.place !== "keep" && r.keywords.some(w => tLow.includes(w))) {
-          currentPlace = r.place;
-          break;
-        }
-      }
-    }
-
-    editableScenes = phrases.map((phrase, idx) => {
-      const duration = Math.max(1.3, phrase.split(/\s+/).length * 0.42);
-      const lower = phrase.toLowerCase();
-
-      let matched = {
-        place: currentPlace,
-        mode: "desk",
-        emotion: "🧠 Focused",
-        move: "💻 Explain",
-        camera: "📷 Medium Shot",
-        object: "📱 Studio Setup",
-        sfx: "pulse"
-      };
-
-      for (const rule of SMART_WORD_ENGINE) {
-        if (rule.keywords.some(w => lower.includes(w))) {
-          const resolvedPlace = rule.place === "keep" ? currentPlace : rule.place;
-          currentPlace = resolvedPlace;
-          matched = Object.assign({}, rule, { place: resolvedPlace });
-          break;
-        }
-      }
-
-      const item = {
-        id: idx,
-        text: phrase,
-        place: matched.place,
-        mode: matched.mode,
-        emotion: matched.emotion,
-        move: matched.move,
-        camera: matched.camera,
-        object: matched.object,
-        sfx: matched.sfx,
-        start: cursor,
-        end: cursor + duration
-      };
-      cursor += duration;
-      return item;
-    });
-
-    if (editableScenes.length > 0) {
-      buildReal3DPlace(editableScenes[0].place);
-    }
-
-    const badge = document.getElementById("castMoodBadge");
-    if (badge) badge.textContent = "✨ 3D Place: " + currentPlace.toUpperCase() + " | " + editableScenes.length + " Auto-Matched Scenes";
-
-    renderSceneCardsUI();
-  }
-
-  function renderSceneCardsUI() {
-    const container = document.getElementById("sceneCardsContainer");
-    if (!container) return;
-
-    container.innerHTML = editableScenes.map((sc, i) => `
-      <div style="background:#1a2030; border:1px solid #333c52; border-radius:8px; padding:8px; display:flex; flex-direction:column; gap:6px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; flex-wrap:wrap;">
-          <span style="color:#f5b942; font-size:11px; font-weight:700;">Scene ${i + 1} • ${sc.emotion}</span>
-          <div style="display:flex; gap:4px; align-items:center;">
-            <select data-idx="${i}" class="scenePlaceOverride" style="background:#0f131d; color:#38bdf8; border:1px solid #3b445c; border-radius:5px; padding:3px 5px; font-size:11px;">
-              <option value="studio" ${sc.place === "studio" ? "selected" : ""}>🏢 Studio</option>
-              <option value="hospital" ${sc.place === "hospital" ? "selected" : ""}>🏥 Hospital</option>
-              <option value="street" ${sc.place === "street" ? "selected" : ""}>🏙️ Street</option>
-              <option value="airport" ${sc.place === "airport" ? "selected" : ""}>✈️ Airport</option>
-            </select>
-            <select data-idx="${i}" class="sceneModeOverride" style="background:#0f131d; color:#fff; border:1px solid #3b445c; border-radius:5px; padding:3px 5px; font-size:11px;">
-              <option value="desk" ${sc.mode === "desk" ? "selected" : ""}>💻 Desk</option>
-              <option value="two_talk" ${sc.mode === "two_talk" ? "selected" : ""}>🗣️ 2 Talk</option>
-              <option value="two_fight" ${sc.mode === "two_fight" ? "selected" : ""}>🥊 2 Fight</option>
-            </select>
-            <button type="button" data-idx="${i}" class="deleteSceneBtn" style="background:#dc2626; color:#fff; border:none; border-radius:5px; padding:3px 7px; font-size:11px; font-weight:700; cursor:pointer;">🗑️</button>
-          </div>
-        </div>
-        <div style="color:#9ca3af; font-size:10px;">${sc.move} | ${sc.camera} | ${sc.object}</div>
-        <input data-idx="${i}" class="sceneTextOverride" type="text" value="${sc.text.replace(/"/g, "&quot;")}" style="background:#0f131d; color:#fff; border:1px solid #2b3245; border-radius:5px; padding:5px 8px; font-size:12px; width:100%; box-sizing:border-box;">
-      </div>
-    `).join("");
-
-    container.querySelectorAll(".scenePlaceOverride").forEach(sel => {
-      sel.onchange = function () {
-        const idx = Number(this.dataset.idx);
-        editableScenes[idx].place = this.value;
-        buildReal3DPlace(this.value);
-      };
-    });
-
-    container.querySelectorAll(".sceneModeOverride").forEach(sel => {
-      sel.onchange = function () {
-        const idx = Number(this.dataset.idx);
-        editableScenes[idx].mode = this.value;
-        const mainDropdown = document.getElementById("sceneMode");
-        if (mainDropdown) {
-          mainDropdown.value = this.value;
-          mainDropdown.dispatchEvent(new Event("change"));
-        }
-      };
-    });
-
-    container.querySelectorAll(".sceneTextOverride").forEach(inp => {
-      inp.oninput = function () {
-        const idx = Number(this.dataset.idx);
-        editableScenes[idx].text = this.value;
-        const scriptEl = document.getElementById("scriptInput");
-        if (scriptEl) scriptEl.value = editableScenes.map(s => s.text).join(" ");
-      };
-    });
-
-    container.querySelectorAll(".deleteSceneBtn").forEach(btn => {
-      btn.onclick = function () {
-        const idx = Number(this.dataset.idx);
-        editableScenes.splice(idx, 1);
-        let cursor = 0;
-        editableScenes.forEach(s => {
-          const dur = Math.max(1.3, s.text.split(/\s+/).length * 0.42);
-          s.start = cursor;
-          s.end = cursor + dur;
-          cursor += dur;
-        });
-        const scriptEl = document.getElementById("scriptInput");
-        if (scriptEl) scriptEl.value = editableScenes.map(s => s.text).join(" ");
-        renderSceneCardsUI();
-      };
-    });
-  }
-
-  // Watch sceneMode changes & play button clicks safely inside <script type="module">
-  document.addEventListener("click", function (e) {
-    if (e.target && (e.target.id === "remixBtn" || e.target.id === "replayBtn" || e.target.textContent.includes("AI Build"))) {
-      setTimeout(() => {
-        generateEditableSceneCards();
-        const sceneSelect = document.getElementById("sceneMode");
-        const t0 = performance.now();
-        let lastPlayedSceneId = -1;
-        let activePlace = "";
-
-        const watcher = setInterval(() => {
-          const elapsed = (performance.now() - t0) / 1000;
-          const active = editableScenes.find(s => elapsed >= s.start && elapsed < s.end);
-
-          if (active && active.id !== lastPlayedSceneId) {
-            lastPlayedSceneId = active.id;
-            triggerDirectorSFX(active.sfx);
-
-            if (active.place !== activePlace) {
-              activePlace = active.place;
-              buildReal3DPlace(active.place);
-            }
-          }
-
-          if (editableScenes.length > 0 && elapsed > editableScenes[editableScenes.length - 1].end) {
-            clearInterval(watcher);
-          }
-        }, 120);
-      }, 300);
-    }
-  });
-
-  function initSafeUpgrade() {
-    injectCategoryTabs();
-    injectStudioUpgradeUI();
-    generateEditableSceneCards();
-    const scriptEl = document.getElementById("scriptInput");
-    if (scriptEl) scriptEl.addEventListener("change", generateEditableSceneCards);
-  }
-
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", initSafeUpgrade);
-  } else {
-    initSafeUpgrade();
-  }  let lastAutoDetectedText = "";
-  setInterval(function () {
-    const el = document.getElementById("scriptInput");
-    if (el && el.value !== lastAutoDetectedText) {
-      lastAutoDetectedText = el.value;
-      generateEditableSceneCards();
-    }
-  }, 600);
-})();
   </script>
-  <script src="director-pro.js"></script>
-  <script src="script-engine.js"></script>
 </body>
 </html>
-  
