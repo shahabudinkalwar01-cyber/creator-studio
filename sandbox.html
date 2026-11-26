@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Cartoon & AI Story Studio</title>
+  <script src="https://cloudflare.com"></script>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: #090b12; color: #fff; padding-bottom: 50px; }
+    .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 10px; background: #0f131f; border-bottom: 1px solid #22293a; position: sticky; top: 0; z-index: 50; }
+    .tab-btn { padding: 7px 14px; border-radius: 20px; border: 1px solid #2d364d; background: #161c2c; color: #fff; font-weight: 700; font-size: 12px; white-space: nowrap; cursor: pointer; }
+    .tab-btn.active { background: #f5b942; color: #000; border-color: #f5b942; }
+    .card { margin: 12px; padding: 14px; background: #121724; border: 1px solid #232b3e; border-radius: 14px; }
+    h3 { margin: 0 0 10px 0; font-size: 13px; color: #f5b942; text-transform: uppercase; letter-spacing: 0.5px; }
+    textarea { width: 100%; height: 95px; background: #090c14; color: #fff; border: 1px solid #2e374d; border-radius: 10px; padding: 10px; font-size: 14px; resize: none; }
+    .row { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+    .btn { flex: 1; padding: 11px; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; min-width: 110px; }
+    .btn-gold { background: #f5b942; color: #000; }
+    .btn-green { background: #10b981; color: #000; }
+    .btn-red { background: #ef4444; color: #fff; }
+    .btn-blue { background: #2563eb; color: #fff; }
+    .btn-dark { background: #1f2638; color: #fff; border: 1px solid #323c54; }
+    #stageWrap { position: relative; width: 100%; max-width: 340px; aspect-ratio: 9/16; margin: 0 auto; border-radius: 14px; overflow: hidden; border: 2px solid #2b344b; background: #000; }
+    canvas { display: block; width: 100%; height: 100%; }
+    #captionOverlay { position: absolute; bottom: 12%; left: 6%; right: 6%; text-align: center; font-size: 21px; font-weight: 900; text-transform: uppercase; color: #fff; text-shadow: 0 3px 10px rgba(0,0,0,0.95); pointer-events: none; line-height: 1.25; }
+    #captionOverlay span { background: #f5b942; color: #000; padding: 2px 8px; border-radius: 6px; }
+    .scene-card { background: #192030; border: 1px solid #2f384f; border-radius: 10px; padding: 10px; margin-top: 8px; }
+    .scene-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+    select, input[type="text"] { background: #0c0f18; color: #fff; border: 1px solid #323b52; border-radius: 6px; padding: 5px 8px; font-size: 12px; }
+    input[type="text"] { width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP 5 CATEGORY TABS -->
+  <div class="tabs" id="categoryTabs">
+    <button class="tab-btn active" data-mode="cartoon">🧸 3D Cartoon</button>
+    <button class="tab-btn" data-mode="iman">💰 Iman Wealth</button>
+    <button class="tab-btn" data-mode="story">🎬 Action Story</button>
+    <button class="tab-btn" data-mode="song">🎵 Song & Beat</button>
+    <button class="tab-btn" data-mode="cyber">🔷 Cyber AI</button>
+  </div>
+
+  <!-- CARD 1: SCRIPT, MIC RECORDING & PC STUDIO BASS -->
+  <div class="card">
+    <h3>1. Write Cartoon Script or Record Voice</h3>
+    <textarea id="scriptBox">One sunny morning, Leo walked through the green jungle. Suddenly he saw a rocket flying into outer space! Next he swam across the blue ocean and met his best friend in the city.</textarea>
+
+    <div style="margin-top:10px; padding:10px; background:#0d1019; border:1px solid #f5b942; border-radius:10px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; font-weight:700; color:#f5b942;">🎙️ PC Studio Bass Voice Enhancer</span>
+        <button id="bassToggle" class="btn-green" style="border:none; border-radius:6px; padding:4px 10px; font-weight:700; font-size:11px;">ON (+8 dB)</button>
+      </div>
+      <div class="row" style="margin-top:6px;">
+        <span style="font-size:11px; color:#9ca3af;">Deep Bass:</span>
+        <input id="bassSlider" type="range" min="0" max="14" value="8" style="flex:1; accent-color:#f5b942;">
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="recordMicBtn" class="btn btn-red">🎤 Record Voice</button>
+      <button id="uploadAudioBtn" class="btn btn-dark">📁 Upload Audio</button>
+      <input id="audioFileInput" type="file" accept="audio/*" style="display:none;">
+    </div>
+    <div class="row">
+      <button id="generateBtn" class="btn btn-gold">✨ Build 3D Cartoon Video</button>
+    </div>
+  </div>
+
+  <!-- CARD 2: LIVE 9:16 3D CARTOON STAGE -->
+  <div class="card">
+    <h3>2. Live 3D Cartoon Stage</h3>
+    <div id="stageWrap">
+      <canvas id="threeCanvas"></canvas>
+      <div id="captionOverlay">READY TO <span>ANIMATE</span></div>
+    </div>
+    <div class="row">
+      <button id="playBtn" class="btn btn-green">▶ Play Video</button>
+      <button id="exportBtn" class="btn btn-blue">⬇️ Export Video</button>
+    </div>
+    <div id="statusText" style="margin-top:8px; font-size:12px; color:#10b981; text-align:center;">Cartoon Engine Ready — Every place word builds a new 3D world!</div>
+  </div>
+
+  <!-- CARD 3: EDIT OR REMOVE SCENES BEFORE EXPORT -->
+  <div class="card">
+    <h3>3. Edit or Remove Scenes Before Export</h3>
+    <div id="sceneList"></div>
+  </div>
+
+<script>
+  // === 1. THREE.JS 3D CARTOON ENGINE ===
+  const canvas = document.getElementById("threeCanvas");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(360, 640, false);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color("#38bdf8");
+
+  const camera = new THREE.PerspectiveCamera(45, 9 / 16, 0.1, 100);
+  camera.position.set(0, 1.45, 4.2);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.85);
+  const sunLight = new THREE.DirectionalLight(0xffffff, 1.1);
+  sunLight.position.set(3, 6, 4);
+  scene.add(ambient, sunLight);
+
+  // Build Expressive 3D Cartoon Character Function
+  function createCartoonCharacter(shirtColor, capColor) {
+    const group = new THREE.Group();
+
+    // Cute rounded body
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.24, 0.28, 0.65, 20),
+      new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.4 })
+    );
+    body.position.y = 0.62;
+    group.add(body);
+
+    // Legs
+    const legMat = new THREE.MeshStandardMaterial({ color: "#1e293b" });
+    const leftLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.35, 12), legMat);
+    leftLeg.position.set(-0.11, 0.18, 0);
+    const rightLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.35, 12), legMat);
+    rightLeg.position.set(0.11, 0.18, 0);
+    group.add(leftLeg, rightLeg);
+
+    // Big Cartoon Head
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(0.32, 24, 24),
+      new THREE.MeshStandardMaterial({ color: "#fed7aa", roughness: 0.35 })
+    );
+    head.position.y = 1.25;
+    group.add(head);
+
+    // Big Expressive Cartoon Eyes
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+    const pupilMat = new THREE.MeshBasicMaterial({ color: "#0f172a" });
+    [-0.11, 0.11].forEach(xPos => {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 16, 16), eyeWhiteMat);
+      eye.position.set(xPos, 1.28, 0.27);
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.038, 12, 12), pupilMat);
+      pupil.position.set(xPos, 1.28, 0.33);
+      group.add(eye, pupil);
+    });
+
+    // Cute Cartoon Cap
+    const cap = new THREE.Mesh(
+      new THREE.SphereGeometry(0.33, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2),
+      new THREE.MeshStandardMaterial({ color: capColor })
+    );
+    cap.position.y = 1.28;
+    const brim = new THREE.Mesh(
+      new THREE.BoxGeometry(0.36, 0.04, 0.25),
+      new THREE.MeshStandardMaterial({ color: capColor })
+    );
+    brim.position.set(0, 1.42, 0.25);
+    group.add(cap, brim);
+
+    // Waving Cartoon Arms
+    const armMat = new THREE.MeshStandardMaterial({ color: shirtColor });
+    const leftArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.45, 12), armMat);
+    leftArm.position.set(-0.33, 0.72, 0);
+    leftArm.rotation.z = 0.4;
+    const rightArm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.45, 12), armMat);
+    rightArm.position.set(0.33, 0.72, 0);
+    rightArm.rotation.z = -0.4;
+    group.add(leftArm, rightArm);
+
+    group.userData = { head, leftArm, rightArm };
+    return group;
+  }
+
+  const heroChar = createCartoonCharacter("#f97316", "#ef4444");
+  const friendChar = createCartoonCharacter("#3b82f6", "#facc15");
+  friendChar.position.set(0.75, 0, -0.2);
+  friendChar.visible = false;
+  scene.add(heroChar, friendChar);
+
+  // Dynamic 3D Environment Group (Rebuilds completely for every place in script)
+  let envGroup = new THREE.Group();
+  scene.add(envGroup);
+
+  function buildCartoonEnvironment(envType, twoChars = false) {
+    while (envGroup.children.length > 0) envGroup.remove(envGroup.children);
+
+    heroChar.position.x = twoChars ? -0.48 : 0;
+    friendChar.visible = twoChars;
+    friendChar.position.set(0.52, 0, 0);
+
+    if (envType === "jungle") {
+      scene.background = new THREE.Color("#38bdf8");
+      const grass = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 0.2, 32), new THREE.MeshStandardMaterial({ color: "#22c55e" }));
+      grass.position.y = -0.1;
+      envGroup.add(grass);
+
+      // Cartoon Trees & Glowing Sun
+      [[-1.1, -1.2], [1.1, -1.4], [-0.8, -2.2]].forEach(([tx, tz]) => {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 1.1, 10), new THREE.MeshStandardMaterial({ color: "#78350f" }));
+        trunk.position.set(tx, 0.55, tz);
