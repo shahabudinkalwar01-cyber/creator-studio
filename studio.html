@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio v21 — Real Sculpted 3D (.GLB) + Marimba</title>
+  <title>Studio v22 — Moving 3D Paths + AI Voice + Marimba</title>
   <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
   <style>
     :root{--bg:#07090e;--card:#10141f;--in:#0a0e17;--bd:#21293b;--gold:#f5c542;--tx:#f8fafc;--mu:#94a3b8;--gr:#10b981;--rd:#ef4444;}
@@ -18,9 +18,11 @@
     textarea,select{width:100%;background:var(--in);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px;font-size:.88rem;margin-bottom:8px;}
     textarea{min-height:86px;line-height:1.4;resize:vertical;}
     .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
-    .mic{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:9px;font-size:.82rem;font-weight:700;cursor:pointer;}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
+    .mic{background:#1f1622;color:#fca5a5;border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:9px;font-size:.8rem;font-weight:700;cursor:pointer;}
     .mic.rec{background:var(--rd);color:#fff;}
-    .up{display:flex;align-items:center;justify-content:center;background:var(--in);color:var(--tx);border:1px dashed #374151;border-radius:10px;padding:9px;font-size:.82rem;font-weight:600;cursor:pointer;}
+    .aiv{background:#172554;color:#93c5fd;border:1px solid #3b82f6;border-radius:10px;padding:9px;font-size:.8rem;font-weight:700;cursor:pointer;}
+    .up{display:flex;align-items:center;justify-content:center;background:var(--in);color:var(--tx);border:1px dashed #374151;border-radius:10px;padding:9px;font-size:.8rem;font-weight:600;cursor:pointer;}
     .pre{background:#151d2e;color:#7dd3fc;border:1px solid #0284c7;border-radius:9px;padding:8px;font-size:.78rem;font-weight:700;cursor:pointer;}
     input[type="file"]{display:none;}
     .bgen{width:100%;background:linear-gradient(90deg,#f5c542,#fbbf24);color:#07090e;border:none;border-radius:11px;padding:13px;font-size:.95rem;font-weight:800;cursor:pointer;}
@@ -36,7 +38,7 @@
     .stat{font-size:.78rem;color:var(--gr);flex:1;min-width:160px;}
     .bsm{background:#1e293b;color:var(--tx);border:1px solid var(--bd);padding:8px 12px;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;}
     .bex{background:var(--gr);color:#052e16;border:none;}
-    .bsm:disabled{opacity:.5;}
+    .bsm:disabled,.aiv:disabled{opacity:.5;}
     .sr{background:var(--in);border:1px solid var(--bd);border-radius:10px;padding:9px;margin-bottom:8px;}
     .sh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:7px;}
     .sh input[type="text"]{flex:1;background:#111827;color:var(--tx);border:1px solid var(--bd);border-radius:7px;padding:6px 8px;font-size:.8rem;}
@@ -49,26 +51,33 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="top"><span class="badge">REAL 3D (.GLB) SHAPES + MARIMBA v21</span><a href="index.html" class="back">← Home</a></div>
+    <div class="top"><span class="badge">3D TRAVELING PATHS + AI VOICE v22</span><a href="index.html" class="back">← Home</a></div>
 
     <div class="card">
-      <div class="st">1. Script, Story Presets & Custom 3D Model</div>
+      <div class="st">1. Script, Natural AI Voice & 3D Size</div>
       <div class="g2">
         <button class="pre" id="kidsDemoBtn">🦊 Animals & Kids Story</button>
         <button class="pre" id="dramaDemoBtn">🥊 Laugh/Cry/Fight Story</button>
       </div>
-      <textarea id="scriptInput">Cute animals run and fly happily in the sunny green garden! Inside, naughty kids paint colorful art on the bedroom walls. Meanwhile Mom and Father sit on the bed eating breakfast together!</textarea>
-      <div class="g2">
-        <button class="mic" id="micBtn">🎙️ Record Voice</button>
-        <label class="up"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Upload Audio</span></label>
+      <textarea id="scriptInput">Cute animals run across the sunny green garden! Inside, naughty kids walk to the wall and paint colorful art. Meanwhile Mom and Father sit on the bed eating breakfast together!</textarea>
+      <div class="g3">
+        <button class="aiv" id="aiVoiceBtn">🗣️ Add AI Voice</button>
+        <button class="mic" id="micBtn">🎙️ Mic Voice</button>
+        <label class="up"><input type="file" id="audioUpload" accept="audio/*" /><span id="audioLabel">📁 Audio</span></label>
       </div>
       <div class="g2">
+        <select id="voiceSelect">
+          <option value="aura-en:thalia" selected>👩 Thalia (Natural Female)</option>
+          <option value="aura-en:luna">👩 Luna (Friendly Story)</option>
+          <option value="aura-en:zeus">👨 Zeus (Deep Narrator)</option>
+          <option value="aura-en:orion">👨 Orion (Luxury Male)</option>
+          <option value="aura-en:apollo">👨 Apollo (YouTube Male)</option>
+        </select>
         <select id="sizeSelect">
           <option value="9:16" selected>📱 9:16 Reels / Shorts</option>
           <option value="16:9">📺 16:9 Full YouTube</option>
           <option value="1:1">🟦 1:1 Square</option>
         </select>
-        <label class="up" style="border-color:var(--gold);color:var(--gold);"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload Custom .GLB</span></label>
       </div>
       <div class="g2">
         <select id="speedSelect">
@@ -77,11 +86,7 @@
           <option value="6">⏱️ 6s Story</option>
           <option value="10">⏱️ 10s Slow</option>
         </select>
-        <select id="charStyleSelect">
-          <option value="auto" selected>✨ Real Sculpted .GLB Mix</option>
-          <option value="robot">🤖 Cartoon Robot Only</option>
-          <option value="xbot">🧍 Sculpted Humanoid</option>
-        </select>
+        <label class="up" style="border-color:var(--gold);color:var(--gold);"><input type="file" id="glbUpload" accept=".glb,.gltf" /><span id="glbLabel">📦 Upload Custom .GLB</span></label>
       </div>
       <button class="bgen" id="generateBtn">✨ Generate 4 Live 3D Videos</button>
     </div>
@@ -97,15 +102,15 @@
     </div>
 
     <div class="card">
-      <div class="st">3. Live Real 3D Preview, BGM Bar & MP4 Export</div>
+      <div class="st">3. Live 3D Preview, BGM Bar & MP4 Export</div>
       <canvas id="previewCanvas" width="720" height="1280" style="aspect-ratio:9/16;"></canvas>
       <div class="vol-bar">
         <span>🎵 BGM Volume</span>
-        <input type="range" id="bgmVol" min="0" max="100" value="18" />
-        <span id="bgmVal">18%</span>
+        <input type="range" id="bgmVol" min="0" max="100" value="15" />
+        <span id="bgmVal">15%</span>
       </div>
       <div class="crow">
-        <span class="stat" id="statusText">Loading real sculpted 3D models...</span>
+        <span class="stat" id="statusText">Loading sculpted 3D models...</span>
         <div style="display:flex;gap:7px;">
           <button class="bsm" id="replayBtn">Replay</button>
           <button class="bsm bex" id="exportBtn">Export MP4</button>
@@ -114,7 +119,7 @@
     </div>
 
     <div class="card" id="editorCard" style="display:none;">
-      <div class="st">4. Edit Every Scene (Action, World, Camera, Hide/Add Clip)</div>
+      <div class="st">4. Edit Every Scene (Action, World, Camera, Hide/Add Media)</div>
       <div id="sceneRowsContainer"></div>
     </div>
   </div>
@@ -123,21 +128,21 @@
     import * as THREE from "three";
     import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+    const WORKER_URL="https://viralengine.shahabudinkalwar001.workers.dev";
     const canvas=document.getElementById("previewCanvas"),ctx=canvas.getContext("2d");
     const statusText=document.getElementById("statusText"),scriptInput=document.getElementById("scriptInput");
-    const sizeSelect=document.getElementById("sizeSelect"),speedSelect=document.getElementById("speedSelect"),charStyleSelect=document.getElementById("charStyleSelect");
+    const sizeSelect=document.getElementById("sizeSelect"),speedSelect=document.getElementById("speedSelect"),voiceSelect=document.getElementById("voiceSelect");
     const bgmVol=document.getElementById("bgmVol"),bgmVal=document.getElementById("bgmVal");
     const variantsCard=document.getElementById("variantsCard"),editorCard=document.getElementById("editorCard");
-    const rowsBox=document.getElementById("sceneRowsContainer"),exportBtn=document.getElementById("exportBtn"),micBtn=document.getElementById("micBtn");
+    const rowsBox=document.getElementById("sceneRowsContainer"),exportBtn=document.getElementById("exportBtn"),micBtn=document.getElementById("micBtn"),aiVoiceBtn=document.getElementById("aiVoiceBtn");
 
     bgmVol.oninput=()=>{bgmVal.textContent=bgmVol.value+"%";};
 
-    // --- THREE.JS ENGINE ---
     const threeR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
     threeR.setSize(540,960);threeR.outputColorSpace=THREE.SRGBColorSpace;
     const threeS=new THREE.Scene();
     const threeCam=new THREE.PerspectiveCamera(48,540/960,0.1,100);
-    const camPos=new THREE.Vector3(0,1.1,4.8),camLook=new THREE.Vector3(0,0.4,0);
+    const camPos=new THREE.Vector3(0,1.2,5.0),camLook=new THREE.Vector3(0,0.3,0);
 
     threeS.add(new THREE.HemisphereLight(0xffffff,0x334155,1.9));
     const keyL=new THREE.DirectionalLight(0xffffff,2.3);keyL.position.set(4,7,5);
@@ -145,8 +150,8 @@
     threeS.add(keyL,rimL);
 
     const floorMat=new THREE.MeshStandardMaterial({color:0x06080f,roughness:0.45,metalness:0.3});
-    const floor=new THREE.Mesh(new THREE.PlaneGeometry(26,26),floorMat);floor.rotation.x=-Math.PI/2;floor.position.y=-1;
-    const grid=new THREE.GridHelper(22,24,0xf5c542,0x1e293b);grid.position.y=-0.99;
+    const floor=new THREE.Mesh(new THREE.PlaneGeometry(28,28),floorMat);floor.rotation.x=-Math.PI/2;floor.position.y=-1;
+    const grid=new THREE.GridHelper(24,26,0xf5c542,0x1e293b);grid.position.y=-0.99;
     threeS.add(floor,grid);
 
     const worlds={};
@@ -155,19 +160,19 @@
 
     // 1. KIDS ROOM
     const wKids=mkW("kids_room");
-    const kBack=new THREE.Mesh(new THREE.BoxGeometry(10,5.5,0.2),M(0xfef3c7,0.8));kBack.position.set(0,1.75,-2.0);
-    const kL=new THREE.Mesh(new THREE.BoxGeometry(0.2,5.5,8),M(0xbae6fd,0.8));kL.position.set(-4.2,1.75,1);
-    const kR=new THREE.Mesh(new THREE.BoxGeometry(0.2,5.5,8),M(0xbae6fd,0.8));kR.position.set(4.2,1.75,1);
+    const kBack=new THREE.Mesh(new THREE.BoxGeometry(11,5.5,0.2),M(0xfef3c7,0.8));kBack.position.set(0,1.75,-2.2);
+    const kL=new THREE.Mesh(new THREE.BoxGeometry(0.2,5.5,9),M(0xbae6fd,0.8));kL.position.set(-4.5,1.75,1);
+    const kR=new THREE.Mesh(new THREE.BoxGeometry(0.2,5.5,9),M(0xbae6fd,0.8));kR.position.set(4.5,1.75,1);
     wKids.add(kBack,kL,kR);
     const splats=[];
     [0xef4444,0x3b82f6,0x22c55e,0xf59e0b,0xec4899,0xa855f7].forEach((c,i)=>{
-      const sp=new THREE.Mesh(new THREE.SphereGeometry(0.35,14,12),new THREE.MeshBasicMaterial({color:c}));
-      sp.scale.set(1.4,1.1,0.16);sp.position.set(-1.8+i*0.72,0.35+(i%3)*0.55,-1.86);wKids.add(sp);splats.push(sp);
+      const sp=new THREE.Mesh(new THREE.SphereGeometry(0.36,14,12),new THREE.MeshBasicMaterial({color:c}));
+      sp.scale.set(1.4,1.1,0.16);sp.position.set(-2.0+i*0.8,0.4+(i%3)*0.55,-2.06);wKids.add(sp);splats.push(sp);
     });
 
     // 2. BEDROOM
     const wBed=mkW("bedroom");
-    const bBack=new THREE.Mesh(new THREE.BoxGeometry(10,5.5,0.2),M(0xfde68a,0.8));bBack.position.set(0,1.75,-2.4);
+    const bBack=new THREE.Mesh(new THREE.BoxGeometry(11,5.5,0.2),M(0xfde68a,0.8));bBack.position.set(0,1.75,-2.4);
     const bFr=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.45,2.2),M(0x78350f,0.6));bFr.position.set(0,-0.78,-0.5);
     const hB=new THREE.Mesh(new THREE.BoxGeometry(3.2,1.6,0.18),M(0x78350f,0.6));hB.position.set(0,-0.1,-1.55);
     const mat=new THREE.Mesh(new THREE.BoxGeometry(3.0,0.32,2.0),M(0xf8fafc,0.7));mat.position.set(0,-0.45,-0.5);
@@ -179,12 +184,12 @@
 
     // 3. GARDEN
     const wGard=mkW("garden");
-    const sun=new THREE.Mesh(new THREE.SphereGeometry(0.7,16,16),new THREE.MeshBasicMaterial({color:0xfacc15}));sun.position.set(2.4,3.4,-4.5);wGard.add(sun);
-    [[-2.8,-2.2],[2.7,-2.4],[-3.6,0.4],[3.6,0.6]].forEach(([tx,tz])=>{
-      const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.24,1.8,12),M(0x78350f,0.8));tr.position.set(tx,-0.1,tz);
-      const lv=new THREE.Mesh(new THREE.SphereGeometry(0.95,16,14),M(0x16a34a,0.7));lv.position.set(tx,1.2,tz);wGard.add(tr,lv);
+    const sun=new THREE.Mesh(new THREE.SphereGeometry(0.75,16,16),new THREE.MeshBasicMaterial({color:0xfacc15}));sun.position.set(2.5,3.5,-4.8);wGard.add(sun);
+    [[-3.2,-2.4],[3.1,-2.6],[-4.0,0.6],[4.0,0.8]].forEach(([tx,tz])=>{
+      const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.24,1.9,12),M(0x78350f,0.8));tr.position.set(tx,-0.05,tz);
+      const lv=new THREE.Mesh(new THREE.SphereGeometry(1.0,16,14),M(0x16a34a,0.7));lv.position.set(tx,1.3,tz);wGard.add(tr,lv);
     });
-    for(let fx=-4;fx<=4;fx+=0.65){const pk=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.9,0.08),M(0xf8fafc,0.6));pk.position.set(fx,-0.55,-3.2);wGard.add(pk);}
+    for(let fx=-4.5;fx<=4.5;fx+=0.65){const pk=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.9,0.08),M(0xf8fafc,0.6));pk.position.set(fx,-0.55,-3.4);wGard.add(pk);}
 
     // 4-7. LUXURY, RAIN, RING, CITY
     const wLux=mkW("luxury");[[-3,-2],[3,-2]].forEach(([x,z])=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.18,5,14),M(0xf5c542,0.2));p.position.set(x,1.5,z);wLux.add(p);});
@@ -194,92 +199,111 @@
     [0,0.45,0.9].forEach((ry,ri)=>{const rb=new THREE.Mesh(new THREE.BoxGeometry(4.4,0.04,0.04),new THREE.MeshBasicMaterial({color:ri===1?0x38bdf8:0xef4444}));rb.position.set(0,ry,-2.2);wRing.add(rb);});
     const wCity=mkW("city");for(let i=0;i<8;i++){const h=2+((i*1.7)%3.5),b=new THREE.Mesh(new THREE.BoxGeometry(0.9,h,0.9),M(0x111827));b.position.set(-3.5+i,-1+h/2,-3);wCity.add(b);}
 
-    // --- LOAD REAL SCULPTED .GLB 3D MODELS ---
-    const loader=new GLTFLoader();
-    const glbPool={}; // key -> { model, mixer, acts, cur, ready, baseY }
-    let loadedCount=0;
-
-    function loadSculpted(key, url, targetSize, yOffset=-1.0, rotY=0){
-      glbPool[key]={model:null,mixer:null,acts:{},cur:"",ready:false,baseY:yOffset};
-      loader.load(url, gltf=>{
-        const m=gltf.scene;
-        m.rotation.y=rotY;
-        const box=new THREE.Box3().setFromObject(m);
-        const md=Math.max(...box.getSize(new THREE.Vector3()).toArray())||1;
-        m.scale.setScalar(targetSize/md);
-        box.setFromObject(m);
-        const cen=box.getCenter(new THREE.Vector3());
-        const by=-box.min.y+yOffset;
-        m.position.set(-cen.x, by, -cen.z);
-        m.userData.baseY=by;
-        m.visible=false;
-        threeS.add(m);
-
-        const mix=new THREE.AnimationMixer(m), acts={};
+    // --- LOAD REAL SCULPTED .GLB MODELS ---
+    const loader=new GLTFLoader(),glbPool={};let loadedCount=0;
+    function loadSculpted(key,url,targetSize,yOff=-1.0){
+      glbPool[key]={model:null,mixer:null,acts:{},cur:"",ready:false,baseY:yOff,origScale:1};
+      loader.load(url,gltf=>{
+        const m=gltf.scene,box=new THREE.Box3().setFromObject(m);
+        const md=Math.max(...box.getSize(new THREE.Vector3()).toArray())||1,sc=targetSize/md;
+        m.scale.setScalar(sc);box.setFromObject(m);
+        const by=-box.min.y+yOff;m.position.set(0,by,0);m.visible=false;threeS.add(m);
+        const mix=new THREE.AnimationMixer(m),acts={};
         gltf.animations.forEach(cl=>{acts[cl.name]=mix.clipAction(cl);});
-        glbPool[key]={model:m,mixer:mix,acts,cur:"",ready:true,baseY:by};
-        loadedCount++;
-        statusText.textContent=`Loaded ${loadedCount}/6 real sculpted 3D models!`;
+        glbPool[key]={model:m,mixer:mix,acts,cur:"",ready:true,baseY:by,origScale:sc};
+        loadedCount++;statusText.textContent=`Loaded ${loadedCount}/6 3D models — Ready!`;
       });
     }
-
-    function playClip(key, pat){
-      const g=glbPool[key];if(!g||!g.ready)return;
-      const names=Object.keys(g.acts);if(!names.length)return;
-      const target=names.find(n=>pat.test(n))||names[0];
-      if(g.cur===target)return;
-      if(g.cur&&g.acts[g.cur])g.acts[g.cur].fadeOut(0.2);
-      g.acts[target].reset().fadeIn(0.2).play();g.cur=target;
+    function playClip(key,pat){
+      const g=glbPool[key];if(!g||!g.ready)return;const ns=Object.keys(g.acts);if(!ns.length)return;
+      const t=ns.find(n=>pat.test(n))||ns[0];if(g.cur===t)return;
+      if(g.cur&&g.acts[g.cur])g.acts[g.cur].fadeOut(0.2);g.acts[t].reset().fadeIn(0.2).play();g.cur=t;
     }
 
-    // Real Sculpted Animals + Characters (100% Free MIT/CC0)
-    loadSculpted("fox",    "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/Fox/glTF-Binary/Fox.glb", 1.35, -1.0, 0.5);
-    loadSculpted("horse",  "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Horse.glb", 1.75, -1.0, -0.4);
-    loadSculpted("parrot", "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Parrot.glb", 0.95, 0.35, 0.3);
-    loadSculpted("duck",   "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/Duck/glTF-Binary/Duck.glb", 0.85, -1.0, 0.2);
-    loadSculpted("bot1",   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb", 1.85, -1.0, 0);
-    loadSculpted("xbot",   "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Xbot.glb", 1.9, -1.0, 0);
+    loadSculpted("fox","https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/Fox/glTF-Binary/Fox.glb",1.3,-1.0);
+    loadSculpted("horse","https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Horse.glb",1.7,-1.0);
+    loadSculpted("parrot","https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Parrot.glb",0.9,0.4);
+    loadSculpted("duck","https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/Duck/glTF-Binary/Duck.glb",0.8,-1.0);
+    loadSculpted("bot1","https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/RobotExpressive/RobotExpressive.glb",1.85,-1.0);
+    loadSculpted("xbot","https://cdn.jsdelivr.net/gh/mrdoob/three.js@r170/examples/models/gltf/Xbot.glb",1.85,-1.0);
 
-    document.getElementById("glbUpload").addEventListener("change", e=>{
-      const f=e.target.files[0];if(!f)return;
-      document.getElementById("glbLabel").textContent="✅ "+f.name.slice(0,10);
-      loadSculpted("custom", URL.createObjectURL(f), 1.9, -1.0, 0);
+    document.getElementById("glbUpload").addEventListener("change",e=>{
+      const f=e.target.files[0];if(!f)return;document.getElementById("glbLabel").textContent="✅ "+f.name.slice(0,10);
+      loadSculpted("custom",URL.createObjectURL(f),1.9,-1.0);
     });
 
-    function animateSculpted(act, p, el){
-      Object.values(glbPool).forEach(g=>{if(g.model)g.model.visible=false;});
+    // Helper: Move model along a real path (Spot A -> Spot B) & turn toward direction!
+    function moveAlong(g,x1,z1,x2,z2,t,bob=0){
+      const x=x1+(x2-x1)*t, z=z1+(z2-z1)*t;
+      g.model.position.set(x, g.baseY+bob, z);
+      g.model.rotation.y=Math.atan2(x2-x1, z2-z1);
+    }
 
-      // If user uploaded a custom .GLB, show it in human scenes!
-      const useCustom = glbPool.custom?.ready && act !== "animals_garden";
-      if(useCustom){
-        const c=glbPool.custom; c.model.visible=true; c.model.position.set(0, c.baseY, 0);
-        playClip("custom", act==="fight"?/punch|run/i:/walk|idle|dance/i);
-        return;
+    function animateSculpted(act,p,el,en){
+      Object.values(glbPool).forEach(g=>{if(g.model){g.model.visible=false;g.model.scale.setScalar(g.origScale);}});
+
+      if(glbPool.custom?.ready && act!=="animals_garden"){
+        const c=glbPool.custom;c.model.visible=true;
+        moveAlong(c,-1.5,0.4,1.2,-0.2,Math.min(1,p*1.4));
+        playClip("custom",/walk|run|idle/i);return;
       }
 
       if(act==="animals_garden"){
-        // Real 3D Fox + Horse + Flying Parrot + Duck!
-        if(glbPool.fox.ready){const f=glbPool.fox;f.model.visible=true;f.model.position.set(-1.1+Math.sin(p*3.14)*0.4, f.baseY, 0.2);f.model.rotation.y=0.6;playClip("fox",/run|walk/i);}
-        if(glbPool.horse.ready){const h=glbPool.horse;h.model.visible=true;h.model.position.set(1.0, h.baseY, -0.5);h.model.rotation.y=-0.5;playClip("horse",/.*/);}
-        if(glbPool.parrot.ready){const pr=glbPool.parrot;pr.model.visible=true;pr.model.position.set(Math.cos(el*0.002)*1.2, 0.75+Math.sin(el*0.004)*0.25, 0.1);pr.model.rotation.y=-el*0.002;playClip("parrot",/.*/);}
-        if(glbPool.duck.ready){const dk=glbPool.duck;dk.model.visible=true;dk.model.position.set(0, dk.baseY, 0.85);dk.model.rotation.y=Math.sin(el*0.002)*0.5; }
-      }else if(act==="kid_paint"){
-        const k=charStyleSelect.value==="xbot"&&glbPool.xbot.ready?"xbot":"bot1";
-        if(glbPool[k].ready){
-          const m=glbPool[k]; m.model.visible=true; m.model.scale.setScalar(k==="bot1"?0.36:0.75);
-          m.model.position.set(Math.sin(p*3.14)*0.8, m.baseY, -1.0); m.model.rotation.y=Math.PI;
-          playClip(k, /wave|walk/i);
+        // Fox runs from left side -> across grass -> right side!
+        if(glbPool.fox.ready){const f=glbPool.fox;f.model.visible=true;moveAlong(f,-2.7,0.8,2.5,-0.5,p);playClip("fox",/run|walk/i);}
+        // Horse gallops in a wide curved oval path!
+        if(glbPool.horse.ready){
+          const h=glbPool.horse;h.model.visible=true;
+          const a=p*Math.PI*1.3-0.8, nx=Math.cos(a)*2.2, nz=Math.sin(a)*1.4-0.4;
+          const dx=-Math.sin(a)*2.2, dz=Math.cos(a)*1.4;
+          h.model.position.set(nx, h.baseY, nz); h.model.rotation.y=Math.atan2(dx,dz);
+          playClip("horse",/.*/);
         }
-        splats.forEach((sp,si)=>{sp.visible=p>(si/splats.length)*0.85;});
+        // Parrot flies in wide 3D figure-8 overhead!
+        if(glbPool.parrot.ready){
+          const pr=glbPool.parrot;pr.model.visible=true;
+          const a=el*0.0022, px=Math.sin(a)*2.1, pz=Math.cos(a*2)*0.9, dx=Math.cos(a)*2.1, dz=-2*Math.sin(a*2)*0.9;
+          pr.model.position.set(px, 0.85+Math.sin(el*0.004)*0.3, pz); pr.model.rotation.y=Math.atan2(dx,dz);
+          playClip("parrot",/.*/);
+        }
+        // Duck waddles across foreground!
+        if(glbPool.duck.ready){const dk=glbPool.duck;dk.model.visible=true;moveAlong(dk,1.8,1.1,-1.4,0.8,p,Math.abs(Math.sin(el*0.015))*0.08);}
+      }else if(act==="kid_paint"){
+        const k=glbPool.bot1.ready?"bot1":"xbot";
+        if(glbPool[k].ready){
+          const m=glbPool[k];m.model.visible=true;m.model.scale.setScalar(m.origScale*0.72);
+          if(p<0.45){
+            // Walks from left side over to back wall!
+            moveAlong(m,-2.2,0.5,-0.5,-1.2,p/0.45);
+            playClip(k,/walk/i);
+          }else{
+            // Arrives at wall & paints side-to-side!
+            m.model.position.set(-0.5+(p-0.45)*2.0, m.baseY, -1.2);
+            m.model.rotation.y=Math.PI;
+            playClip(k,/wave/i);
+          }
+        }
+        splats.forEach((sp,si)=>{sp.visible=p>0.42+(si/splats.length)*0.45;});
       }else if(act==="family_bed"){
-        if(glbPool.xbot.ready){const m=glbPool.xbot;m.model.visible=true;m.model.position.set(-0.55,-0.35,-0.55);m.model.rotation.y=0;playClip("xbot",/idle/i);}
-        if(glbPool.bot1.ready){const b=glbPool.bot1;b.model.visible=true;b.model.position.set(0.55,-0.4,-0.55);b.model.rotation.y=0;playClip("bot1",/sit|yes/i);}
+        if(glbPool.xbot.ready){const m=glbPool.xbot;m.model.visible=true;m.model.position.set(-0.55,-0.32,-0.55);m.model.rotation.y=0.15;m.model.rotation.x=en*0.08;playClip("xbot",/idle/i);}
+        if(glbPool.bot1.ready){const b=glbPool.bot1;b.model.visible=true;b.model.position.set(0.55,-0.38,-0.55);b.model.rotation.y=-0.15;playClip("bot1",en>0.35?/yes|wave/i:/sit/i);}
       }else if(act==="laugh"||act==="cry"){
-        const k=charStyleSelect.value==="xbot"&&glbPool.xbot.ready?"xbot":"bot1";
-        if(glbPool[k].ready){const m=glbPool[k];m.model.visible=true;m.model.position.set(0,m.baseY,0);m.model.rotation.y=0;playClip(k, act==="laugh"?/dance|wave|yes/i:/sit|no|idle/i);}
+        if(glbPool.bot1.ready){
+          const b=glbPool.bot1;b.model.visible=true;
+          moveAlong(b,-1.6,0.4,0,0,Math.min(1,p*2.5));
+          playClip("bot1",p<0.4?/walk/i:(act==="laugh"?/dance|wave/i:/sit|no/i));
+        }
       }else if(act==="angry"||act==="fight"){
-        if(glbPool.bot1.ready){const b=glbPool.bot1;b.model.visible=true;b.model.position.set(-0.7+(act==="fight"?Math.sin(p*6.28)*0.45:0),b.baseY,0);b.model.rotation.y=Math.PI/2;playClip("bot1",act==="fight"?/punch|run/i:/no|wave/i);}
-        if(glbPool.xbot.ready){const x=glbPool.xbot;x.model.visible=true;x.model.position.set(0.75,x.baseY,0);x.model.rotation.y=-Math.PI/2;playClip("xbot",act==="fight"?/run|walk/i:/idle/i);}
+        if(glbPool.bot1.ready){
+          const b=glbPool.bot1;b.model.visible=true;
+          if(p<0.35){moveAlong(b,-2.4,0,-0.6,0,p/0.35);playClip("bot1",/run|walk/i);}
+          else{b.model.position.set(-0.6+(act==="fight"?Math.sin(p*12)*0.3:0),b.baseY,0);b.model.rotation.y=Math.PI/2;playClip("bot1",act==="fight"?/punch/i:/no|wave/i);}
+        }
+        if(glbPool.xbot.ready){
+          const x=glbPool.xbot;x.model.visible=true;
+          if(p<0.35){moveAlong(x,2.4,0,0.65,0,p/0.35);playClip("xbot",/run|walk/i);}
+          else{x.model.position.set(0.65+(act==="fight"&&p>0.55?(p-0.55)*1.2:0),x.baseY,0);x.model.rotation.y=-Math.PI/2;playClip("xbot",/idle|run/i);}
+        }
       }
     }
 
@@ -291,11 +315,11 @@
     ];
     const EMOJIS=[[/paint|wall|art|kid/i,"🎨"],[/mom|father|dad|eat|bed/i,"🍽️"],[/animal|garden|fox|horse|parrot|duck/i,"🦊"],[/laugh|happy/i,"😂"],[/cry|sad/i,"😢"],[/angry|shout/i,"😡"],[/fight|punch|win/i,"🥊"]];
 
-    let activeVar=0,scenes=[],audioUrl=null,audioDur=0,audioEl=null,animId=null,beatInt=null,startTime=null,lastIdx=-1,rec=null,actx=null,sfxD=null,prevT=0;
+    let activeVar=0,scenes=[],audioUrl=null,audioDur=0,audioEl=null,animId=null,beatInt=null,startTime=null,lastIdx=-1,rec=null,actx=null,sfxD=null,analyser=null,freqD=null,prevT=0;
     let micR=null,micC=[],isMic=false,recog=null;
 
-    document.getElementById("kidsDemoBtn").onclick=()=>{scriptInput.value="Cute animals run and fly happily in the sunny green garden! Inside, naughty kids paint colorful art on the bedroom walls. Meanwhile Mom and Father sit on the bed eating breakfast together!";buildScenes();startPlayback(null);};
-    document.getElementById("dramaDemoBtn").onclick=()=>{scriptInput.value="First he was laughing at my dream! Then he started crying when it failed. A rival comes in angry talking, and they fight hard!";buildScenes();startPlayback(null);};
+    document.getElementById("kidsDemoBtn").onclick=()=>{scriptInput.value="Cute animals run across the sunny green garden! Inside, naughty kids walk to the wall and paint colorful art. Meanwhile Mom and Father sit on the bed eating breakfast together!";buildScenes();startPlayback(null);};
+    document.getElementById("dramaDemoBtn").onclick=()=>{scriptInput.value="First he was laughing at my dream! Then he started crying when it failed. A rival runs in angry talking, and they fight hard!";buildScenes();startPlayback(null);};
 
     function applySize(){
       const s=sizeSelect.value,d={"9:16":[720,1280,540,960],"16:9":[1280,720,960,540],"1:1":[960,960,640,640]}[s];
@@ -310,7 +334,7 @@
       if(/animal|garden|fox|horse|parrot|duck|dog|cat|bunny|tree|sunny/i.test(t))return"animals_garden";
       if(/paint|wall|brush|kid|boy|girl|draw|color/i.test(t))return"kid_paint";
       if(/mom|mother|father|dad|parent|bed|eat|breakfast|dinner|food/i.test(t))return"family_bed";
-      if(/laugh|haha|funny|happy/i.test(t))return"laugh";
+      if(/laugh|haha|funny|happy|smile/i.test(t))return"laugh";
       if(/cry|sad|tear|broke|fail/i.test(t))return"cry";
       if(/angry|shout|rival|argue|mad/i.test(t))return"angry";
       if(/fight|punch|hit|beat|win/i.test(t))return"fight";
@@ -318,8 +342,23 @@
     }
     const detectWorld=act=>({kid_paint:"kids_room",family_bed:"bedroom",animals_garden:"garden",laugh:"luxury",cry:"rain",angry:"ring",fight:"ring"}[act]||"garden");
 
+    // 1-Tap Natural AI Voice (Deepgram Aura-2 via your Cloudflare Worker)
+    aiVoiceBtn.addEventListener("click",async()=>{
+      const txt=scriptInput.value.trim();if(!txt)return;
+      aiVoiceBtn.disabled=true;statusText.textContent="Generating natural AI voice...";
+      try{
+        const res=await fetch(`${WORKER_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:txt,voice:voiceSelect.value})});
+        if(!res.ok)throw new Error("Daily AI voice quota full — use Mic or Upload Audio");
+        const blob=await res.blob();
+        audioUrl=URL.createObjectURL(blob);audioDur=await getAudDur(audioUrl);
+        document.getElementById("audioLabel").textContent="✅ AI Voice";
+        statusText.textContent="Natural AI Voice Ready! Tap Generate.";
+      }catch(e){statusText.textContent=e.message;}
+      finally{aiVoiceBtn.disabled=false;}
+    });
+
     micBtn.addEventListener("click",async()=>{
-      if(isMic){isMic=false;micBtn.classList.remove("rec");micBtn.textContent="🎙️ Record Voice";if(micR?.state==="recording")micR.stop();if(recog)try{recog.stop();}catch(e){}return;}
+      if(isMic){isMic=false;micBtn.classList.remove("rec");micBtn.textContent="🎙️ Mic Voice";if(micR?.state==="recording")micR.stop();if(recog)try{recog.stop();}catch(e){}return;}
       try{
         const ms=await navigator.mediaDevices.getUserMedia({audio:true});micC=[];micR=new MediaRecorder(ms);
         micR.ondataavailable=e=>{if(e.data.size>0)micC.push(e.data);};
@@ -329,11 +368,11 @@
         isMic=true;micBtn.classList.add("rec");micBtn.textContent="⏹️ Stop";statusText.textContent="Recording...";
       }catch(e){statusText.textContent="Mic blocked";}
     });
-    document.getElementById("audioUpload").addEventListener("change",async e=>{if(!e.target.files[0])return;audioUrl=URL.createObjectURL(e.target.files[0]);audioDur=await getAudDur(audioUrl);document.getElementById("audioLabel").textContent="✅ "+e.target.files[0].name.slice(0,10);});
+    document.getElementById("audioUpload").addEventListener("change",async e=>{if(!e.target.files[0])return;audioUrl=URL.createObjectURL(e.target.files[0]);audioDur=await getAudDur(audioUrl);document.getElementById("audioLabel").textContent="✅ "+e.target.files[0].name.slice(0,8);});
 
     function buildScenes(){
       const parts=scriptInput.value.trim().split(/(?<=[.!?؟۔])\s+|\n+/).filter(Boolean);
-      const list=parts.length?parts:["Cute animals run in the sunny garden!"];
+      const list=parts.length?parts:["Cute animals run across the sunny green garden!"];
       const cams=["orbit","wide_pull","face_zoom"];
       scenes=list.map((t,i)=>{const act=detectAct(t,i);return{text:t,show3D:true,act,world:detectWorld(act),cam:cams[i%cams.length],mediaEl:null,isVid:false};});
       renderRows();
@@ -401,14 +440,19 @@
       tick();beatInt=setInterval(tick,ms);
     }
 
+    function getSpeechEnergy(){
+      if(audioEl&&!audioEl.paused&&analyser&&freqD){analyser.getByteFrequencyData(freqD);let s=0;for(let i=1;i<10;i++)s+=freqD[i];return Math.min(1,s/(9*180));}
+      return 0;
+    }
+
     function updateCamera(cam,act,p){
-      let dp=[0,1.2,4.8],dl=[0,0.2,0];
-      if(act==="animals_garden"){dp=[-1.6+p*3.2,1.0,4.3];dl=[0,0.1,0];}
-      else if(act==="kid_paint"){dp=[-0.9+p*1.8,0.8,3.6];dl=[0,0.4,-1.0];}
-      else if(act==="family_bed"){dp=[Math.sin(p*3.14)*1.2,0.85,3.5-p*0.8];dl=[0,0.25,-0.5];}
-      else if(cam==="face_zoom"){const e=1-Math.pow(1-p,3);dp=[0.2,0.85,4.4-e*2.1];dl=[0,0.6,0];}
-      else if(cam==="orbit"){const a=-0.8+p*1.6;dp=[Math.sin(a)*4.4,1.0,Math.cos(a)*4.4];}
-      else{const e=1-Math.pow(1-p,3);dp=[-0.4,0.4+e*1.1,2.4+e*2.6];}
+      let dp=[0,1.3,5.2],dl=[0,0.15,0];
+      if(act==="animals_garden"){dp=[-2.0+p*4.0,1.2,4.8];dl=[(-1.5+p*3.0)*0.4,0.0,0];}
+      else if(act==="kid_paint"){dp=[-1.2+p*2.4,0.8,3.9];dl=[0,0.3,-1.0];}
+      else if(act==="family_bed"){dp=[Math.sin(p*3.14)*1.3,0.9,3.6-p*0.7];dl=[0,0.2,-0.5];}
+      else if(cam==="face_zoom"){const e=1-Math.pow(1-p,3);dp=[0.2,0.85,4.4-e*2.1];dl=[0,0.55,0];}
+      else if(cam==="orbit"){const a=-0.8+p*1.6;dp=[Math.sin(a)*4.6,1.1,Math.cos(a)*4.6];}
+      else{const e=1-Math.pow(1-p,3);dp=[-0.4,0.5+e*1.1,2.6+e*2.7];}
       camPos.lerp(new THREE.Vector3(...dp),0.14);camLook.lerp(new THREE.Vector3(...dl),0.14);
       threeCam.position.copy(camPos);threeCam.lookAt(camLook);
     }
@@ -419,7 +463,7 @@
       const el=Math.max(0,now-startTime),v=VARS[activeVar],dur=audioDur>1000?Math.max(2400,(audioDur+300)/scenes.length):(+speedSelect.value*1000),tot=scenes.length*dur;
       if(el>=tot){clearInterval(beatInt);if(audioEl)audioEl.pause();if(rec?.state==="recording")rec.stop();else statusText.textContent=`Done (${v.name}) — Tap Export MP4`;return;}
 
-      const idx=Math.min(scenes.length-1,Math.floor(el/dur)),sel=el%dur,p=sel/dur,sc=scenes[idx];
+      const idx=Math.min(scenes.length-1,Math.floor(el/dur)),sel=el%dur,p=sel/dur,sc=scenes[idx],en=getSpeechEnergy();
       if(idx!==lastIdx){lastIdx=idx;playLoudSfx(sc.act);}
 
       Object.values(glbPool).forEach(g=>{if(g.mixer&&g.model?.visible)g.mixer.update(dt);});
@@ -440,7 +484,7 @@
         if(ok){const mw=sc.isVid?m.videoWidth:m.naturalWidth,mh=sc.isVid?m.videoHeight:m.naturalHeight,s=Math.max(canvas.width/mw,canvas.height/mh)*1.06;ctx.save();ctx.globalAlpha=0.75;ctx.drawImage(m,(canvas.width-mw*s)/2,(canvas.height-mh*s)/2,mw*s,mh*s);ctx.restore();}
       }
 
-      if(sc.show3D){animateSculpted(sc.act,p,el);updateCamera(sc.cam,sc.act,p);threeR.render(threeS,threeCam);ctx.drawImage(threeR.domElement,0,0,canvas.width,canvas.height);}
+      if(sc.show3D){animateSculpted(sc.act,p,el,en);updateCamera(sc.cam,sc.act,p);threeR.render(threeS,threeCam);ctx.drawImage(threeR.domElement,0,0,canvas.width,canvas.height);}
       else Object.values(glbPool).forEach(g=>{if(g.model)g.model.visible=false;});
 
       if(sel<200){ctx.fillStyle="#fff";ctx.globalAlpha=(1-sel/200)*0.22;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.globalAlpha=1;}
@@ -465,11 +509,12 @@
     function startPlayback(recStream=null){
       cancelAnimationFrame(animId);clearInterval(beatInt);startTime=null;lastIdx=-1;
       if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();
+      if(!analyser){analyser=actx.createAnalyser();analyser.fftSize=64;freqD=new Uint8Array(analyser.frequencyBinCount);}
       if(recStream){sfxD=actx.createMediaStreamDestination();sfxD.stream.getAudioTracks().forEach(t=>recStream.addTrack(t));}else sfxD=null;
       const v=VARS[activeVar];startBgm(v.bgm);
       statusText.textContent=`Playing ${v.name} (BGM: ${bgmVol.value}%)`;
       if(audioEl){audioEl.pause();audioEl=null;}
-      if(audioUrl){audioEl=new Audio(audioUrl);try{const s=actx.createMediaElementSource(audioEl);s.connect(actx.destination);if(sfxD)s.connect(sfxD);}catch(e){}audioEl.play().catch(()=>{});}
+      if(audioUrl){audioEl=new Audio(audioUrl);try{const s=actx.createMediaElementSource(audioEl);s.connect(analyser);analyser.connect(actx.destination);if(sfxD)s.connect(sfxD);}catch(e){}audioEl.play().catch(()=>{});}
       animId=requestAnimationFrame(drawFrame);
     }
 
@@ -481,7 +526,7 @@
       exportBtn.disabled=true;statusText.textContent=`Exporting ${isMp4?"MP4":"WebM"}...`;
       const ch=[];rec=new MediaRecorder(stream,mt?{mimeType:mt,videoBitsPerSecond:3500000}:{});
       rec.ondataavailable=e=>{if(e.data?.size>0)ch.push(e.data);};
-      rec.onstop=()=>{clearInterval(beatInt);const b=new Blob(ch,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=isMp4?"real-3d-v21.mp4":"real-3d-v21.webm";a.click();exportBtn.disabled=false;rec=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(b.size/1024).toFixed(0)} KB)!`;};
+      rec.onstop=()=>{clearInterval(beatInt);const b=new Blob(ch,{type:mt||"video/webm"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=isMp4?"3d-story-v22.mp4":"3d-story-v22.webm";a.click();exportBtn.disabled=false;rec=null;statusText.textContent=`Exported ${isMp4?"MP4":"WebM"} (${(b.size/1024).toFixed(0)} KB)!`;};
       rec.start(250);
     });
   </script>
