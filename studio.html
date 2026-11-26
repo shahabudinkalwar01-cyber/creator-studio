@@ -438,7 +438,7 @@
         playCharAnim(0, plan.anim1);
         if(sceneMode.value!=="desk") playCharAnim(1, plan.anim2);
       }
-      
+      const theme = THEMES[activeThemeKey] || THEMES.luxury;
 
       // Animate props & update 3D mixers
       trophyGroup.rotation.y += dt * 1.8;
