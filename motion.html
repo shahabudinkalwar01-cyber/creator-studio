@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Motion & RGB Reel Studio</title>
+  <title>Free AI Auto Captions & RGB Motion Reel Studio</title>
+  <meta name="description" content="Free unlimited AI auto captions, RGB neon effects, studio bass voice enhancer, and motion graphics video maker online." />
   <style>
     *{box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif}
     body{margin:0;background:#08090d;color:#fff;padding-bottom:50px}
@@ -23,49 +24,45 @@
 </head>
 <body>
 
-  <!-- 1. INPUT: SCRIPT, MIC VOICE, AUDIO OR UPLOAD REEL MP4 -->
   <div class="card">
-    <h3>1. Script, Voice or Upload Reel Video</h3>
+    <h3>1. Upload Reel (Auto Captions) or Write Script</h3>
     <textarea id="txt">An airplane flew over the green jungle! Next a golden coin unlocked our AI empire. Now millions of creators win fast.</textarea>
 
     <div class="row" style="background:#0a0c12;padding:8px;border-radius:8px;border:1px solid #f5b942">
-      <span style="font-size:11px;font-weight:700;color:#f5b942">🎙️ PC Studio Bass:</span>
+      <span style="font-size:11px;font-weight:700;color:#f5b942">🎙️ Studio Bass:</span>
       <input id="bassRange" type="range" min="0" max="14" value="9" style="flex:1;accent-color:#f5b942">
       <span id="bassVal" style="font-size:11px;font-weight:700;color:#10b981">+9 dB</span>
       <label style="font-size:11px;color:#38bdf8;font-weight:700;margin-left:6px"><input id="rgbToggle" type="checkbox" checked> RGB Glow</label>
     </div>
 
     <div class="row">
+      <select id="langSel" style="flex:1;min-width:105px;padding:9px;background:#1c2230;color:#fff;border:1px solid #2e374d;border-radius:8px;font-weight:700;font-size:12px">
+        <option value="ur-PK">🇵🇰 Urdu (اردو)</option>
+        <option value="hi-IN">🇮🇳 Hindi (हिंदी)</option>
+        <option value="en-US" selected>🇺🇸 English</option>
+        <option value="ar-SA">🇸🇦 Arabic</option>
+      </select>
+      <button class="btn blue" onclick="document.getElementById('vidIn').click()">🎬 Upload Reel</button>
       <button id="micBtn" class="btn red">🎤 Mic</button>
       <button class="btn dark" onclick="document.getElementById('audIn').click()">🎵 Audio</button>
-      <button class="btn dark" onclick="document.getElementById('vidIn').click()">🎬 Upload Reel</button>
-      <select id="langSel" style="flex:1;min-width:95px;padding:9px;background:#1c2230;color:#fff;border:1px solid #2e374d;border-radius:8px;font-weight:700;font-size:12px">
-  <option value="ur-PK">🇵🇰 Urdu (اردو)</option>
-  <option value="hi-IN">🇮🇳 Hindi (हिंदी)</option>
-  <option value="en-US">🇺🇸 English</option>
-  <option value="ar-SA">🇸🇦 Arabic</option>
-</select>
-<button id="autoCapBtn" class="btn green" onclick="transcribeReel()">🎙️ Auto-Caption Reel</button>
       <input id="audIn" type="file" accept="audio/*" style="display:none">
       <input id="vidIn" type="file" accept="video/*" style="display:none">
     </div>
     <div class="row">
-      <button class="btn gold" onclick="buildVideo()">✨ Auto-Build RGB & Objects</button>
+      <button class="btn gold" onclick="buildVideo()">✨ Shuffle New In/Out FX & Objects</button>
     </div>
   </div>
 
-  <!-- 2. LIVE 9:16 STAGE & EXPORT -->
   <div class="card">
-    <h3>2. Live 9:16 Preview (8 Non-Repeating FX + 8 SFX)</h3>
+    <h3>2. Live 9:16 Preview (Dual Non-Repeating FX + 8 SFX)</h3>
     <div class="stage"><canvas id="cv" width="270" height="480"></canvas></div>
     <div class="row">
       <button class="btn green" onclick="playVideo(false)">▶ Play</button>
       <button class="btn blue" onclick="playVideo(true)">⬇️ Export Video</button>
     </div>
-    <div id="st" style="margin-top:6px;font-size:11px;color:#10b981;text-align:center">Ready — Each scene gets a unique animation, SFX & matching object!</div>
+    <div id="st" style="margin-top:6px;font-size:11px;color:#10b981;text-align:center">Ready — Upload any Reel for automatic keyless captions!</div>
   </div>
 
-  <!-- 3. MANUAL POST-GENERATION CONTROLS -->
   <div class="card">
     <h3>3. Manual Camera, Object, Photo & FX Controls</h3>
     <div id="sceneList"></div>
@@ -75,11 +72,10 @@
 
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),bgVid=document.getElementById('bgVid');
-let scenes=[],activeIdx=0,playing=false,sceneStart=0,audUrl=null,hasReel=false,rec=null,chunks=[];
+let scenes=[],activeIdx=0,playing=false,sceneStart=0,audUrl=null,hasReel=false,rec=null,chunks=[],localWhisper=null;
 
 document.getElementById('bassRange').oninput=function(){document.getElementById('bassVal').textContent='+'+this.value+' dB';};
 
-// 8 DISTINCT IN/OUT ANIMATION COMBOS (NEVER REPEATS PREVIOUS)
 const ANIM_COMBOS=[
   {id:0,name:'Zoom Pop -> Slide Left'},
   {id:1,name:'Drop Bounce -> Shrink Out'},
@@ -91,7 +87,6 @@ const ANIM_COMBOS=[
   {id:7,name:'Split Expand -> Whip Out'}
 ];
 
-// 8 MATCHING WEB AUDIO SFX (DIFFERENT SOUND FOR EACH ANIMATION)
 function playMatchedSFX(animId){
   try{
     const ac=new (window.AudioContext||window.webkitAudioContext)();
@@ -99,7 +94,6 @@ function playMatchedSFX(animId){
     osc.connect(g);g.connect(ac.destination);
     const now=ac.currentTime;
     g.gain.setValueAtTime(0.14,now);
-
     if(animId===0){osc.type='sine';osc.frequency.setValueAtTime(320,now);osc.frequency.exponentialRampToValueAtTime(920,now+0.14);}
     else if(animId===1){osc.type='sine';osc.frequency.setValueAtTime(140,now);osc.frequency.exponentialRampToValueAtTime(38,now+0.22);}
     else if(animId===2){osc.type='triangle';osc.frequency.setValueAtTime(220,now);osc.frequency.exponentialRampToValueAtTime(75,now+0.18);}
@@ -108,51 +102,46 @@ function playMatchedSFX(animId){
     else if(animId===5){osc.type='square';osc.frequency.setValueAtTime(680,now);osc.frequency.setValueAtTime(340,now+0.07);g.gain.setValueAtTime(0.07,now);}
     else if(animId===6){osc.type='triangle';osc.frequency.setValueAtTime(520,now);osc.frequency.exponentialRampToValueAtTime(260,now+0.12);}
     else{osc.type='sine';osc.frequency.setValueAtTime(800,now);osc.frequency.exponentialRampToValueAtTime(120,now+0.15);}
-
     g.gain.exponentialRampToValueAtTime(0.001,now+0.24);
     osc.start(now);osc.stop(now+0.25);
   }catch(e){}
 }
 
-// FREE AUTOMATIC WORD-TO-OBJECT FETCHER (ICONIFY 200,000+ VECTOR ICONS)
 async function fetchWordObject(sc){
-  const stopWords=/^(the|and|for|with|that|this|from|into|over|next|now|our|are|was|were|have|has|had|you|your|they|their|what|when|how)$/i;
-  const words=sc.text.replace(/[^a-zA-Z\s]/g,'').split(/\s+/).filter(w=>w.length>2&&!stopWords.test(w));
-  const keyword=(words.at(-1)||words.at(0)||'star').toLowerCase();
-  sc.keyword=keyword;
-
+  const stop=/^(the|and|for|with|that|this|from|into|over|next|now|our|are|was|were|have|has|had|you|your|they|their|what|when|how)$/i;
+  const words=sc.text.replace(/[^a-zA-Z\s]/g,'').split(/\s+/).filter(w=>w.length>2&&!stop.test(w));
+  const kw=(words.at(-1)||words.at(0)||'star').toLowerCase();
+  sc.keyword=kw;
   try{
     const res=await fetch('https://iconify.design');
     const data=await res.json();
     if(data&&data.icons&&data.icons.length>0){
-      const iconName=data.icons.at(0);
-      const img=new Image();
-      img.crossOrigin='anonymous';
+      const img=new Image();img.crossOrigin='anonymous';
       img.onload=()=>{sc.fetchedImg=img;};
       img.src='https://iconify.design';
     }
   }catch(e){}
 }
 
-// 1. BUILD SCENES WITH NON-REPEATING ANIMATIONS & AUTO OBJECT FETCHING
 function buildVideo(){
   const raw=document.getElementById('txt').value.trim();
   const arr=/[.!?]/.test(raw)?raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean):(raw.match(/\S+(?:\s+\S+){0,2}/g)||[]);
-  let t=0,prevAnim=-1;
-  const bgCycle=['luxury','cyber','crimson','space'];
+  let t=0,prevObj=-1,prevCap=-1;
+  const bgs=['luxury','cyber','crimson','space'];
+  const totalVidDur=(hasReel&&bgVid.duration&&isFinite(bgVid.duration))?bgVid.duration:0;
+  const fixedDur=totalVidDur>0&&arr.length>0?(totalVidDur/arr.length):0;
 
   scenes=arr.map((text,i)=>{
-    const dur=Math.max(2.0,text.split(/\s+/).length*0.44);
-    // Pick an animation strictly different from the previous scene
-    let animId=(i*3+1)%ANIM_COMBOS.length;
-    if(animId===prevAnim)animId=(animId+1)%ANIM_COMBOS.length;
-    prevAnim=animId;
+    const dur=fixedDur>0?Math.max(1.0,fixedDur):Math.max(1.8,text.split(/\s+/).length*0.44);
+    let objAnimId=Math.floor(Math.random()*ANIM_COMBOS.length);
+    if(objAnimId===prevObj)objAnimId=(objAnimId+1)%ANIM_COMBOS.length;
+    prevObj=objAnimId;
 
-    const sc={
-      id:i,text,keyword:'',animId,bg:bgCycle.at(i%bgCycle.length),
-      showObj:!hasReel,cam:i%2===0?'zoom_in':'zoom_out',
-      fetchedImg:null,customImg:null,start:t,end:t+dur
-    };
+    let capAnimId=Math.floor(Math.random()*ANIM_COMBOS.length);
+    while(capAnimId===prevCap||capAnimId===objAnimId)capAnimId=(capAnimId+1)%ANIM_COMBOS.length;
+    prevCap=capAnimId;
+
+    const sc={id:i,text,keyword:'',animId:objAnimId,capAnimId,bg:bgs.at(i%bgs.length),showObj:!hasReel,cam:i%2===0?'zoom_in':'zoom_out',fetchedImg:null,customImg:null,start:t,end:t+dur};
     fetchWordObject(sc);
     t+=dur;
     return sc;
@@ -160,10 +149,9 @@ function buildVideo(){
 
   activeIdx=0;sceneStart=performance.now();
   renderEditor();
-  document.getElementById('st').textContent='Built '+scenes.length+' Scenes with Auto Objects, RGB Glow & Unique SFX!';
+  document.getElementById('st').textContent='Built '+scenes.length+' Scenes — Dual Unique In/Out FX Every Time!';
 }
 
-// 2. MANUAL POST-GENERATION CONTROLS
 function renderEditor(){
   const box=document.getElementById('sceneList');box.innerHTML='';
   scenes.forEach((sc,i)=>{
@@ -180,172 +168,4 @@ function renderEditor(){
       <input type="text" style="margin-top:6px" value="${sc.text.replace(/"/g,'&quot;')}" oninput="scenes.at(${i}).text=this.value">
       <div class="sc-grid">
         <select onchange="setAnim(${i},Number(this.value))">
-          ${ANIM_COMBOS.map(a=>`<option value="${a.id}" ${sc.animId===a.id?'selected':''}>✨ ${a.name}</option>`).join('')}
-        </select>
-        <select onchange="setCam(${i},this.value)">
-          <option value="zoom_in" ${sc.cam==='zoom_in'?'selected':''}>🎥 Cam: Zoom In</option>
-          <option value="zoom_out" ${sc.cam==='zoom_out'?'selected':''}>🎥 Cam: Zoom Out</option>
-          <option value="pan" ${sc.cam==='pan'?'selected':''}>🎥 Cam: Pan Move</option>
-          <option value="shake" ${sc.cam==='shake'?'selected':''}>🎥 Cam: Shake</option>
-        </select>
-              <input type="file" id="imgIn_${i}" accept="image/*" style="display:none" onchange="loadPhoto(${i},event)">
-    `;
-    box.appendChild(div);
-  });
-}
-
-function previewSc(i){activeIdx=i;sceneStart=performance.now();playMatchedSFX(scenes.at(i).animId);}
-function toggleObj(i){const s=scenes.at(i);if(s){s.showObj=!s.showObj;previewSc(i);renderEditor();}}
-function setAnim(i,v){const s=scenes.at(i);if(s){s.animId=v;previewSc(i);}}
-function setCam(i,v){const s=scenes.at(i);if(s){s.cam=v;previewSc(i);}}
-function loadPhoto(i,ev){
-  const f=ev.target.files.item(0);
-  if(f){const img=new Image();img.onload=()=>{const s=scenes.at(i);if(s){s.customImg=img;s.showObj=true;previewSc(i);}};img.src=URL.createObjectURL(f);}
-}
-function delSc(i){scenes.splice(i,1);document.getElementById('txt').value=scenes.map(s=>s.text).join('. ');buildVideo();}
-
-function getAnimTransform(animId,prog,t){
-  let x=0,y=Math.sin(t*3)*5,scale=1,rot=0,alpha=1;
-  const inP=Math.min(1,prog/0.18),outP=prog>0.84?(prog-0.84)/0.16:0;
-  if(animId===0){scale=inP*(1-outP);x=-outP*180;}
-  else if(animId===1){y+=(1-inP)*-140;scale=1-outP;}
-  else if(animId===2){x=(1-inP)*180;y+=outP*140;}
-  else if(animId===3){rot=(1-inP)*3.14;x=outP*180;}
-  else if(animId===4){y+=(1-inP)*140;rot=outP*3.14;scale=1-outP*0.5;}
-  else if(animId===5){x=inP<1?(Math.random()-0.5)*16:0;y+=-outP*140;}
-  else if(animId===6){rot=Math.sin(t*5)*0.22;alpha=(1-outP)*inP;}
-  else{scale=inP;x=outP*220;alpha=1-outP;}
-  return {x,y,scale:Math.max(0.01,scale),rot,alpha:Math.max(0,alpha)};
-}
-
-function renderLoop(){
-  const now=performance.now(),t=now*0.001;
-  const sc=scenes.at(activeIdx)||{text:'READY',keyword:'star',animId:0,bg:'luxury',showObj:true,cam:'zoom_in',start:0,end:2};
-  const dur=Math.max(0.5,sc.end-sc.start),prog=Math.min(1,(now-sceneStart)/(dur*1000));
-  const useRGB=document.getElementById('rgbToggle').checked;
-  const rgbColor='hsl('+Math.floor((t*160)%360)+',100%,55%)';
-
-  ctx.save();
-  let camZoom=1,camX=0,camY=0;
-  if(sc.cam==='zoom_in')camZoom=1+prog*0.12;
-  else if(sc.cam==='zoom_out')camZoom=1.14-prog*0.12;
-  else if(sc.cam==='pan')camX=Math.sin(prog*Math.PI)*16;
-  else if(sc.cam==='shake'&&prog<0.25){camX=(Math.random()-0.5)*10;camY=(Math.random()-0.5)*10;}
-  ctx.translate(135+camX,240+camY);ctx.scale(camZoom,camZoom);ctx.translate(-135,-240);
-
-  if(hasReel&&bgVid.readyState>=2){
-    ctx.drawImage(bgVid,0,0,270,480);ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(0,0,270,480);
-  }else{
-    const bgMap={luxury:'#090a0f',cyber:'#050d1a',crimson:'#1a080c',space:'#050816'};
-    ctx.fillStyle=bgMap[sc.bg]||'#090a0f';ctx.fillRect(-20,-20,310,520);
-  }
-
-  const tr=getAnimTransform(sc.animId,prog,t);
-  if(sc.showObj){
-    ctx.save();ctx.globalAlpha=tr.alpha;ctx.translate(135+tr.x,185+tr.y);ctx.scale(tr.scale,tr.scale);ctx.rotate(tr.rot);
-    if(useRGB){ctx.shadowColor=rgbColor;ctx.shadowBlur=22;}
-    const img=sc.customImg||sc.fetchedImg;
-    if(img)ctx.drawImage(img,-62,-62,124,124);
-    else{ctx.fillStyle='#f5b942';ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();ctx.fillStyle='#000';ctx.font='900 28px sans-serif';ctx.textAlign='center';ctx.fillText('$',0,10);}
-    ctx.restore();
-  }
-
-  ctx.save();ctx.globalAlpha=tr.alpha;
-  const words=sc.text.toUpperCase().split(' '),last=words.pop()||'';
-  ctx.font='900 17px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;
-  if(useRGB){ctx.shadowColor=rgbColor;ctx.shadowBlur=14;}
-  const l1=words.slice(0,4).join(' '),l2=words.slice(4).join(' ');
-  if(l1){ctx.strokeText(l1,135,362);ctx.fillText(l1,135,362);}
-  if(l2){ctx.strokeText(l2,135,388);ctx.fillText(l2,135,388);}
-  const bw=ctx.measureText(last).width+22;
-  ctx.fillStyle=useRGB?rgbColor:'#f5b942';ctx.beginPath();ctx.roundRect(135-bw/2,400,bw,28,7);ctx.fill();
-  ctx.shadowBlur=0;ctx.fillStyle='#000';ctx.fillText(last,135,420);
-  ctx.restore();ctx.restore();
-  requestAnimationFrame(renderLoop);
-}
-
-document.getElementById('micBtn').onclick=async function(){
-  if(!rec||rec.state==='inactive'){
-    const st=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(st);chunks=[];
-    rec.ondataavailable=e=>chunks.push(e.data);
-    rec.onstop=()=>{audUrl=URL.createObjectURL(new Blob(chunks));document.getElementById('st').textContent='Mic Voice Saved!';};
-    rec.start();this.textContent='⏹️ Stop';
-  }else{rec.stop();this.textContent='🎤 Mic';}
-};
-document.getElementById('audIn').onchange=e=>{if(e.target.files.item(0)){audUrl=URL.createObjectURL(e.target.files.item(0));document.getElementById('st').textContent='Audio Loaded!';}};
-document.getElementById('vidIn').onchange=async e=>{
-  const f=e.target.files.item(0);
-  if(!f)return;
-  bgVid.src=URL.createObjectURL(f);bgVid.loop=true;bgVid.play();
-  hasReel=true;audUrl=null;
-  document.getElementById('st').textContent='Auto-generating captions from Reel audio...';
-
-  try{
-    const {pipeline}=await import('https://jsdelivr.net');
-    const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny');
-    const buf=await f.arrayBuffer();
-    const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
-    const audioData=await ac.decodeAudioData(buf);
-    const channelData=audioData.getChannelData(0);
-    const langCode=document.getElementById('langSel').value.split('-').at(0);
-    const out=await transcriber(channelData,{language:langCode,chunk_length_s:30});
-    if(out&&out.text){
-      document.getElementById('txt').value=out.text.trim();
-      buildVideo();
-      document.getElementById('st').textContent='Auto-Captions Ready & Synced!';
-    }
-  }catch(err){
-    document.getElementById('st').textContent='Reel Loaded! Tap Auto-Caption Reel or paste lyrics.';
-  }
-};
-
-function playVideo(save){
-  if(!scenes.length)buildVideo();
-  speechSynthesis.cancel();
-  if(hasReel){bgVid.currentTime=0;bgVid.muted=false;bgVid.play();}
-  else if(audUrl)new Audio(audUrl).play();
-  else speechSynthesis.speak(new SpeechSynthesisUtterance(scenes.map(s=>s.text).join('. ')));
-  playing=true;const stTime=performance.now();let last=-1,vr=null,vc=[];
-  if(save){
-    vr=new MediaRecorder(cv.captureStream(30));vr.ondataavailable=e=>vc.push(e.data);
-    vr.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(vc,{type:'video/webm'}));a.download='RGB_Reel.webm';a.click();document.getElementById('st').textContent='Exported!';};
-    vr.start();
-  }
-  const iv=setInterval(()=>{
-    const sec=(performance.now()-stTime)/1000;
-    const idx=scenes.findIndex(s=>sec>=s.start&&sec<s.end);
-    if(idx!==-1&&idx!==last){last=idx;activeIdx=idx;sceneStart=performance.now();playMatchedSFX(scenes.at(idx).animId);}
-    if(sec>=scenes.at(-1).end){clearInterval(iv);playing=false;if(hasReel)bgVid.muted=true;if(vr)vr.stop();}
-  },80);
-}
-
-buildVideo();renderLoop();
-  let isTranscribing=false;
-function transcribeReel(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert('Use Chrome on Android for Auto-Captions');return;}
-  const r=new SR();
-  r.lang=document.getElementById('langSel').value;
-  r.continuous=true;r.interimResults=true;
-  isTranscribing=true;
-  let finalLog='';
-  document.getElementById('st').textContent='Listening ('+r.lang+')... Speak or sing along!';
-  if(hasReel){bgVid.currentTime=0;bgVid.muted=true;bgVid.loop=false;bgVid.play();}
-
-  r.onresult=e=>{
-    let interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      if(e.results.item(i).isFinal)finalLog+=e.results.item(i).item(0).transcript+' ';
-      else interim+=e.results.item(i).item(0).transcript;
-    }
-    document.getElementById('txt').value=(finalLog+interim).trim();
-    buildVideo();
-    if(scenes.length>0)activeIdx=scenes.length-1;
-  };
-  r.onend=()=>{if(isTranscribing)try{r.start();}catch(err){}};
-  r.start();
-  if(hasReel){bgVid.onended=()=>{isTranscribing=false;r.stop();bgVid.loop=true;document.getElementById('st').textContent='Full Reel Captioned! Tap Play or Export.';};}
-}
-</script>
-</body>
-</html>
+          ${ANIM_COMBOS.map(a=>`<option value="${a.id}" ${sc.capAnimId===a.id?'selected':''}>✨ ${a.name}</option>`).join('')}
