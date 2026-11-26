@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://github.io"></script>
+  <script type="importmap">{"imports":{"three":"https://jsdelivr.net"}}</script>
   <style>
     *{box-sizing:border-box;font-family:sans-serif}
     body{margin:0;background:#090b12;color:#fff;padding:10px}
@@ -47,7 +47,8 @@
   <div class="box"><div class="stage"><canvas id="cv"></canvas><div id="cap">READY TO <span>CREATE</span></div></div></div>
   <div class="box" id="list"></div>
 
-<script>
+<script type="module">
+import * as THREE from "three";
 const cv=document.getElementById('cv'),ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
 ren.setSize(270,480,false);
 const scn=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,270/480,0.1,100);
@@ -149,9 +150,8 @@ function play(save){
 }
 function exp(){document.getElementById('st').textContent='Exporting 3D Video...';play(true);}
 
+window.setMode=setMode;window.build=build;window.play=play;window.exp=exp;window.delSc=delSc;
+
 function loop(){
   requestAnimationFrame(loop);
   const t=performance.now()*0.004;
-  cam.position.x=Math.sin(t*0.3)*0.45;cam.lookAt(0,1.1,0);
-  c1.position.y=playing?Math.abs(Math.sin(t*2.5))*0.15:0;
-  if(c2.visible)c2.position.y=playing?Math.abs(Math.cos(t*2.5))*0.15:0;
