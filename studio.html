@@ -278,15 +278,6 @@ const URLS = {
       }
     }
 
-      function reloadModels() {
-    const sel = glbSelect.value || "soldier";
-    const needFlip = ["soldier", "ninja", "police"].includes(sel);
-    const mainUrl = URLS[sel] || URLS.soldier;
-    const partnerUrl = (sel === "fox" || sel === "cartoon_kid") ? URLS.parrot : (sel === "michelle" ? URLS.xbot : URLS.fox);
-    loadChar(0, mainUrl, needFlip);
-    loadChar(1, partnerUrl, false);
-  }
-    }
     reloadModels();
     sceneMode.addEventListener("change", reloadModels);
     glbSelect.addEventListener("change", reloadModels);
