@@ -296,26 +296,32 @@ function playVideo(save){
 }
 
 buildVideo();renderLoop();
-  function transcribeReel(){
+  let isTranscribing=false;
+function transcribeReel(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){alert('Use Chrome on Android for Auto-Captions');return;}
   const r=new SR();
   r.lang=document.getElementById('langSel').value;
   r.continuous=true;r.interimResults=true;
-  let captured='';
-  document.getElementById('st').textContent='Listening to Reel ('+r.lang+')... Keep volume up!';
-  if(hasReel){bgVid.currentTime=0;bgVid.muted=false;bgVid.play();}
+  isTranscribing=true;
+  let finalLog='';
+  document.getElementById('st').textContent='Listening ('+r.lang+')... Speak or sing along!';
+  if(hasReel){bgVid.currentTime=0;bgVid.muted=true;bgVid.loop=false;bgVid.play();}
+
   r.onresult=e=>{
-    let full='';
-    for(let i=0;i<e.results.length;i++)full+=e.results[i][0].transcript+' ';
-    document.getElementById('txt').value=full.trim();
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results.item(i).isFinal)finalLog+=e.results.item(i).item(0).transcript+' ';
+      else interim+=e.results.item(i).item(0).transcript;
+    }
+    document.getElementById('txt').value=(finalLog+interim).trim();
     buildVideo();
+    if(scenes.length>0)activeIdx=scenes.length-1;
   };
-  r.onend=()=>{document.getElementById('st').textContent='Auto-Captions Ready in '+r.lang+'!';};
+  r.onend=()=>{if(isTranscribing)try{r.start();}catch(err){}};
   r.start();
-  if(hasReel)bgVid.onended=()=>r.stop();
+  if(hasReel){bgVid.onended=()=>{isTranscribing=false;r.stop();bgVid.loop=true;document.getElementById('st').textContent='Full Reel Captioned! Tap Play or Export.';};}
 }
 </script>
 </body>
 </html>
-      </div>
