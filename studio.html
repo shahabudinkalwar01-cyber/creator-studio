@@ -428,6 +428,10 @@
       const idx=Math.min(scenes.length-1,Math.floor(el/sceneDurationMs)),sel=el%sceneDurationMs,plan=scenePlans[idx],theme=THEMES[activeThemeKey];
       if(idx!==lastSceneIdx){
         lastSceneIdx=idx;
+       const autoMode = plan.isFight ? "two_fight" : (idx % 2 === 1 ? "two_talk" : "desk");
+      if (sceneMode.value !== autoMode) { sceneMode.value = autoMode; positionCharsForMode(); }
+      const tKeys = Object.keys(THEMES);
+      activeThemeKey = tKeys[idx % tKeys.length];
         playWhooshAndPunch(plan.isFight);
         playCharAnim(0, plan.anim1);
         if(sceneMode.value!=="desk") playCharAnim(1, plan.anim2);
