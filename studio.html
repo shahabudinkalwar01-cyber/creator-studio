@@ -278,16 +278,14 @@ const URLS = {
       }
     }
 
-    function reloadModels() {
-      const m = sceneMode.value;
-      if (m === "two_fight") {
-        loadChar(0, URLS.robot, false);
-        loadChar(1, URLS.robot, false);
-      } else {
-        const isSol = glbSelect.value === "soldier";
-        loadChar(0, URLS[glbSelect.value], isSol);
-        loadChar(1, URLS.robot, false);
-      }
+      function reloadModels() {
+    const sel = glbSelect.value || "soldier";
+    const needFlip = ["soldier", "ninja", "police"].includes(sel);
+    const mainUrl = URLS[sel] || URLS.soldier;
+    const partnerUrl = (sel === "fox" || sel === "cartoon_kid") ? URLS.parrot : (sel === "michelle" ? URLS.xbot : URLS.fox);
+    loadChar(0, mainUrl, needFlip);
+    loadChar(1, partnerUrl, false);
+  }
     }
     reloadModels();
     sceneMode.addEventListener("change", reloadModels);
