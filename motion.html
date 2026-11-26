@@ -39,6 +39,13 @@
       <button id="micBtn" class="btn red">🎤 Mic</button>
       <button class="btn dark" onclick="document.getElementById('audIn').click()">🎵 Audio</button>
       <button class="btn dark" onclick="document.getElementById('vidIn').click()">🎬 Upload Reel</button>
+      <select id="langSel" style="flex:1;min-width:95px;padding:9px;background:#1c2230;color:#fff;border:1px solid #2e374d;border-radius:8px;font-weight:700;font-size:12px">
+  <option value="ur-PK">🇵🇰 Urdu (اردو)</option>
+  <option value="hi-IN">🇮🇳 Hindi (हिंदी)</option>
+  <option value="en-US">🇺🇸 English</option>
+  <option value="ar-SA">🇸🇦 Arabic</option>
+</select>
+<button id="autoCapBtn" class="btn green" onclick="transcribeReel()">🎙️ Auto-Caption Reel</button>
       <input id="audIn" type="file" accept="audio/*" style="display:none">
       <input id="vidIn" type="file" accept="video/*" style="display:none">
     </div>
@@ -289,6 +296,25 @@ function playVideo(save){
 }
 
 buildVideo();renderLoop();
+  function transcribeReel(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Use Chrome on Android for Auto-Captions');return;}
+  const r=new SR();
+  r.lang=document.getElementById('langSel').value;
+  r.continuous=true;r.interimResults=true;
+  let captured='';
+  document.getElementById('st').textContent='Listening to Reel ('+r.lang+')... Keep volume up!';
+  if(hasReel){bgVid.currentTime=0;bgVid.muted=false;bgVid.play();}
+  r.onresult=e=>{
+    let full='';
+    for(let i=0;i<e.results.length;i++)full+=e.results[i][0].transcript+' ';
+    document.getElementById('txt').value=full.trim();
+    buildVideo();
+  };
+  r.onend=()=>{document.getElementById('st').textContent='Auto-Captions Ready in '+r.lang+'!';};
+  r.start();
+  if(hasReel)bgVid.onended=()=>r.stop();
+}
 </script>
 </body>
 </html>
