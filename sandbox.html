@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://github.io"></script>
   <style>
     *{box-sizing:border-box;font-family:sans-serif}
     body{margin:0;background:#090b12;color:#fff;padding:10px}
@@ -12,7 +13,10 @@
     textarea{width:100%;height:75px;background:#090c14;color:#fff;border:1px solid #303a52;border-radius:8px;padding:8px;font-size:13px}
     .row{display:flex;gap:8px;margin-top:8px}
     button.btn{flex:1;padding:10px;border:none;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer}
-    canvas{display:block;width:270px;height:480px;margin:0 auto;border:2px solid #f5b942;border-radius:12px;background:#000}
+    .stage{position:relative;width:270px;height:480px;margin:0 auto;border:2px solid #f5b942;border-radius:12px;overflow:hidden}
+    canvas{display:block;width:100%;height:100%}
+    #cap{position:absolute;bottom:10%;left:6%;right:6%;text-align:center;font-weight:900;font-size:18px;text-shadow:0 2px 8px #000;pointer-events:none}
+    #cap span{background:#f5b942;color:#000;padding:2px 8px;border-radius:5px;display:inline-block;margin-top:4px}
     .sc{background:#1a2133;padding:8px;border-radius:8px;margin-top:6px;font-size:12px}
   </style>
 </head>
@@ -20,9 +24,9 @@
   <div class="tabs">
     <button class="tab on" onclick="setMode('jungle',this)">🧸 3D Cartoon</button>
     <button class="tab" onclick="setMode('wealth',this)">💰 Iman Wealth</button>
-    <button class="tab" onclick="setMode('space',this)">🚀 Space AI</button>
-    <button class="tab" onclick="setMode('ocean',this)">🌊 Ocean</button>
-    <button class="tab" onclick="setMode('city',this)">🏙️ City</button>
+    <button class="tab" onclick="setMode('space',this)">🚀 3D Space</button>
+    <button class="tab" onclick="setMode('ocean',this)">🌊 3D Ocean</button>
+    <button class="tab" onclick="setMode('city',this)">🏙️ 3D City</button>
   </div>
 
   <div class="box">
@@ -34,28 +38,73 @@
     </div>
     <div class="row">
       <button class="btn" style="background:#f5b942;color:#000" onclick="build()">✨ Build 3D Video</button>
-      <button class="btn" style="background:#10b981;color:#000" onclick="play()">▶ Play</button>
+      <button class="btn" style="background:#10b981;color:#000" onclick="play()">▶ Play 3D</button>
       <button class="btn" style="background:#2563eb;color:#fff" onclick="exp()">⬇️ Export</button>
     </div>
-    <div id="st" style="font-size:11px;color:#10b981;margin-top:6px;text-align:center">Ready!</div>
+    <div id="st" style="font-size:11px;color:#10b981;margin-top:6px;text-align:center">Real 3D Ready!</div>
   </div>
 
-  <div class="box"><canvas id="cv" width="270" height="480"></canvas></div>
+  <div class="box"><div class="stage"><canvas id="cv"></canvas><div id="cap">READY TO <span>CREATE</span></div></div></div>
   <div class="box" id="list"></div>
 
 <script>
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-let scenes=[],cur={text:'READY',env:'jungle',two:false},playing=false,audUrl=null,rec=null,chunks=[];
+const cv=document.getElementById('cv'),ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});
+ren.setSize(270,480,false);
+const scn=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,270/480,0.1,100);
+cam.position.set(0,1.6,4.4);
+scn.add(new THREE.AmbientLight(0xffffff,0.75));
+const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(3,6,4);scn.add(sun);
 
-function setMode(e,el){
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-  el.classList.add('on');
-  cur={text:e.toUpperCase()+' MODE',env:e,two:e==='city'};
+function make3DChar(col,capCol){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.28,0.65,20),new THREE.MeshStandardMaterial({color:col,roughness:0.3}));body.position.y=0.6;
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.32,24,24),new THREE.MeshStandardMaterial({color:'#fed7aa',roughness:0.3}));head.position.y=1.22;
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.33,20,12,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:capCol}));cap.position.y=1.25;
+  const e1=new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),new THREE.MeshBasicMaterial({color:'#000'}));e1.position.set(-0.1,1.25,0.29);
+  const e2=e1.clone();e2.position.x=0.1;
+  g.add(body,head,cap,e1,e2);return g;
+}
+const c1=make3DChar('#f97316','#ef4444'),c2=make3DChar('#3b82f6','#facc15');c2.visible=false;scn.add(c1,c2);
+const envG=new THREE.Group();scn.add(envG);
+
+function setEnv(e,two){
+  while(envG.children.length)envG.remove(envG.children.at(0));
+  c1.position.x=two?-0.5:0;c2.visible=Boolean(two);c2.position.set(0.55,0,0);
+  const gnd=new THREE.Mesh(new THREE.CylinderGeometry(3.8,3.8,0.2,32),new THREE.MeshStandardMaterial({color:e==='space'?'#475569':e==='wealth'?'#151926':e==='ocean'?'#fde047':e==='city'?'#1e293b':'#22c55e'}));
+  gnd.position.y=-0.1;envG.add(gnd);
+  if(e==='jungle'){
+    scn.background=new THREE.Color('#38bdf8');
+    const tr=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.16,1.2,12),new THREE.MeshStandardMaterial({color:'#78350f'}));tr.position.set(-1.1,0.6,-1.2);
+    const lf=new THREE.Mesh(new THREE.ConeGeometry(0.6,1.3,16),new THREE.MeshStandardMaterial({color:'#15803d'}));lf.position.set(-1.1,1.5,-1.2);
+    envG.add(tr,lf);
+  }else if(e==='space'){
+    scn.background=new THREE.Color('#050816');
+    const pl=new THREE.Mesh(new THREE.SphereGeometry(0.45,24,24),new THREE.MeshStandardMaterial({color:'#a855f7'}));pl.position.set(0.8,2.1,-2.2);
+    const rg=new THREE.Mesh(new THREE.TorusGeometry(0.7,0.05,8,24),new THREE.MeshBasicMaterial({color:'#38bdf8'}));rg.rotation.x=1.2;rg.position.copy(pl.position);
+    envG.add(pl,rg);
+  }else if(e==='ocean'){
+    scn.background=new THREE.Color('#0284c7');
+    const sea=new THREE.Mesh(new THREE.CylinderGeometry(6,6,0.15,32),new THREE.MeshStandardMaterial({color:'#0ea5e9'}));sea.position.y=-0.12;envG.add(sea);
+  }else if(e==='city'){
+    scn.background=new THREE.Color('#0f172a');
+    const b1=new THREE.Mesh(new THREE.BoxGeometry(0.9,2.8,1),new THREE.MeshStandardMaterial({color:'#334155'}));b1.position.set(-1.1,1.4,-2);
+    const b2=new THREE.Mesh(new THREE.BoxGeometry(0.9,3.4,1),new THREE.MeshStandardMaterial({color:'#1e293b'}));b2.position.set(1.1,1.7,-2);
+    envG.add(b1,b2);
+  }else{
+    scn.background=new THREE.Color('#090a0f');
+    [0.4,0.8,1.2].forEach((h,i)=>{
+      const b=new THREE.Mesh(new THREE.BoxGeometry(0.2,h,0.2),new THREE.MeshStandardMaterial({color:i===2?'#10b981':'#f5b942'}));
+      b.position.set(0.5+(i-1)*0.26,h/2+0.6,-0.5);envG.add(b);
+    });
+  }
 }
 
+let scenes=[],cur={text:'READY',env:'jungle',two:false},playing=false,audUrl=null,rec=null,chunks=[];
+function apply(s){cur=s;setEnv(s.env,s.two);const w=s.text.toUpperCase().split(' '),l=w.pop()||'';document.getElementById('cap').innerHTML=w.join(' ')+'<br><span>'+l+'</span>';}
+function setMode(e,el){document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');apply({text:e.toUpperCase()+' 3D',env:e,two:e==='city'});}
+
 function build(){
-  const raw=document.getElementById('txt').value.trim();
-  const arr=raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  const arr=document.getElementById('txt').value.trim().split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
   let t=0;
   scenes=arr.map((s,i)=>{
     const d=Math.max(1.8,s.split(' ').length*0.45),l=s.toLowerCase();
@@ -64,101 +113,45 @@ function build(){
     else if(/ocean|sea|water|swim/.test(l))env='ocean';
     else if(/city|street|karachi|car/.test(l))env='city';
     else if(/money|rich|gold|iman|win/.test(l))env='wealth';
-    const two=/friend|meet|two|talk|fight/.test(l);
-    const o={id:i,text:s,env,two,start:t,end:t+d};t+=d;return o;
+    const o={id:i,text:s,env,two:/friend|meet|two|talk|fight/.test(l),start:t,end:t+d};t+=d;return o;
   });
-  if(scenes.length)cur=scenes[0];
-  renderCards();
-  document.getElementById('st').textContent='Built '+scenes.length+' Scenes!';
-}
-
-function renderCards(){
+  if(scenes.length)apply(scenes.at(0));
   const box=document.getElementById('list');box.innerHTML='';
   scenes.forEach((s,i)=>{
     const d=document.createElement('div');d.className='sc';
     d.innerHTML='<b>Scene '+(i+1)+' ('+s.env+')</b> <button style="float:right;background:#dc2626;color:#fff;border:none;border-radius:4px" onclick="delSc('+i+')">🗑️</button><br>'+s.text;
     box.appendChild(d);
   });
+  document.getElementById('st').textContent='Built '+scenes.length+' Real 3D Scenes!';
 }
 function delSc(i){scenes.splice(i,1);document.getElementById('txt').value=scenes.map(s=>s.text).join('. ');build();}
 
 document.getElementById('micBtn').onclick=async function(){
   if(!rec||rec.state==='inactive'){
-    const st=await navigator.mediaDevices.getUserMedia({audio:true});
-    rec=new MediaRecorder(st);chunks=[];
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(st);chunks=[];
     rec.ondataavailable=e=>chunks.push(e.data);
     rec.onstop=()=>{audUrl=URL.createObjectURL(new Blob(chunks));document.getElementById('st').textContent='Voice Saved!';};
     rec.start();this.textContent='⏹️ Stop';
   }else{rec.stop();this.textContent='🎤 Record Voice';}
 };
-document.getElementById('audIn').onchange=e=>{if(e.target.files[0]){audUrl=URL.createObjectURL(e.target.files[0]);document.getElementById('st').textContent='Audio Loaded!';}};
-
-function hero(x,y,col,t,flip){
-  const b=playing?Math.abs(Math.sin(t*7))*12:0;
-  ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.ellipse(x,y+50,26,8,0,0,7);ctx.fill();
-  ctx.fillStyle='#1e293b';ctx.fillRect(x-12,y+24-b,8,25);ctx.fillRect(x+4,y+24-b,8,25);
-  ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x-18,y-6-b,36,34,10);ctx.fill();
-  ctx.fillStyle='#fed7aa';ctx.beginPath();ctx.arc(x,y-28-b,25,0,7);ctx.fill();
-  const ox=flip?-3:3;
-  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x-8+ox,y-30-b,6,0,7);ctx.arc(x+8+ox,y-30-b,6,0,7);ctx.fill();
-  ctx.fillStyle='#000';ctx.beginPath();ctx.arc(x-8+ox,y-30-b,3,0,7);ctx.arc(x+8+ox,y-30-b,3,0,7);ctx.fill();
-  ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(x,y-33-b,25,Math.PI,0);ctx.fill();
-}
-
-function draw(){
-  const t=performance.now()*0.001,e=cur.env;
-  ctx.fillStyle=e==='space'?'#050816':e==='wealth'?'#090a0f':e==='city'?'#1e293b':'#38bdf8';
-  ctx.fillRect(0,0,270,480);
-  if(e==='jungle'){
-    ctx.fillStyle='#fde047';ctx.beginPath();ctx.arc(220,60,24,0,7);ctx.fill();
-    ctx.fillStyle='#22c55e';ctx.beginPath();ctx.ellipse(135,410,200,110,0,0,7);ctx.fill();
-    ctx.fillStyle='#78350f';ctx.fillRect(42,270,12,45);ctx.fillStyle='#15803d';ctx.beginPath();ctx.arc(48,255,28,0,7);ctx.fill();
-  }else if(e==='space'){
-    ctx.fillStyle='#a855f7';ctx.beginPath();ctx.arc(200,90,28,0,7);ctx.fill();
-    ctx.fillStyle='#475569';ctx.beginPath();ctx.ellipse(135,410,200,110,0,0,7);ctx.fill();
-  }else if(e==='ocean'){
-    ctx.fillStyle='#0284c7';ctx.fillRect(0,280,270,200);
-    ctx.fillStyle='#fde047';ctx.beginPath();ctx.ellipse(135,380,140,60,0,0,7);ctx.fill();
-  }else if(e==='city'){
-    ctx.fillStyle='#334155';ctx.fillRect(20,130,65,200);ctx.fillRect(185,110,70,220);
-    ctx.fillStyle='#0f172a';ctx.fillRect(0,320,270,160);
-  }else{
-    ctx.fillStyle='#f5b942';ctx.fillRect(185,180,18,60);ctx.fillRect(210,150,18,90);
-    ctx.fillStyle='#10b981';ctx.fillRect(235,110,18,130);
-  }
-  if(cur.two){hero(90,320,'#f97316',t,false);hero(185,320,'#3b82f6',t+1,true);}
-  else hero(135,320,'#f97316',t,false);
-
-  ctx.font='900 16px sans-serif';ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=4;
-  const w=cur.text.toUpperCase().split(' '),last=w.pop()||'';
-  ctx.strokeText(w.slice(0,4).join(' '),135,415);ctx.fillText(w.slice(0,4).join(' '),135,415);
-  ctx.fillStyle='#f5b942';ctx.fillRect(65,428,140,26);
-  ctx.fillStyle='#000';ctx.fillText(last,135,446);
-  requestAnimationFrame(draw);
-}
+document.getElementById('audIn').onchange=e=>{if(e.target.files.item(0)){audUrl=URL.createObjectURL(e.target.files.item(0));document.getElementById('st').textContent='Audio Loaded!';}};
 
 function play(save){
-  build();if(!scenes.length)return;
-  speechSynthesis.cancel();
-  if(audUrl)new Audio(audUrl).play();
-  else speechSynthesis.speak(new SpeechSynthesisUtterance(scenes.map(s=>s.text).join('. ')));
-  playing=true;const st=performance.now();
-  let vr=null,vc=[];
-  if(save){
-    vr=new MediaRecorder(cv.captureStream(30));
-    vr.ondataavailable=e=>vc.push(e.data);
-    vr.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(vc,{type:'video/webm'}));a.download='Cartoon.webm';a.click();};
-    vr.start();
-  }
+  build();if(!scenes.length)return;speechSynthesis.cancel();
+  if(audUrl)new Audio(audUrl).play();else speechSynthesis.speak(new SpeechSynthesisUtterance(scenes.map(s=>s.text).join('. ')));
+  playing=true;const st=performance.now();let last=-1,vr=null,vc=[];
+  if(save){vr=new MediaRecorder(cv.captureStream(30));vr.ondataavailable=e=>vc.push(e.data);vr.onstop=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(vc,{type:'video/webm'}));a.download='3D_Cartoon.webm';a.click();};vr.start();}
   const iv=setInterval(()=>{
-    const sec=(performance.now()-st)/1000;
-    const f=scenes.find(s=>sec>=s.start&&sec<s.end);
-    if(f)cur=f;
-    if(sec>=scenes[scenes.length-1].end){clearInterval(iv);playing=false;if(vr)vr.stop();}
+    const sec=(performance.now()-st)/1000,f=scenes.find(s=>sec>=s.start&&sec<s.end);
+    if(f&&f.id!==last){last=f.id;apply(f);}
+    if(sec>=scenes.at(-1).end){clearInterval(iv);playing=false;if(vr)vr.stop();}
   },100);
 }
-function exp(){document.getElementById('st').textContent='Exporting...';play(true);}
-build();draw();
-</script>
-</body>
-</html>
+function exp(){document.getElementById('st').textContent='Exporting 3D Video...';play(true);}
+
+function loop(){
+  requestAnimationFrame(loop);
+  const t=performance.now()*0.004;
+  cam.position.x=Math.sin(t*0.3)*0.45;cam.lookAt(0,1.1,0);
+  c1.position.y=playing?Math.abs(Math.sin(t*2.5))*0.15:0;
+  if(c2.visible)c2.position.y=playing?Math.abs(Math.cos(t*2.5))*0.15:0;
