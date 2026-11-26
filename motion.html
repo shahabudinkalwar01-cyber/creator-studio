@@ -273,7 +273,31 @@ document.getElementById('micBtn').onclick=async function(){
   }else{rec.stop();this.textContent='🎤 Mic';}
 };
 document.getElementById('audIn').onchange=e=>{if(e.target.files.item(0)){audUrl=URL.createObjectURL(e.target.files.item(0));document.getElementById('st').textContent='Audio Loaded!';}};
-document.getElementById('vidIn').onchange=e=>{const f=e.target.files.item(0);if(f){bgVid.src=URL.createObjectURL(f);bgVid.loop=true;bgVid.play();hasReel=true;audUrl=null;document.getElementById('st').textContent='Reel Loaded!';}};
+document.getElementById('vidIn').onchange=async e=>{
+  const f=e.target.files.item(0);
+  if(!f)return;
+  bgVid.src=URL.createObjectURL(f);bgVid.loop=true;bgVid.play();
+  hasReel=true;audUrl=null;
+  document.getElementById('st').textContent='Auto-generating captions from Reel audio...';
+
+  try{
+    const {pipeline}=await import('https://jsdelivr.net');
+    const transcriber=await pipeline('automatic-speech-recognition','Xenova/whisper-tiny');
+    const buf=await f.arrayBuffer();
+    const ac=new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
+    const audioData=await ac.decodeAudioData(buf);
+    const channelData=audioData.getChannelData(0);
+    const langCode=document.getElementById('langSel').value.split('-').at(0);
+    const out=await transcriber(channelData,{language:langCode,chunk_length_s:30});
+    if(out&&out.text){
+      document.getElementById('txt').value=out.text.trim();
+      buildVideo();
+      document.getElementById('st').textContent='Auto-Captions Ready & Synced!';
+    }
+  }catch(err){
+    document.getElementById('st').textContent='Reel Loaded! Tap Auto-Caption Reel or paste lyrics.';
+  }
+};
 
 function playVideo(save){
   if(!scenes.length)buildVideo();
